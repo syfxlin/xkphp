@@ -8,6 +8,6 @@ class HomeController
 {
     public function index(Request $request)
     {
-        return response($request->all())->header('X-Test', '1');
+        return response($request->cookie('r', '123'))->header('X-Test', '1');
     }
 }

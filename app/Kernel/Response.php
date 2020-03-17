@@ -48,6 +48,7 @@ class Response
         $httponly = false
     ): Response {
         $this->cookies[$name] = [
+            'name' => $name,
             'value' => $value,
             'expire' => $expire,
             'path' => $path,
@@ -66,7 +67,7 @@ class Response
         }
         foreach ($this->cookies as $name => $value) {
             setcookie(
-                $name,
+                $value['name'],
                 $value['value'],
                 $value['expire'],
                 $value['path'],

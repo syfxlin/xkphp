@@ -51,7 +51,6 @@ class RequestFile
 class Request
 {
     private $path_param;
-    private $cookie_param;
     private $query_param;
     private $body_param;
     private $server_param;
@@ -65,7 +64,6 @@ class Request
     public function __construct($request = [])
     {
         $this->path_param = $request['path_param'];
-        $this->cookie_param = $request['cookie_param'];
         $this->query_param = $request['query_param'];
         $this->body_param = $request['body_param'];
         $this->server_param = $request['server_param'];
@@ -75,6 +73,11 @@ class Request
     public function session($name, $default = null)
     {
         return session($name, $default);
+    }
+
+    public function cookie($name, $default = null)
+    {
+        return cookie($name, $default);
     }
 
     public function getDotData($key, $source)
@@ -182,6 +185,9 @@ class Request
         }
         if (isset($this->path_param[$name])) {
             return $this->path_param[$name];
+        }
+        if (isset($this->uploaded_files[$name])) {
+            return $this->file($name);
         }
         return null;
     }

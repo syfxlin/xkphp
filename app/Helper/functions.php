@@ -1,5 +1,6 @@
 <?php
 
+use App\Kernel\Cookie;
 use App\Kernel\Response;
 use App\Kernel\Session;
 
@@ -10,7 +11,7 @@ function response($content = '', $code = 200): Response
 
 function redirect($url, $code = 301)
 {
-    echo response('', $code)->header('Location', $url);
+    response('', $code)->header('Location', $url)->emit();
     exit;
 }
 
@@ -24,4 +25,10 @@ function session($name, $default = null)
             $session->put($key, $value);
         }
     }
+}
+
+function cookie($name, $default = null)
+{
+    $cookie = Cookie::getInstance();
+    return $cookie->get($name, $default);
 }

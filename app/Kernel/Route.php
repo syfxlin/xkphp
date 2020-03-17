@@ -41,9 +41,9 @@ class Route
     private function handleRequest($dispatcher, string $request_method, string $request_uri)
     {
         list($code, $handler, $path_param) = array_pad($dispatcher->dispatch($request_method, $request_uri), 3, null);
+
         $request = Request::getInstance([
             'path_param' => $path_param,
-            'cookie_param' => $_COOKIE,
             'query_param' => $_GET,
             'body_param' => $_POST,
             'server_param' => $_SERVER,
@@ -89,6 +89,7 @@ class RouteItem
     public static $route;
     public static $globalMiddlewares;
     public static $routeMiddlewares;
+    public static $useGroupMiddlewares = null;
     public $prefix = null;
     public $middlewares = [];
 
@@ -101,6 +102,10 @@ class RouteItem
 
     public function getHandle($handler)
     {
+        // 注册组中间件
+        if (self::$useGroupMiddlewares !== null) {
+            $this->middlewares = array_merge($this->middlewares, self::$useGroupMiddlewares);
+        }
         return function ($request) use ($handler) {
             foreach (array_merge(self::$globalMiddlewares, $this->middlewares) as $middleware) {
                 $handler = function ($request) use ($middleware, $handler) {
@@ -181,14 +186,16 @@ class RouteItem
 
     public function group(callable $callback)
     {
+        self::$useGroupMiddlewares = $this->middlewares;
         self::$route->addGroup($this->prefix, $callback);
+        self::$useGroupMiddlewares = null;
         $this->prefix = null;
         return $this;
     }
 
     public function redirect($old_route, $new_route, $code = 301)
     {
-        self::get($old_route, function () use ($new_route, $code) {
+        self::any($old_route, function () use ($new_route, $code) {
             redirect($new_route, $code);
         });
         return $this;
