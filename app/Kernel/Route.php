@@ -21,8 +21,10 @@ class Route
         self::$routeMiddlewares = $middleware_config['route'];
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
-            require_once __DIR__ . "/../Route/web.php";
-            require_once __DIR__ . "/../Route/api.php";
+            $route_config = require_once __DIR__ . "/../../config/route.php";
+            foreach ($route_config as $route) {
+                require_once $route;
+            }
         });
 
         $request_method = $_SERVER['REQUEST_METHOD'];
@@ -74,6 +76,8 @@ class Route
                 $result = call_user_func($handler, $request);
                 break;
         }
+
+        // TODO: 处理多种类型
         return is_object($result) && get_class($result) === 'App\Middleware\Response' ? $result : response($result);
     }
 
