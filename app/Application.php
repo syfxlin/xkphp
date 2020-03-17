@@ -9,7 +9,7 @@ class Application
     public static $app;
 
     protected static $bootInstanceClass = [
-        \App\Middleware\Route::class,
+        \App\Kernel\Route::class,
         \App\Database\DB::class
     ];
 

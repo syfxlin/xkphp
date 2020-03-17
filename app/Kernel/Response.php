@@ -6,7 +6,10 @@ use App\Application;
 
 class Response
 {
-    public $content = null;
+    private $content;
+    private $code;
+    private $headers;
+    private $cookies;
 
     public static function getInstance($content = '', $code = 200)
     {
@@ -15,20 +18,22 @@ class Response
 
     public function __construct($content = '', $code = 200)
     {
-        http_response_code($code);
+        $this->code = $code;
         $this->content = is_string($content) ? $content : json_encode($content);
+        $this->headers = [];
+        $this->cookies = [];
     }
 
     public function header(string $key, string $value): Response
     {
-        header("$key: $value");
+        $this->headers[$key] = $value;
         return $this;
     }
 
     public function withHeaders(array $headers): Response
     {
         foreach ($headers as $key => $value) {
-            header("$key: $value");
+            $this->headers[$key] = $value;
         }
         return $this;
     }
@@ -42,7 +47,34 @@ class Response
         $secure = false,
         $httponly = false
     ): Response {
-        setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+        $this->cookies[$name] = [
+            'value' => $value,
+            'expire' => $expire,
+            'path' => $path,
+            'domain' => $domain,
+            'secure' => $secure,
+            'httponly' => $httponly
+        ];
         return $this;
+    }
+
+    public function emit()
+    {
+        http_response_code($this->code);
+        foreach ($this->headers as $key => $value) {
+            header("$key: $value");
+        }
+        foreach ($this->cookies as $name => $value) {
+            setcookie(
+                $name,
+                $value['value'],
+                $value['expire'],
+                $value['path'],
+                $value['domain'],
+                $value['secure'],
+                $value['httponly']
+            );
+        }
+        echo $this->content;
     }
 }

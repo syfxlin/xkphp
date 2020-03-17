@@ -10,13 +10,15 @@ use function FastRoute\simpleDispatcher;
 
 class Route
 {
-    protected static $instance;
     protected static $route;
-    protected static $prefix;
+    protected static $globalMiddlewares;
+    protected static $routeMiddlewares;
 
     public function __construct()
     {
-        self::$instance = $this;
+        $middleware_config = require_once __DIR__ . "/../../config/middleware.php";
+        self::$globalMiddlewares = $middleware_config['global'];
+        self::$routeMiddlewares = $middleware_config['route'];
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
             require_once __DIR__ . "/../Route/web.php";
@@ -33,7 +35,7 @@ class Route
 
         $response = $this->handleRequest($dispatcher, $request_method, $request_uri);
 
-        echo $response->content;
+        $response->emit();
     }
 
     private function handleRequest($dispatcher, string $request_method, string $request_uri)
@@ -47,14 +49,7 @@ class Route
             'server_param' => $_SERVER,
             'uploaded_files' => $_FILES
         ]);
-        $middlewares = [
-            \App\Middleware\TestMiddleware::class
-        ];
-        foreach ($middlewares as $middleware) {
-            $handler = function ($request) use ($middleware, $handler) {
-                return (new $middleware())->handle($request, $handler);
-            };
-        }
+
         switch ($code) {
             case Dispatcher::NOT_FOUND:
                 $result = [
@@ -79,79 +74,135 @@ class Route
                 $result = call_user_func($handler, $request);
                 break;
         }
-
         return is_object($result) && get_class($result) === 'App\Middleware\Response' ? $result : response($result);
     }
 
-    public static function addRoute($httpMethod, $route, $handler)
+    public static function __callStatic($name, $arguments)
+    {
+        $route_item = new RouteItem(self::$route, self::$routeMiddlewares, self::$globalMiddlewares);
+        return $route_item->$name(...$arguments);
+    }
+}
+
+class RouteItem
+{
+    public static $route;
+    public static $globalMiddlewares;
+    public static $routeMiddlewares;
+    public $prefix = null;
+    public $middlewares = [];
+
+    public function __construct($r, $rm, $gm)
+    {
+        self::$route = $r;
+        self::$routeMiddlewares = $rm;
+        self::$globalMiddlewares = $gm;
+    }
+
+    public function getHandle($handler)
+    {
+        return function ($request) use ($handler) {
+            foreach (array_merge(self::$globalMiddlewares, $this->middlewares) as $middleware) {
+                $handler = function ($request) use ($middleware, $handler) {
+                    return (new $middleware())->handle($request, $handler);
+                };
+            }
+            return $handler($request);
+        };
+    }
+
+    public function addRoute($httpMethod, $route, $handler)
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
             list($c_name, $f_name) = explode('@', $handler);
             $c_name = 'App\Controllers\\' . $c_name;
-            self::$route->addRoute($httpMethod, $route, function ($request) use ($c_name, $f_name) {
+            self::$route->addRoute($httpMethod, $route, $this->getHandle(function ($request) use ($c_name, $f_name) {
                 return Controller::invokeController($c_name, $f_name, [], ['request' => $request]);
-            });
+            }));
         } else {
-            self::$route->addRoute($httpMethod, $route, $handler);
+            self::$route->addRoute($httpMethod, $route, $this->getHandle($handler));
         }
+        return $this;
     }
 
-    public static function get(string $route, $handler)
+    public function get(string $route, $handler)
     {
         self::addRoute('GET', $route, $handler);
+        return $this;
     }
 
-    public static function post(string $route, $handler)
+    public function post(string $route, $handler)
     {
         self::addRoute('POST', $route, $handler);
+        return $this;
     }
 
-    public static function put(string $route, $handler)
+    public function put(string $route, $handler)
     {
         self::addRoute('PUT', $route, $handler);
+        return $this;
     }
 
-    public static function delete(string $route, $handler)
+    public function delete(string $route, $handler)
     {
         self::addRoute('DELETE', $route, $handler);
+        return $this;
     }
 
-    public static function patch(string $route, $handler)
+    public function patch(string $route, $handler)
     {
         self::addRoute('PATCH', $route, $handler);
+        return $this;
     }
 
-    public static function head(string $route, $handler)
+    public function head(string $route, $handler)
     {
         self::addRoute('HEAD', $route, $handler);
+        return $this;
     }
 
-    public static function match(array $httpMethod, string $route, $handler)
+    public function match(array $httpMethod, string $route, $handler)
     {
         self::addRoute($httpMethod, $route, $handler);
+        return $this;
     }
 
-    public static function any(string $route, $handler)
+    public function any(string $route, $handler)
     {
         self::addRoute(['GET', 'POST', 'PUT', 'DELTE', 'PATCH'], $route, $handler);
+        return $this;
     }
 
-    public static function prefix($prefix)
+    public function prefix($prefix)
     {
-        self::$prefix = $prefix;
-        return self::$instance;
+        $this->prefix = $prefix;
+        return $this;
     }
 
-    public static function group(callable $callback)
+    public function group(callable $callback)
     {
-        self::$route->addGroup(self::$prefix, $callback);
-        self::$prefix = null;
+        self::$route->addGroup($this->prefix, $callback);
+        $this->prefix = null;
+        return $this;
     }
 
-    public static function redirect($old_route, $new_route, $code = 301)
+    public function redirect($old_route, $new_route, $code = 301)
     {
         self::get($old_route, function () use ($new_route, $code) {
             redirect($new_route, $code);
         });
+        return $this;
+    }
+
+    public function middleware($name)
+    {
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                $this->middlewares[] = self::$routeMiddlewares[$n];
+            }
+        } else {
+            $this->middlewares[] = self::$routeMiddlewares[$name];
+        }
+        return $this;
     }
 }
