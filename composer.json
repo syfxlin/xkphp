@@ -1,0 +1,31 @@
+{
+  "name": "syfxlin/xkblog",
+  "description": "一个 Swoole 和 React 组成的博客系统",
+  "type": "project",
+  "require": {
+    "illuminate/database": "^7.1",
+    "vlucas/phpdotenv": "^4.1",
+    "illuminate/events": "^7.1",
+    "nikic/fast-route": "^1.3",
+    "middlewares/fast-route": "^2.0",
+    "middlewares/request-handler": "^2.0",
+    "relay/relay": "2.x",
+    "laminas/laminas-diactoros": "^2.2",
+    "laminas/laminas-httphandlerrunner": "^1.1"
+  },
+  "license": "Apache 2.0",
+  "authors": [
+    {
+      "name": "syfxlin",
+      "email": "syfxlin@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Helper/functions.php"
+    ]
+  }
+}
