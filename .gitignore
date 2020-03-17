@@ -1,3 +1,5 @@
 /vendor
 .env
 .history
+/storage/app/*
+/storage/sessions/*
