@@ -14,8 +14,12 @@ class Session
     public function __construct($sessid = null)
     {
         $session_config = require_once __DIR__ . "/../../config/session.php";
-        session_save_path($session_config['save_path']);
-        session_set_cookie_params($session_config['life_time']);
+        if ($session_config['save_path']) {
+            session_save_path($session_config['save_path']);
+        }
+        if ($session_config['life_time']) {
+            session_set_cookie_params($session_config['life_time']);
+        }
         if ($sessid !== null) {
             session_id($sessid);
         }

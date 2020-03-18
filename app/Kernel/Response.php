@@ -53,6 +53,9 @@ class Response
 
     private function convert($content)
     {
+        if (is_null($content)) {
+            return '';
+        }
         // String
         if (is_string($content)) {
             return $content;
