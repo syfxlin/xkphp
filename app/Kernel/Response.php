@@ -19,9 +19,20 @@ class Response
     public function __construct($content = '', $code = 200)
     {
         $this->code = $code;
-        $this->content = is_string($content) ? $content : json_encode($content);
+        $this->content = $this->convert($content);
         $this->headers = [];
         $this->cookies = [];
+    }
+
+    private function convert($content)
+    {
+        if (is_string($content)) {
+            return $content;
+        }
+        if (is_object($content) && get_class($content) === 'App\Kernel\ViewItem') {
+            return $content->render();
+        }
+        return json_encode($content);
     }
 
     public function header(string $key, string $value): Response

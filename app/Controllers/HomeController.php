@@ -8,6 +8,6 @@ class HomeController
 {
     public function index(Request $request)
     {
-        return response(session('test', 123))->header('X-Test', '1');
+        return view('group.home', ['title' => 'title'])->with('content', 'content');
     }
 }

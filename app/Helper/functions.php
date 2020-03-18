@@ -3,6 +3,7 @@
 use App\Kernel\Cookie;
 use App\Kernel\Response;
 use App\Kernel\Session;
+use App\Kernel\View;
 
 function response($content = '', $code = 200): Response
 {
@@ -31,4 +32,10 @@ function cookie($name, $default = null)
 {
     $cookie = Cookie::getInstance();
     return $cookie->get($name, $default);
+}
+
+function view($name, $data = [])
+{
+    $view = View::make($name, $data);
+    return $view;
 }
