@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Database;
+namespace App\Kernel;
 
 use Illuminate\Database\Eloquent\Model as EModel;
 

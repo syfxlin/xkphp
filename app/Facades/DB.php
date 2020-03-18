@@ -2,12 +2,7 @@
 
 namespace App\Facades;
 
-use App\Database\DB as DatabaseDB;
-
-class DB
+class DB extends Facade
 {
-    public static function __callStatic($name, $arguments)
-    {
-        return DatabaseDB::$name(...$arguments);
-    }
+    protected static $class = \App\Database\DB::class;
 }

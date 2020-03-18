@@ -4,7 +4,7 @@ namespace App\Facades;
 
 use App\Kernel\Response as KernelResponse;
 
-class Response
+class Response extends Facade
 {
     public static function __callStatic($name, $arguments)
     {

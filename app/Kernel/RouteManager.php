@@ -77,6 +77,6 @@ class RouteManager
         }
 
         // TODO: 处理多种类型
-        return is_object($result) && get_class($result) === 'App\Kernel\Response' ? $result : response($result);
+        return is_object($result) && get_class($result) === \App\Kernel\Response::class ? $result : response($result);
     }
 }

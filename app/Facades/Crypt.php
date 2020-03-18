@@ -4,7 +4,7 @@ namespace App\Facades;
 
 use App\Utils\Crypt as UtilsCrypt;
 
-class Crypt
+class Crypt extends Facade
 {
     public static function __callStatic($name, $arguments)
     {

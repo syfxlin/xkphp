@@ -2,13 +2,7 @@
 
 namespace App\Facades;
 
-use App\Utils\Hash as UtilsHash;
-
-class Hash
+class Hash extends Facade
 {
-    public static function __callStatic($name, $arguments)
-    {
-        $hash = new UtilsHash();
-        return $hash->$name(...$arguments);
-    }
+    protected static $class = \App\Utils\Hash::class;
 }

@@ -2,7 +2,7 @@
 
 namespace App\Kernel;
 
-use App\Controllers\Controller;
+use App\Kernel\Controller;
 
 class Route
 {

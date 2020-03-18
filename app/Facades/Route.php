@@ -5,7 +5,7 @@ namespace App\Facades;
 use App\Kernel\Route as KernelRoute;
 use App\Kernel\RouteManager;
 
-class Route
+class Route extends Facade
 {
     public static function __callStatic($name, $arguments)
     {

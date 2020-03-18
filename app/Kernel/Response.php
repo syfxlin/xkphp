@@ -61,7 +61,7 @@ class Response
             return $content;
         }
         // View
-        if (is_object($content) && get_class($content) === 'App\Kernel\View') {
+        if (is_object($content) && get_class($content) === \App\Kernel\View::class) {
             return $content->render();
         }
         // JSON

@@ -4,7 +4,7 @@ namespace App\Facades;
 
 use App\Kernel\Request as KernelRequest;
 
-class Request
+class Request extends Facade
 {
     public static function __callStatic($name, $arguments)
     {
