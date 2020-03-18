@@ -1,18 +1,18 @@
 <?php
 
 use App\Kernel\Cookie;
-use App\Kernel\Response;
+use App\Facades\Response;
 use App\Kernel\Session;
-use App\Kernel\View;
+use App\Facades\View;
 
-function response($content = '', $code = 200): Response
+function response($content = '', $code = 200, $headers = []): App\Kernel\Response
 {
-    return Response::getInstance($content, $code);
+    return Response::make($content, $code, $headers);
 }
 
-function redirect($url, $code = 301)
+function redirect($url, $code = 301, $headers = [])
 {
-    response('', $code)->header('Location', $url)->emit();
+    response('', $code, $headers)->header('Location', $url)->emit();
     exit;
 }
 

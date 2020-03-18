@@ -25,7 +25,7 @@ class Controller
                 $actual_param[] = $param[$var_name];
             } elseif (is_null($class_name)) {
                 if (!$dependenci->isDefaultValueAvailable()) {
-                    throw new Exception($var_name . ' 参数没有默认值');
+                    throw new Exception($var_name . ' has no default value.');
                 }
                 $actual_param[] = $dependenci->getDefaultValue();
             } else {
@@ -39,7 +39,7 @@ class Controller
     {
         $rel_class = new ReflectionClass($class);
         if (!$rel_class->isInstantiable()) {
-            throw new Exception($class . ' 类不可实例化');
+            throw new Exception($class . ' is not instantiable.');
         }
         $rel_method = $rel_class->getConstructor();
         if (is_null($rel_method)) {

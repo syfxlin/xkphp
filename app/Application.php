@@ -9,8 +9,8 @@ class Application
     public static $app;
 
     protected static $bootInstanceClass = [
-        \App\Kernel\Route::class,
-        \App\Database\DB::class
+        \App\Database\DB::class,
+        \App\Kernel\RouteManager::class
     ];
 
     public static function boot()

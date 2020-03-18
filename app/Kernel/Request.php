@@ -36,6 +36,24 @@ class Request
         return cookie($name, $default);
     }
 
+    public function server($name, $default = null)
+    {
+        if (isset($this->server_param[$name])) {
+            return $this->server_param[$name];
+        }
+        return $default;
+    }
+
+    public function header($name, $default = null)
+    {
+        return $this->server('HTTP_' . strtoupper($name), $default);
+    }
+
+    public function hasHeader($name)
+    {
+        return isset($this->server_param["HTTP_$name"]);
+    }
+
     public function getDotData($key, $source)
     {
         $keys = explode('.', $key);
