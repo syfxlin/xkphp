@@ -7,6 +7,13 @@ class View
     protected $view = '';
     protected $data = [];
 
+    public function exists($view)
+    {
+        $view = str_replace('.', '/', $view);
+        $view_file = __DIR__ . "/../Views/$view.php";
+        return file_exists($view_file);
+    }
+
     public function assign(array $data)
     {
         $this->data = array_merge($this->data, $data);

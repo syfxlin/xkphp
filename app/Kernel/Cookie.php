@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Application;
+use App\Facades\Crypt;
 
 class Cookie
 {
@@ -26,6 +27,6 @@ class Cookie
         if (!isset($_COOKIE[$name])) {
             return $default;
         }
-        return $_COOKIE[$name];
+        return Crypt::decrypt($_COOKIE[$name]);
     }
 }

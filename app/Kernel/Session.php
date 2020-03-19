@@ -18,12 +18,15 @@ class Session
             session_save_path($session_config['save_path']);
         }
         if ($session_config['life_time']) {
-            session_set_cookie_params($session_config['life_time']);
+            session_set_cookie_params(60 * $session_config['life_time']);
         }
         if ($sessid !== null) {
             session_id($sessid);
         }
         session_start();
+        if (!$this->has('_token')) {
+            $this->regenerateToken();
+        }
     }
 
     public function has($name)
@@ -75,5 +78,20 @@ class Session
         $value = $this->get($name, $default);
         $this->forget($name);
         return $value;
+    }
+
+    public function remove($key)
+    {
+        $this->forget($key);
+    }
+
+    public function token()
+    {
+        return $this->get('_token');
+    }
+
+    public function regenerateToken()
+    {
+        $this->put('_token', str_random(40));
     }
 }

@@ -53,30 +53,30 @@ class RouteManager
 
         switch ($code) {
             case Dispatcher::NOT_FOUND:
-                $result = [
+                $response = response([
                     'status' => 404,
                     'message' => 'Not Found',
                     'errors' => [
                         sprintf('The URI "%s" was not found', $request_uri)
                     ]
-                ];
+                ], 404);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $handler;
-                $result = [
+                $response = response([
                     'status' => 405,
                     'message' => 'Method Not Allowed',
                     'errors' => [
                         sprintf('Method "%s" is not allowed', $request_method)
                     ]
-                ];
+                ], 405);
                 break;
             case Dispatcher::FOUND:
-                $result = call_user_func($handler, $request);
+                $response = call_user_func($handler, $request);
                 break;
         }
 
         // TODO: 处理多种类型
-        return is_object($result) && get_class($result) === \App\Kernel\Response::class ? $result : response($result);
+        return $response;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Application;
+use App\Facades\Crypt;
 
 class Response
 {
@@ -94,7 +95,7 @@ class Response
     ): Response {
         $this->cookies[$name] = [
             'name' => $name,
-            'value' => $value,
+            'value' => Crypt::encrypt($value),
             'expire' => $expire,
             'path' => $path,
             'domain' => $domain,

@@ -26,12 +26,12 @@ class Request
         $this->uploaded_files = $request['uploaded_files'];
     }
 
-    public function session($name, $default = null)
+    public function session($name = null, $default = null)
     {
         return session($name, $default);
     }
 
-    public function cookie($name, $default = null)
+    public function cookie($name = null, $default = null)
     {
         return cookie($name, $default);
     }
@@ -147,6 +147,11 @@ class Request
     public function hasFile($name)
     {
         return isset($this->uploaded_files[$name]);
+    }
+
+    public function pattern($regex)
+    {
+        return preg_match($regex, $this->path());
     }
 
     public function __get($name)

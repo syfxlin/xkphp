@@ -27,6 +27,12 @@ class Route
             $this->middlewares = array_merge($this->middlewares, self::$useGroupMiddlewares);
         }
         return function ($request) use ($handler) {
+            // Make response hander
+            $handler = function ($request) use ($handler) {
+                $result = $handler($request);
+                return is_object($result) && get_class($result) === \App\Kernel\Response::class ? $result : response($result);
+            };
+            // Make middlewares hander
             foreach (array_merge(self::$globalMiddlewares, $this->middlewares) as $middleware) {
                 $handler = function ($request) use ($middleware, $handler) {
                     return (new $middleware())->handle($request, $handler);

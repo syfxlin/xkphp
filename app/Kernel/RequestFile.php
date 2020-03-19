@@ -32,9 +32,7 @@ class RequestFile
 
     public function store($path)
     {
-        $str = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm";
-        $str = str_shuffle($str);
-        $this->storeAs($path, substr($str, 0, 10) . "." . pathinfo($this->file['name'], PATHINFO_EXTENSION));
+        $this->storeAs($path, str_random(10) . "." . pathinfo($this->file['name'], PATHINFO_EXTENSION));
     }
 
     public function storeAs($path, $filename = null)
