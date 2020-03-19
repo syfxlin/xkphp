@@ -122,7 +122,7 @@
             t();
         })([]);
     </script>
-    <script src="<?php $asset('js/2.js'); ?>"></script>
+    <script src="<?php $asset('js/vendors-main.js'); ?>"></script>
     <script src="<?php $asset('js/main.js'); ?>"></script>
 </body>
 

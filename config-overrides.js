@@ -33,6 +33,11 @@ module.exports = {
         );
       }
     }
+    config.optimization.splitChunks = {
+      chunks: "all",
+      name: true,
+      automaticNameDelimiter: "-"
+    };
     config.plugins.push({
       apply: compiler => {
         compiler.hooks.afterEmit.tap("AfterEmitPlugin", compilation => {
