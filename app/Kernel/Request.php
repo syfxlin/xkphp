@@ -26,6 +26,11 @@ class Request
         $this->uploaded_files = $request['uploaded_files'];
     }
 
+    public function make()
+    {
+        return self::getInstance();
+    }
+
     public function session($name = null, $default = null)
     {
         return session($name, $default);

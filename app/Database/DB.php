@@ -12,7 +12,7 @@ class DB extends Capsule
     {
         $capsule = new Capsule();
 
-        $capsule->addConnection(require_once __DIR__ . "/../../config/database.php");
+        $capsule->addConnection(config('database'));
 
         $capsule->setEventDispatcher(new Dispatcher(new Container));
         $capsule->setAsGlobal();

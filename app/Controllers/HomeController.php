@@ -20,6 +20,7 @@ class HomeController
         // return Crypt::encrypt('123');
         // config(['session.test' => true]);
         // return config('session');
-        return $request->session()->token();
+        // return $request->session()->token();
+        return view('home');
     }
 }

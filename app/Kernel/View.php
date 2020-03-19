@@ -36,6 +36,7 @@ class View
     public function render()
     {
         ob_start();
+        extract($this->pushCommon());
         extract($this->data);
         include $this->getView($this->view);
         $content = ob_get_clean();
@@ -45,11 +46,28 @@ class View
 
     private function getView($view)
     {
-        $view = str_replace('.', '/', $view);
-        $view_file = __DIR__ . "/../Views/$view.php";
+        $view_file = view_path($view);
         if (!file_exists($view_file)) {
             throw new \UnexpectedValueException("The view $view_file does not exist");
         }
         return $view_file;
+    }
+
+    private function pushCommon()
+    {
+        return [
+            'csrf' => '<input type="hidden" name="_token" value="' . csrf_token() . '">',
+            'csrf_token' => csrf_token(),
+            'request' => request(),
+            'include' => function ($view) {
+                include view_path($view);
+            },
+            'echo' => function ($content) {
+                echo $content;
+            },
+            'json' => function ($data, $options = 0) {
+                echo json_encode($data, $options);
+            },
+        ];
     }
 }

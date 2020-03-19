@@ -18,13 +18,13 @@ class Hash
         return $hash;
     }
 
-    public function check($value, $hashedValue)
+    public function check($value, $hashed_value)
     {
-        return password_verify($value, $hashedValue);
+        return password_verify($value, $hashed_value);
     }
 
-    public function needsRehash($hashedValue, $algo = null, $options = null)
+    public function needsRehash($hashed_value, $algo = null, $options = null)
     {
-        return password_needs_rehash($hashedValue, $algo ?? $this->algo, $options ?? $this->options);
+        return password_needs_rehash($hashed_value, $algo ?? $this->algo, $options ?? $this->options);
     }
 }

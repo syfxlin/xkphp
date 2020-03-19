@@ -1,10 +1,23 @@
 <?php
 
 use App\Facades\Config;
+use App\Facades\Crypt;
+use App\Facades\Hash;
+use App\Facades\Request;
 use App\Kernel\Cookie;
 use App\Facades\Response;
 use App\Kernel\Session;
 use App\Facades\View;
+
+// Features
+
+function request($name = null, $default = null)
+{
+    if ($name === null) {
+        return Request::make();
+    }
+    return Request::input($name, $default);
+}
 
 function response($content = '', $code = 200, $headers = []): App\Kernel\Response
 {
@@ -56,6 +69,8 @@ function config($name, $default = null)
     }
 }
 
+// String
+
 function str_random($length)
 {
     $str = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm";
@@ -64,4 +79,69 @@ function str_random($length)
     }
     $str = str_shuffle($str);
     return substr($str, 0, $length);
+}
+
+
+// Path
+function app_path($sub_path = '')
+{
+    return realpath(BASE_PATH . "/app/$sub_path");
+}
+
+function base_path($sub_path = '')
+{
+    return realpath(BASE_PATH . "/$sub_path");
+}
+
+function config_path($config_name = '')
+{
+    return realpath(BASE_PATH . "/config/$config_name");
+}
+
+function public_path($sub_path = '')
+{
+    return realpath(BASE_PATH . "/public/$sub_path");
+}
+
+function storage_path($sub_path = '')
+{
+    return realpath(BASE_PATH . "/storage/$sub_path");
+}
+
+function view_path($view)
+{
+    $view = str_replace('.', '/', $view);
+    return realpath(BASE_PATH . "/app/Views/$view.php");
+}
+
+// Process
+function abort($code = 403, $content = '', $headers = [])
+{
+    response($content, $code, $headers)->emit();
+    exit;
+}
+
+function bcrypt($value)
+{
+    return Hash::make($value);
+}
+
+function check($value, $hashed_value)
+{
+    return Hash::check($value, $hashed_value);
+}
+
+function decrypt($value)
+{
+    return Crypt::decrypt($value);
+}
+
+function encrypt($value)
+{
+    return Crypt::encrypt($value);
+}
+
+function csrf_token()
+{
+    return session()->token();
 }

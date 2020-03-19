@@ -15,12 +15,12 @@ class RouteManager
 
     public function __construct()
     {
-        $middleware_config = require_once __DIR__ . "/../../config/middleware.php";
+        $middleware_config = config('middleware');
         self::$globalMiddlewares = $middleware_config['global'];
         self::$routeMiddlewares = $middleware_config['route'];
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
-            $route_config = require_once __DIR__ . "/../../config/route.php";
+            $route_config = config('route');
             foreach ($route_config as $route) {
                 require_once $route;
             }

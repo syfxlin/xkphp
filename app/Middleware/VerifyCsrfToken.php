@@ -12,7 +12,7 @@ class VerifyCsrfToken
     public function handle($request, Closure $next)
     {
         if (
-            // $this->isReading($request) ||
+            $this->isReading($request) ||
             $this->skipVerify($request) ||
             $this->verifyToken($request)
         ) {

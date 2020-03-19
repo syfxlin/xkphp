@@ -8,8 +8,9 @@
 </head>
 
 <body>
-    <h1><?php echo $title; ?></h1>
-    <p><?php echo $content; ?></p>
+    <p><?php $echo($csrf_token); ?></p>
+    <p><?php $include('part'); ?></p>
+    <p><?php $json(['json' => 'data']); ?></p>
 </body>
 
 </html>
