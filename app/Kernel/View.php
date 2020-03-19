@@ -68,6 +68,9 @@ class View
             'json' => function ($data, $options = 0) {
                 echo json_encode($data, $options);
             },
+            'asset' => function ($asset) {
+                echo asset($asset);
+            }
         ];
     }
 }

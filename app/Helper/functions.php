@@ -145,3 +145,9 @@ function csrf_token()
 {
     return session()->token();
 }
+
+// Url
+function asset($asset)
+{
+    return env('ASSET_URL', '') . "/$asset";
+}
