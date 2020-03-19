@@ -1,4 +1,4 @@
-认证
+认证 session token
 
 存储
 
