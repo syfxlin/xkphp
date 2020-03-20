@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b20af579bdbbb340b74818a7189bcb7",
+    "content-hash": "fe343516116f15d88f0d25ad9137d8c8",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -330,6 +330,54 @@
             "time": "2020-03-13T20:26:22+00:00"
         },
         {
+            "name": "inhere/php-validate",
+            "version": "v2.7.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/inhere/php-validate.git",
+                "reference": "d1d49165b31962ffb1f1bdb59d6f8ac8216f3678"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/inhere/php-validate/zipball/d1d49165b31962ffb1f1bdb59d6f8ac8216f3678",
+                "reference": "d1d49165b31962ffb1f1bdb59d6f8ac8216f3678",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">7.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Inhere\\Validate\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "inhere",
+                    "email": "in.798@qq.com",
+                    "homepage": "http://www.yzone.net/"
+                }
+            ],
+            "description": "an simple validate, filter library of the php",
+            "homepage": "https://github.com/inhere/php-validate",
+            "keywords": [
+                "form-validate",
+                "library",
+                "php-library",
+                "validate",
+                "validation"
+            ],
+            "time": "2020-03-10T12:00:17+00:00"
+        },
+        {
             "name": "laminas/laminas-diactoros",
             "version": "2.2.2",
             "source": {
@@ -412,6 +460,65 @@
                 "psr-7"
             ],
             "time": "2020-01-07T19:39:26+00:00"
+        },
+        {
+            "name": "laminas/laminas-httphandlerrunner",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-httphandlerrunner.git",
+                "reference": "296f5ff35074dd981d1570a66b95596c81808087"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/296f5ff35074dd981d1570a66b95596c81808087",
+                "reference": "296f5ff35074dd981d1570a66b95596c81808087",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-zendframework-bridge": "^1.0",
+                "php": "^7.1",
+                "psr/http-message": "^1.0",
+                "psr/http-message-implementation": "^1.0",
+                "psr/http-server-handler": "^1.0"
+            },
+            "replace": {
+                "zendframework/zend-httphandlerrunner": "self.version"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~1.0.0",
+                "laminas/laminas-diactoros": "^1.7 || ^2.1.1",
+                "phpunit/phpunit": "^7.0.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev",
+                    "dev-develop": "1.2.x-dev"
+                },
+                "laminas": {
+                    "config-provider": "Laminas\\HttpHandlerRunner\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\HttpHandlerRunner\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Execute PSR-15 RequestHandlerInterface instances and emit responses they generate.",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "components",
+                "laminas",
+                "mezzio",
+                "psr-15",
+                "psr-7"
+            ],
+            "time": "2019-12-31T17:06:16+00:00"
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
@@ -1113,58 +1220,6 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
-        },
-        {
-            "name": "relay/relay",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/relayphp/Relay.Relay.git",
-                "reference": "5e5b249b7968fb229c4c302da071db048338f9a9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/relayphp/Relay.Relay/zipball/5e5b249b7968fb229c4c302da071db048338f9a9",
-                "reference": "5e5b249b7968fb229c4c302da071db048338f9a9",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1",
-                "psr/http-message": "~1.0",
-                "psr/http-server-handler": "~1.0",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "provide": {
-                "psr/http-server-handler-implementation": "1.0"
-            },
-            "require-dev": {
-                "laminas/laminas-diactoros": "~1.0",
-                "phpunit/phpunit": "~7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Relay\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Relay.Relay Contributors",
-                    "homepage": "https://github.com/relayphp/Relay.Relay/contributors"
-                }
-            ],
-            "description": "A PSR-15 server request handler.",
-            "homepage": "https://github.com/relayphp/Relay.Relay",
-            "keywords": [
-                "middleware",
-                "psr-15",
-                "psr-7"
-            ],
-            "time": "2020-03-04T19:40:35+00:00"
         },
         {
             "name": "symfony/console",

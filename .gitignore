@@ -29,3 +29,5 @@ yarn-error.log*
 #mix
 public/
 !public/index.php
+
+.idea

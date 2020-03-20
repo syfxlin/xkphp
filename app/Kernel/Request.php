@@ -51,11 +51,13 @@ class Request
 
     public function header($name, $default = null)
     {
-        return $this->server('HTTP_' . strtoupper($name), $default);
+        $name = str_replace('-', '_', strtoupper($name));
+        return $this->server('HTTP_' . $name, $default);
     }
 
     public function hasHeader($name)
     {
+        $name = str_replace('-', '_', strtoupper($name));
         return isset($this->server_param["HTTP_$name"]);
     }
 

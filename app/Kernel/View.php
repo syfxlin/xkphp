@@ -40,7 +40,6 @@ class View
         extract($this->data);
         include $this->getView($this->view);
         $content = ob_get_clean();
-        ob_end_clean();
         return $content;
     }
 

@@ -17,9 +17,16 @@ class Session
         if ($session_config['save_path']) {
             session_save_path($session_config['save_path']);
         }
-        if ($session_config['life_time']) {
-            session_set_cookie_params(60 * $session_config['life_time']);
+        if ($session_config['cookie']) {
+            session_name($session_config['cookie']);
         }
+        session_set_cookie_params([
+            'lifetime' => 60 * ($session_config['life_time'] ?? 1440),
+            'path' => $session_config['path'] ?? '/',
+            'domain' => $session_config['domain'] ?? null,
+            'secure' => $session_config['secure'] ?? false,
+            'httponly' => true
+        ]);
         if ($sessid !== null) {
             session_id($sessid);
         }

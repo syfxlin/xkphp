@@ -25,7 +25,7 @@ class Crypt
             ($cipher === 'AES-256-CBC' && $length === 32);
     }
 
-    public function encrypt($value, $serialize = true)
+    public function encrypt($value, $serialize = false)
     {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipher));
         $value = \openssl_encrypt(
@@ -48,7 +48,7 @@ class Crypt
         return base64_encode($json);
     }
 
-    public function decrypt($payload, $unserialize = true)
+    public function decrypt($payload, $unserialize = false)
     {
         $payload = $payload = json_decode(base64_decode($payload), true);
         if (!$this->vaild($payload)) {
@@ -85,6 +85,16 @@ class Crypt
             throw new \RuntimeException('The MAC is invalid.');
         }
         return true;
+    }
+
+    public function encryptSerialize($value)
+    {
+        return $this->encrypt($value, true);
+    }
+
+    public function decryptSerialize($value)
+    {
+        return $this->decrypt($value, true);
     }
 
     public function encryptString($value)

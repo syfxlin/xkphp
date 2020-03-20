@@ -84,6 +84,16 @@ class Response
         return $this;
     }
 
+    public function getHeader(string $key)
+    {
+        return $this->headers[$key];
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
     public function cookie(
         $name,
         $value = "",
@@ -119,6 +129,16 @@ class Response
             );
         }
         return $this;
+    }
+
+    public function getCookie($key)
+    {
+        return $this->cookies[$key];
+    }
+
+    public function getCookies()
+    {
+        return $this->cookies;
     }
 
     public function json($data, $code = 200, $headers = [])
