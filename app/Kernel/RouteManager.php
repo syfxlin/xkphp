@@ -57,7 +57,7 @@ class RouteManager
                     'status' => 404,
                     'message' => 'Not Found',
                     'errors' => [
-                        sprintf('The URI "%s" was not found', $request_uri)
+                        sprintf('The URI "%s" was not found.', $request_uri)
                     ]
                 ], 404);
                 break;
@@ -67,7 +67,7 @@ class RouteManager
                     'status' => 405,
                     'message' => 'Method Not Allowed',
                     'errors' => [
-                        sprintf('Method "%s" is not allowed', $request_method)
+                        sprintf('Method "%s" is not allowed.', $request_method)
                     ]
                 ], 405);
                 break;

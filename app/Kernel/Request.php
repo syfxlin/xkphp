@@ -161,6 +161,11 @@ class Request
         return preg_match($regex, $this->path());
     }
 
+    public function ajax()
+    {
+        return $this->hasHeader('X-Requested-With');
+    }
+
     public function __get($name)
     {
         if (isset($this->query_param[$name])) {

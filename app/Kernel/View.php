@@ -72,7 +72,7 @@ class View
                 include view_path($view);
             },
             'echo' => function ($content) {
-                echo $content;
+                echo htmlspecialchars($content);
             },
             'json' => function ($data, $options = 0) {
                 echo json_encode($data, $options);

@@ -18,8 +18,13 @@ class VerifyCsrfToken
         ) {
             return $this->setToken($request, $next($request));
         }
-        // TODO: 返回更友好的回应
-        return response('419', 419);
+        return response([
+            'status' => 419,
+            'message' => 'Request Expired',
+            'errors' => [
+                'CSRF Token needs to be updated.'
+            ]
+        ], 419);
     }
 
     protected function verifyToken($request)

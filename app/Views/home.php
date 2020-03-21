@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Web site created using create-react-app" />
+    <meta name="csrf-token" content="<?php echo $csrf_token; ?>">
     <link rel="apple-touch-icon" href="<?php $asset('logo192.png'); ?>" />
     <link rel="manifest" href="<?php $asset('manifest.json'); ?>" />
     <link href="<?php $asset('css/main.css'); ?>" rel="stylesheet" />

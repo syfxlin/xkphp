@@ -4,6 +4,7 @@ namespace App\Kernel;
 
 use App\Application;
 use App\Facades\Crypt;
+use App\Facades\Request;
 
 class Response
 {
@@ -11,6 +12,8 @@ class Response
     private $code = 200;
     private $headers = [];
     private $cookies = [];
+
+    private $accept_code = [200];
 
     public static function getInstance($content = '', $code = 200, $headers = [])
     {
@@ -24,9 +27,9 @@ class Response
 
     public function make($content = '', $code = 200, $headers = [])
     {
-        $this->content = $this->convert($content);
         $this->code = $code;
         $this->headers = array_merge($this->headers, $headers);
+        $this->content = $this->convert($content);
         return $this;
     }
 
@@ -54,6 +57,9 @@ class Response
 
     private function convert($content)
     {
+        if (!in_array($this->code, $this->accept_code) && !Request::ajax()) {
+            return view('errors/errors', $content)->render();
+        }
         if (is_null($content)) {
             return '';
         }
