@@ -8,7 +8,16 @@ use App\Models\User;
 
 class Auth
 {
-    // public function login()
+    // Auth::attempt(['email' => $email, 'password' => $password])
+    // Auth::guard('guardName');
+    // Auth::guest();
+    // Auth::login($user);
+    // Auth::loginUsingId();
+    // Auth::logout();
+    // Auth::user();
+    // Auth::routes();
+    // Auth::user();
+    // Auth::viaRemember();
     public function register($user)
     {
         $v = $this->validatorRegister($user);
@@ -34,7 +43,7 @@ class Auth
         }, 'Duplicate username or email.')->validate();
     }
 
-    public function check($user)
+    public function attempt($user)
     {
         $v = $this->validatorLogin($user);
         if ($v->failed()) {
