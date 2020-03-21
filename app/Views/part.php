@@ -1,1 +1,2 @@
-<div class="part">Part</div>
+<div class="part"><?php $yield('title') ?></div>
+<?php $yield('part') ?>

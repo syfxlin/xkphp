@@ -2,13 +2,12 @@
 
 remember token = encrypt(userId|rememberToken|passwordHash)
 
-session id = encrypt(sessionId)
-
 设置HTTP Only
 
 存储
 
 验证器
 
+错误页
 
 session 驱动

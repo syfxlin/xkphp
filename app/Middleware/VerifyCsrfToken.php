@@ -18,6 +18,7 @@ class VerifyCsrfToken
         ) {
             return $this->setToken($request, $next($request));
         }
+        // TODO: 返回更友好的回应
         return response('419', 419);
     }
 

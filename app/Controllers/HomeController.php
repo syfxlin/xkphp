@@ -21,6 +21,6 @@ class HomeController
         // config(['session.test' => true]);
         // return config('session');
         // return $request->session()->token();
-        return view('home');
+        return view('extends');
     }
 }

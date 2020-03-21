@@ -6,6 +6,9 @@ class View
 {
     protected $view = '';
     protected $data = [];
+    protected $extends = null;
+    protected $section = [];
+    protected $section_name = null;
 
     public function exists($view)
     {
@@ -33,6 +36,7 @@ class View
         return $this;
     }
 
+
     public function render()
     {
         ob_start();
@@ -40,6 +44,12 @@ class View
         extract($this->data);
         include $this->getView($this->view);
         $content = ob_get_clean();
+        if ($this->extends) {
+            ob_start();
+            include $this->getView($this->extends);
+            $content = ob_get_clean();
+            $this->extends = null;
+        }
         return $content;
     }
 
@@ -69,6 +79,26 @@ class View
             },
             'asset' => function ($asset) {
                 echo asset($asset);
+            },
+            'extends' => function ($view) {
+                $this->extends = $view;
+            },
+            'section' => function ($name, $data = null) {
+                if ($data !== null) {
+                    $this->section[$name] = $data;
+                } else {
+                    ob_start();
+                    $this->section_name = $name;
+                }
+            },
+            'endsection' => function () {
+                if ($this->section_name === null) {
+                    throw new \RuntimeException("Endsection does not have a corresponding start section.");
+                }
+                $this->section[$this->section_name] = ob_get_clean();
+            },
+            'yield' => function ($name) {
+                echo $this->section[$name];
             }
         ];
     }
