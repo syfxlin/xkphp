@@ -6,11 +6,11 @@ use App\Application;
 
 class Request
 {
-    private $path_param;
-    private $query_param;
-    private $body_param;
-    private $server_param;
-    private $uploaded_files;
+    private $_path;
+    private $_get;
+    private $_post;
+    private $_server;
+    private $_files;
 
     public static function getInstance($request = [])
     {
@@ -19,11 +19,11 @@ class Request
 
     public function __construct($request = [])
     {
-        $this->path_param = $request['path_param'];
-        $this->query_param = $request['query_param'];
-        $this->body_param = $request['body_param'];
-        $this->server_param = $request['server_param'];
-        $this->uploaded_files = $request['uploaded_files'];
+        $this->_path = $request['path'];
+        $this->_get = $request['get'];
+        $this->_post = $request['post'];
+        $this->_server = $request['server'];
+        $this->_files = $request['files'];
     }
 
     public function make()
@@ -43,8 +43,8 @@ class Request
 
     public function server($name, $default = null)
     {
-        if (isset($this->server_param[$name])) {
-            return $this->server_param[$name];
+        if (isset($this->_server[$name])) {
+            return $this->_server[$name];
         }
         return $default;
     }
@@ -58,7 +58,7 @@ class Request
     public function hasHeader($name)
     {
         $name = str_replace('-', '_', strtoupper($name));
-        return isset($this->server_param["HTTP_$name"]);
+        return isset($this->_server["HTTP_$name"]);
     }
 
     public function getDotData($key, $source)
@@ -76,41 +76,41 @@ class Request
 
     public function all()
     {
-        return array_merge($this->query_param, $this->body_param);
+        return array_merge($this->_get, $this->_post);
     }
 
     public function input($key = null, $default = null)
     {
         if ($key === null) {
-            return $this->body_param;
+            return $this->_post;
         }
         if (isset($key) && strpos($key, '.') !== false) {
-            return $this->getDotData($key, $this->body_param);
+            return $this->getDotData($key, $this->_post);
         }
-        if (!isset($this->body_param[$key])) {
+        if (!isset($this->_post[$key])) {
             return $default;
         }
-        return $this->body_param[$key];
+        return $this->_post[$key];
     }
 
     public function query($key = null, $default = null)
     {
         if ($key === null) {
-            return $this->query_param;
+            return $this->_get;
         }
-        if (!isset($this->query_param[$key])) {
+        if (!isset($this->_get[$key])) {
             return $default;
         }
-        return $this->query_param[$key];
+        return $this->_get[$key];
     }
 
     public function has($key)
     {
         if (is_string($key)) {
-            return isset($this->query_param[$key]) || isset($this->body_param[$key]);
+            return isset($this->_get[$key]) || isset($this->_post[$key]);
         } else {
             foreach ($key as $value) {
-                if (!isset($this->query_param[$value]) && !isset($this->body_param[$value])) {
+                if (!isset($this->_get[$value]) && !isset($this->_post[$value])) {
                     return false;
                 }
             }
@@ -120,40 +120,40 @@ class Request
 
     public function path()
     {
-        return $this->server_param['PATH_INFO'];
+        return $this->_server['PATH_INFO'];
     }
 
     public function url()
     {
-        return $this->server_param['REQUEST_URI'];
+        return $this->_server['REQUEST_URI'];
     }
 
     public function fullUrl()
     {
-        return $this->server_param['HTTP_HOST'] . $this->server_param['REQUEST_URI'];
+        return $this->_server['HTTP_HOST'] . $this->_server['REQUEST_URI'];
     }
 
     public function method()
     {
-        return $this->server_param['REQUEST_METHOD'];
+        return $this->_server['REQUEST_METHOD'];
     }
 
     public function isMethod($method)
     {
-        return strtoupper($method) === $this->server_param['REQUEST_METHOD'];
+        return strtoupper($method) === $this->_server['REQUEST_METHOD'];
     }
 
     public function file($name)
     {
-        if (!isset($this->uploaded_files[$name])) {
+        if (!isset($this->_files[$name])) {
             return null;
         }
-        return new RequestFile($this->uploaded_files[$name]);
+        return new RequestFile($this->_files[$name]);
     }
 
     public function hasFile($name)
     {
-        return isset($this->uploaded_files[$name]);
+        return isset($this->_files[$name]);
     }
 
     public function pattern($regex)
@@ -168,16 +168,16 @@ class Request
 
     public function __get($name)
     {
-        if (isset($this->query_param[$name])) {
-            return $this->query_param[$name];
+        if (isset($this->_get[$name])) {
+            return $this->_get[$name];
         }
-        if (isset($this->body_param[$name])) {
-            return $this->body_param[$name];
+        if (isset($this->_post[$name])) {
+            return $this->_post[$name];
         }
-        if (isset($this->path_param[$name])) {
-            return $this->path_param[$name];
+        if (isset($this->_path[$name])) {
+            return $this->_path[$name];
         }
-        if (isset($this->uploaded_files[$name])) {
+        if (isset($this->_files[$name])) {
             return $this->file($name);
         }
         return null;

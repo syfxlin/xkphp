@@ -2,12 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Facades\Crypt;
-use App\Facades\DB;
 use App\Kernel\Request;
-use App\Facades\Hash;
-use App\Facades\Request as FacadesRequest;
-use App\Facades\Storage;
 
 class HomeController
 {

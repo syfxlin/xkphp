@@ -4,10 +4,29 @@ namespace App\Utils;
 
 class Crypt
 {
+    /**
+     * 用于加密的 Key
+     *
+     * @var string
+     */
     protected $key;
+
+    /**
+     * 加密算法
+     *
+     * @var string
+     */
     protected $cipher;
 
-    public function __construct(string $key, $cipher = 'AES-256-CBC')
+    /**
+     * 加密构造器
+     *
+     * @param   string  $key     .env APP_KEY
+     * @param   string  $cipher  .env APP_CIPHER
+     *
+     * @return  this
+     */
+    public function __construct(string $key, string $cipher = 'AES-256-CBC')
     {
         if ($this->supported($key, $cipher)) {
             $this->key = $key;
@@ -17,7 +36,15 @@ class Crypt
         }
     }
 
-    public function supported($key, $cipher)
+    /**
+     * 验证加密算法和 Key
+     *
+     * @param   string  $key     Key
+     * @param   string  $cipher  加密算法
+     *
+     * @return  bool             是否合法
+     */
+    public function supported(string $key, string $cipher): bool
     {
         $length = mb_strlen($key, '8bit');
 
@@ -25,7 +52,15 @@ class Crypt
             ($cipher === 'AES-256-CBC' && $length === 32);
     }
 
-    public function encrypt($value, $serialize = false)
+    /**
+     * 加密
+     *
+     * @param   mixed   $value      需要加密的值
+     * @param   bool    $serialize  是否进行序列化操作
+     *
+     * @return  string              加密后的字段
+     */
+    public function encrypt($value, bool $serialize = false): string
     {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipher));
         $value = \openssl_encrypt(
@@ -48,7 +83,15 @@ class Crypt
         return base64_encode($json);
     }
 
-    public function decrypt($payload, $unserialize = false)
+    /**
+     * 解密
+     *
+     * @param   string   $payload      加密后的字段
+     * @param   bool     $unserialize  是否进行反序列化操作
+     *
+     * @return  mixed|void             解密后的数据
+     */
+    public function decrypt(string $payload, bool $unserialize = false)
     {
         $payload = $payload = json_decode(base64_decode($payload), true);
         if (!$this->vaild($payload)) {
@@ -70,6 +113,13 @@ class Crypt
         return $unserialize ? unserialize($decrypted) : $decrypted;
     }
 
+    /**
+     * 验证加密字段是否合法
+     *
+     * @param   mixed  $payload   加密后的字段
+     *
+     * @return  bool              是否合法
+     */
     public function vaild($payload)
     {
         if (
@@ -97,12 +147,12 @@ class Crypt
         return $this->decrypt($value, true);
     }
 
-    public function encryptString($value)
+    public function encryptString(string $value): string
     {
         return $this->encrypt($value, false);
     }
 
-    public function decryptString($value)
+    public function decryptString(string $value): string
     {
         return $this->decrypt($value, false);
     }

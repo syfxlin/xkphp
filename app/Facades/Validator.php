@@ -23,4 +23,13 @@ class Validator
     {
         return self::make($data, $rules, $translates, $scene, true);
     }
+
+    public static function convertViewErrors($errors)
+    {
+        $result = [];
+        foreach ($errors as $error) {
+            $result[$error['name']] = $error['msg'];
+        }
+        return $result;
+    }
 }

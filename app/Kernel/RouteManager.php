@@ -44,11 +44,11 @@ class RouteManager
         list($code, $handler, $path_param) = array_pad($dispatcher->dispatch($request_method, $request_uri), 3, null);
 
         $request = Request::getInstance([
-            'path_param' => $path_param,
-            'query_param' => $_GET,
-            'body_param' => $_POST,
-            'server_param' => $_SERVER,
-            'uploaded_files' => $_FILES
+            'path' => $path_param,
+            'get' => $_GET,
+            'post' => $_POST,
+            'server' => $_SERVER,
+            'files' => $_FILES
         ]);
 
         switch ($code) {

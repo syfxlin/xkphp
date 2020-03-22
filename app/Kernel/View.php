@@ -2,6 +2,8 @@
 
 namespace App\Kernel;
 
+use App\Facades\Auth;
+
 class View
 {
     protected $view = '';
@@ -20,6 +22,9 @@ class View
     public function assign(array $data)
     {
         $this->data = array_merge($this->data, $data);
+        if (!isset($this->data['errors'])) {
+            $this->data['errors'] = [];
+        }
         return $this;
     }
 
@@ -68,6 +73,8 @@ class View
             'csrf' => '<input type="hidden" name="_token" value="' . csrf_token() . '">',
             'csrf_token' => csrf_token(),
             'request' => request(),
+            'auth' => Auth::check(),
+            'guest' => Auth::guest(),
             'include' => function ($view) {
                 include view_path($view);
             },
@@ -99,6 +106,13 @@ class View
             },
             'yield' => function ($name) {
                 echo $this->section[$name];
+            },
+            'error' => function ($name) {
+                if (isset($this->data['errors'][$name])) {
+                    return $this->data['errors'][$name];
+                } else {
+                    return false;
+                }
             }
         ];
     }

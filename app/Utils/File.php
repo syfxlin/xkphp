@@ -2,19 +2,22 @@
 
 namespace App\Utils;
 
+/**
+ * 文件操作类，具体使用方式参考 Laravel
+ */
 class File
 {
-    public function exists($path)
+    public function exists(string $path): bool
     {
         return file_exists($path);
     }
 
-    public function size($path)
+    public function size(string $path)
     {
         return filesize($path);
     }
 
-    public function get($path, $lock = false)
+    public function get(string $path, bool $lock = false)
     {
         if (!$this->exists($path)) {
             throw new \RuntimeException("File does not exist at path $path");
@@ -38,22 +41,22 @@ class File
         return $contents;
     }
 
-    public function hash($path)
+    public function hash(string $path)
     {
         return md5_file($path);
     }
 
-    public function put($path, $contents, $lock = false)
+    public function put(string $path, $contents, bool $lock = false)
     {
         return file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
     }
 
-    public function append($path, $contents)
+    public function append(string $path, $contents)
     {
         return file_put_contents($path, $contents, FILE_APPEND);
     }
 
-    public function prepend($path, $contents)
+    public function prepend(string $path, $contents)
     {
         if (!$this->exists($path)) {
             return $this->put($path, $contents);
@@ -61,7 +64,7 @@ class File
         return $this->put($path, $contents . $this->get($path));
     }
 
-    public function chmod($path, $mode = null)
+    public function chmod(string $path, $mode = null)
     {
         if ($mode) {
             return chmod($path, $mode);
@@ -69,12 +72,12 @@ class File
         return substr(sprintf('%o', fileperms($path)), -4);
     }
 
-    public function move($old_path, $new_path)
+    public function move(string $old_path, string $new_path): bool
     {
         return rename($old_path, $new_path);
     }
 
-    public function delete($paths)
+    public function delete($paths): bool
     {
         if (!is_array($paths)) {
             $paths = [$paths];
@@ -86,79 +89,79 @@ class File
         return $flag;
     }
 
-    public function copy($source, $dist)
+    public function copy(string $source, string $dist): bool
     {
         return copy($source, $dist);
     }
 
-    public function link($target, $link)
+    public function link(string $target, string $link): bool
     {
         return link($target, $link);
     }
 
-    public function name($path)
+    public function name(string $path)
     {
         return pathinfo($path, PATHINFO_FILENAME);
     }
 
-    public function basename($path)
+    public function basename(string $path)
     {
         return pathinfo($path, PATHINFO_BASENAME);
     }
 
-    public function dirname($path)
+    public function dirname(string $path)
     {
         return pathinfo($path, PATHINFO_DIRNAME);
     }
 
-    public function extension($path)
+    public function extension(string $path)
     {
         return pathinfo($path, PATHINFO_EXTENSION);
     }
 
-    public function type($path)
+    public function type(string $path)
     {
         return filetype($path);
     }
 
-    public function mimeType($path)
+    public function mimeType(string $path)
     {
         return mime_content_type($path);
     }
 
-    public function lastModified($path)
+    public function lastModified(string $path)
     {
         return filemtime($path);
     }
 
-    public function isDirectory($path)
+    public function isDirectory(string $path): bool
     {
         return is_dir($path);
     }
 
-    public function isReadable($path)
+    public function isReadable(string $path): bool
     {
         return is_readable($path);
     }
 
-    public function isWritable($path)
+    public function isWritable(string $path): bool
     {
         return is_writable($path);
     }
 
-    public function isFile($path)
+    public function isFile(string $path): bool
     {
         return is_file($path);
     }
 
-    public function files($path)
+    public function files(string $path): array
     {
         return array_values(array_filter(scandir($path), function ($item) use ($path) {
             return !is_dir("$path/$item");
         }));
     }
 
-    private function walkAllFiles($path, $root = null)
+    private function walkAllFiles(string $path, $root = null): array
     {
         $files = [];
         foreach (scandir($path) as $item) {
@@ -176,19 +179,19 @@ class File
         return $files;
     }
 
-    public function allFiles($path)
+    public function allFiles(string $path): array
     {
         return $this->walkAllFiles($path);
     }
 
-    public function directories($path)
+    public function directories(string $path): array
     {
         return array_values(array_filter(scandir($path), function ($item) use ($path) {
             return is_dir("$path/$item") && $item !== "." && $item !== "..";
         }));
     }
 
-    private function walkAllDirs($path, $root = null)
+    private function walkAllDirs(string $path, $root = null): array
     {
         $dirs = [];
         foreach (scandir($path) as $item) {
@@ -205,12 +208,12 @@ class File
         return $dirs;
     }
 
-    public function allDirectories($path)
+    public function allDirectories(string $path): array
     {
         return $this->walkAllDirs($path);
     }
 
-    public function makeDirectory($path, $mode = 0755, $recursive = false, $force = false)
+    public function makeDirectory(string $path, int $mode = 0755, bool $recursive = false, bool $force = false): bool
     {
         if ($force) {
             return @mkdir($path, $mode, $recursive);
@@ -218,7 +221,7 @@ class File
         return mkdir($path, $mode, $recursive);
     }
 
-    public function deleteDirectory($path, $preserve = false)
+    public function deleteDirectory(string $path, bool $preserve = false): bool
     {
         if (!is_dir($path)) {
             return false;
@@ -239,12 +242,12 @@ class File
         return true;
     }
 
-    public function cleanDirectory($path)
+    public function cleanDirectory(string $path): bool
     {
         return $this->deleteDirectory($path, true);
     }
 
-    public function moveDirectory($source, $target, $overwrite = false)
+    public function moveDirectory(string $source, string $target, bool $overwrite = false): bool
     {
         if ($overwrite && is_dir($target)) {
             $this->deleteDirectory($target);
@@ -252,7 +255,7 @@ class File
         return @rename($source, $target);
     }
 
-    public function copyDirectory($source, $target)
+    public function copyDirectory(string $source, string $target): bool
     {
         if (!is_dir($source)) {
             return false;

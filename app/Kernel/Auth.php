@@ -22,7 +22,8 @@ class Auth
             return $v->getErrors();
         }
         $user['password'] = Hash::make($user['password']);
-        User::create($user);
+        self::$user = User::create($user) ?? false;
+        $this->updateLogin(self::$user);
         return true;
     }
 
@@ -35,7 +36,10 @@ class Auth
             'password' => 'required|string:8,255',
             'password_confirmed' => 'required|string:8,255|eqField:password'
         ])->addValidator('unique_users', function ($data) {
-            return User::existUserByAccount($data);
+            return !User::existUserByAccount([
+                'username' => $data,
+                'email' => $data
+            ]);
         }, 'Duplicate username or email.')->validate();
     }
 
@@ -197,5 +201,8 @@ class Auth
         Route::get('/login', 'Auth\LoginController@loginForm')->middleware('guest');
         Route::post('/login', 'Auth\LoginController@login')->middleware('guest');
         Route::any('/logout', 'Auth\LoginController@logout')->middleware('auth');
+
+        Route::get('/register', 'Auth\RegisterController@registerForm')->middleware('guest');
+        Route::post('/register', 'Auth\RegisterController@register')->middleware('guest');
     }
 }

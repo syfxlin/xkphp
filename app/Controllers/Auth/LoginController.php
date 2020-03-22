@@ -3,6 +3,7 @@
 namespace App\Controllers\Auth;
 
 use App\Facades\Auth;
+use App\Facades\Validator;
 use App\Kernel\Request;
 use App\Kernel\Controller;
 
@@ -14,10 +15,12 @@ class LoginController extends Controller
             'account' => $request->input('account'),
             'password' => $request->input('password')
         ]);
-        if ($logged) {
+        if ($logged === true) {
             redirect('/home');
         }
-        redirect('/login');
+        return view('auth/login', [
+            'errors' => Validator::convertViewErrors($logged)
+        ]);
     }
 
     public function loginForm()
