@@ -76,7 +76,6 @@ class RouteManager
                 break;
         }
 
-        // TODO: 处理多种类型
         return $response;
     }
 }

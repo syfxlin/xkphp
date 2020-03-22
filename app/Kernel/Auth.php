@@ -18,7 +18,6 @@ class Auth
     {
         $v = $this->validatorRegister($user);
         if ($v->failed()) {
-            // TODO: 错误处理
             return $v->getErrors();
         }
         $user['password'] = Hash::make($user['password']);
@@ -47,7 +46,6 @@ class Auth
     {
         $v = $this->validatorLogin($user);
         if ($v->failed()) {
-            // TODO: 错误处理
             return $v->getErrors();
         }
         return $this->attempt($user, $remember);
@@ -64,12 +62,11 @@ class Auth
 
     public function attempt($user, $remember = false)
     {
-        // TODO: attemptUser 后续会更改
-        self::$user = $this->attemptUser($user);
-        if (!self::$user) {
-            // TODO: 错误处理
-            return false;
+        $result = $this->attemptUser($user);
+        if (is_array($result)) {
+            return $result;
         }
+        self::$user = $result;
         $this->updateLogin(self::$user, $remember);
         return true;
     }
@@ -87,18 +84,24 @@ class Auth
     {
         $db_user = User::getUserByAccount($user);
         if (!$db_user) {
-            // TODO: 错误处理
-            return false;
+            return [[
+                'name' => 'account',
+                'msg' => sprintf('No "%s" users found', $user['account'])
+            ]];
         }
         if (!Hash::check($user['password'], $db_user['password'])) {
-            // TODO: 错误处理
-            return false;
+            return [[
+                'name' => 'password',
+                'msg' => 'Account does not match the password.'
+            ]];
         }
         unset($user['account'], $user['password']);
         foreach ($user as $key => $value) {
             if ($db_user[$key] !== $value) {
-                // TODO: 错误处理
-                return false;
+                return [[
+                    'name' => $key,
+                    'msg' => 'These credentials do not match our records.'
+                ]];
             }
         }
         return $db_user;
@@ -197,7 +200,7 @@ class Auth
 
     public function routes()
     {
-        // TODO: 注册
+        // TODO: 找回密码
         Route::get('/login', 'Auth\LoginController@loginForm')->middleware('guest');
         Route::post('/login', 'Auth\LoginController@login')->middleware('guest');
         Route::any('/logout', 'Auth\LoginController@logout')->middleware('auth');
