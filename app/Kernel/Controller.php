@@ -55,7 +55,17 @@ class Controller
         return $rel_method->invokeArgs($object, self::makeParam($rel_method, $method_param));
     }
 
-    public static function invokeController($class, $method, $class_param = [], $method_param = [])
+    /**
+     * 反射注入 Request
+     *
+     * @param   string  $class         Class 名称
+     * @param   string  $method        方法名称
+     * @param   array   $class_param   构造器参数
+     * @param   array   $method_param  方法参数
+     *
+     * @return  mixed
+     */
+    public static function invokeController(string $class, string $method, array $class_param = [], array $method_param = [])
     {
         return self::runMethod(
             $class,

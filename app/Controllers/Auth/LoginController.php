@@ -13,8 +13,8 @@ class LoginController extends Controller
     {
         $logged = Auth::login([
             'account' => $request->input('account'),
-            'password' => $request->input('password')
-        ]);
+            'password' => $request->input('password'),
+        ], $request->input('remember_me') === 'on');
         if ($logged === true) {
             redirect('/home');
         }
