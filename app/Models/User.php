@@ -9,6 +9,13 @@ class User extends Model
     protected $table = 'users';
     protected $fillable = ['username', 'nickname', 'email', 'password'];
 
+    /**
+     * 获取用户对象，通过 account 字段
+     *
+     * @param   mixed   $user  用户数组或对象
+     *
+     * @return  User|null User 对象
+     */
     public static function getUserByAccount($user)
     {
         return User::where(
@@ -20,12 +27,26 @@ class User extends Model
         )->first();
     }
 
-    public static function existUserByAccount($user)
+    /**
+     * 查看指定用户是否存在
+     *
+     * @param   mixed   $user  用户对象或数组
+     *
+     * @return  bool           是否存在
+     */
+    public static function existUserByAccount($user): bool
     {
         return self::getUserByAccount($user) !== null;
     }
 
-    public static function getUserByToken($remember_token)
+    /**
+     * 通过 remember token 获取用户对象
+     *
+     * @param   string  $remember_token  remember token
+     *
+     * @return  User|null     User 对象
+     */
+    public static function getUserByToken(string $remember_token)
     {
         list($id, $token, $password_hash) = explode('|', $remember_token);
         $db_user = User::where([
@@ -33,16 +54,31 @@ class User extends Model
             'remember_token' => $token,
             'password' => $password_hash
         ])->first();
-        return $db_user ?? false;
+        return $db_user;
     }
 
-    public static function getUserById($id)
+    /**
+     * 通过 id 获取用户对象
+     *
+     * @param   int  $id  用户 id
+     *
+     * @return  User|null     User 对象
+     */
+    public static function getUserById(int $id)
     {
         $db_user = User::where('id', $id)->first();
-        return $db_user ?? false;
+        return $db_user;
     }
 
-    public static function updateToken($id, $token)
+    /**
+     * 更新 remember token
+     *
+     * @param   int     $id     用户 id
+     * @param   string  $token  remember token
+     *
+     * @return  User|null     User 对象
+     */
+    public static function updateToken(int $id, string $token)
     {
         return User::where('id', $id)->update([
             'remember_token' => $token

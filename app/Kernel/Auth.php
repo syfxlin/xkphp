@@ -177,13 +177,13 @@ class Auth
         // 检查Session
         $id = session()->get($this->getName());
         if (!is_null($id)) {
-            self::$user = User::getUserById($id);
+            self::$user = User::getUserById($id) ?? false;
         }
         // 检查Cookie
         if (!self::$user) {
             $remember_token = cookie()->get($this->getRememeberName());
             if (!is_null($remember_token)) {
-                self::$user = User::getUserByToken($remember_token);
+                self::$user = User::getUserByToken($remember_token) ?? false;
                 if (self::$user) {
                     $this->updateSession(self::$user['id']);
                     self::$viaRemember = true;
