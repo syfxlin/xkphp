@@ -2,16 +2,34 @@
 
 namespace App\Kernel;
 
-use App\Facades\Request;
 use App\Kernel\Controller;
+use Closure;
 
 class Route
 {
     public static $route;
     public static $globalMiddlewares;
     public static $routeMiddlewares;
+
+    /**
+     * 组路由中间件
+     *
+     * @var array|null
+     */
     public static $useGroupMiddlewares = null;
+
+    /**
+     * Group prefix
+     *
+     * @var string|null
+     */
     public $prefix = null;
+
+    /**
+     * 当前路由使用的中间件
+     *
+     * @var array
+     */
     public $middlewares = [];
 
     public function __construct($r, $rm, $gm)
@@ -21,7 +39,14 @@ class Route
         self::$globalMiddlewares = $gm;
     }
 
-    public function getHandle($handler)
+    /**
+     * 中间件处理器
+     *
+     * @param   Closure  $handler  分配到路由的处理事件闭包
+     *
+     * @return  Closure            增加了中间件的处理事件闭包
+     */
+    protected function getHandle(Closure $handler): Closure
     {
         // 注册组中间件
         if (self::$useGroupMiddlewares !== null) {
@@ -43,7 +68,16 @@ class Route
         };
     }
 
-    public function addRoute($httpMethod, $route, $handler)
+    /**
+     * 注册路由
+     *
+     * @param   array|string  $httpMethod  路由方法
+     * @param   string        $route       路由 URL
+     * @param   mixed         $handler     路由事件
+     *
+     * @return  Route
+     */
+    public function addRoute($httpMethod, string $route, $handler): Route
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
             list($c_name, $f_name) = explode('@', $handler);
@@ -57,61 +91,139 @@ class Route
         return $this;
     }
 
-    public function get(string $route, $handler)
+    /**
+     * 注册 GET 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function get(string $route, $handler): Route
     {
         self::addRoute('GET', $route, $handler);
         return $this;
     }
 
-    public function post(string $route, $handler)
+    /**
+     * 注册 POST 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function post(string $route, $handler): Route
     {
         self::addRoute('POST', $route, $handler);
         return $this;
     }
 
-    public function put(string $route, $handler)
+    /**
+     * 注册 PUT 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function put(string $route, $handler): Route
     {
         self::addRoute('PUT', $route, $handler);
         return $this;
     }
 
-    public function delete(string $route, $handler)
+    /**
+     * 注册 DELETE 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function delete(string $route, $handler): Route
     {
         self::addRoute('DELETE', $route, $handler);
         return $this;
     }
 
-    public function patch(string $route, $handler)
+    /**
+     * 注册 PATCH 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function patch(string $route, $handler): Route
     {
         self::addRoute('PATCH', $route, $handler);
         return $this;
     }
 
-    public function head(string $route, $handler)
+    /**
+     * 注册 HEAD 方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function head(string $route, $handler): Route
     {
         self::addRoute('HEAD', $route, $handler);
         return $this;
     }
 
-    public function match(array $httpMethod, string $route, $handler)
+    /**
+     * 注册部分方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function match(array $httpMethod, string $route, $handler): Route
     {
         self::addRoute($httpMethod, $route, $handler);
         return $this;
     }
 
-    public function any(string $route, $handler)
+    /**
+     * 注册所有方法的路由
+     *
+     * @param   string  $route    Route URL
+     * @param   mixed   $handler  路由事件
+     *
+     * @return  Route
+     */
+    public function any(string $route, $handler): Route
     {
         self::addRoute(['GET', 'POST', 'PUT', 'DELTE', 'PATCH'], $route, $handler);
         return $this;
     }
 
-    public function prefix($prefix)
+    /**
+     * 路由前缀
+     *
+     * @param   string  $prefix  路由前缀
+     *
+     * @return  Route
+     */
+    public function prefix(string $prefix): Route
     {
         $this->prefix = $prefix;
         return $this;
     }
 
-    public function group(callable $callback)
+    /**
+     * 分组路由
+     *
+     * @param   callable  $callback  路由分组的回调函数
+     *
+     * @return  Route
+     */
+    public function group(callable $callback): Route
     {
         self::$useGroupMiddlewares = $this->middlewares;
         self::$route->addGroup($this->prefix, $callback);
@@ -120,7 +232,16 @@ class Route
         return $this;
     }
 
-    public function redirect($old_route, $new_route, $code = 301)
+    /**
+     * 跳转路由
+     *
+     * @param   string  $old_route  从该路由 URL 跳转
+     * @param   string  $new_route  跳转到该路由 URL
+     * @param   int     $code       跳转路由响应码
+     *
+     * @return  Route
+     */
+    public function redirect(string $old_route, string $new_route, int $code = 301): Route
     {
         self::get($old_route, function () use ($new_route, $code) {
             redirect($new_route, $code);
@@ -128,7 +249,14 @@ class Route
         return $this;
     }
 
-    public function middleware($name)
+    /**
+     * 为路由增加中间件
+     *
+     * @param   mixed   $name  中间件名称或中间件数组
+     *
+     * @return  Route
+     */
+    public function middleware($name): Route
     {
         if (is_array($name)) {
             foreach ($name as $n) {
@@ -140,7 +268,16 @@ class Route
         return $this;
     }
 
-    public function view($route, $view, $data = [])
+    /**
+     * 视图路由
+     *
+     * @param   string  $route  Route URL
+     * @param   string  $view   视图名称
+     * @param   array   $data   传递到视图的数据
+     *
+     * @return  Route
+     */
+    public function view(string $route, string $view, array $data = []): Route
     {
         self::get($route, function () use ($view, $data) {
             return view($view, $data);

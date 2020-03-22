@@ -2,18 +2,18 @@
 
 namespace App\Facades;
 
-use App\Kernel\Route as KernelRoute;
 use App\Kernel\RouteManager;
 
 class Route extends Facade
 {
-    public static function __callStatic($name, $arguments)
+    protected static $class = \App\Kernel\Route::class;
+
+    public static function getArgs()
     {
-        $route_item = new KernelRoute(
+        return [
             RouteManager::$route,
             RouteManager::$routeMiddlewares,
             RouteManager::$globalMiddlewares
-        );
-        return $route_item->$name(...$arguments);
+        ];
     }
 }

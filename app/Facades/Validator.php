@@ -24,7 +24,14 @@ class Validator
         return self::make($data, $rules, $translates, $scene, true);
     }
 
-    public static function convertViewErrors($errors)
+    /**
+     * 将验证器的错误转换成视图显示的错误
+     *
+     * @param   array  $errors  验证器错误列表
+     *
+     * @return  array           视图显示的错误列表
+     */
+    public static function convertViewErrors(array $errors): array
     {
         $result = [];
         foreach ($errors as $error) {

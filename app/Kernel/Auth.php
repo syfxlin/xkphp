@@ -2,7 +2,6 @@
 
 namespace App\Kernel;
 
-use App\Facades\Crypt;
 use App\Facades\Hash;
 use App\Facades\Route;
 use App\Facades\Validator;

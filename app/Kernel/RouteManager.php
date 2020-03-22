@@ -9,10 +9,32 @@ use function FastRoute\simpleDispatcher;
 
 class RouteManager
 {
+    /**
+     * FastRoute RouteCollector
+     *
+     * @var RouteCollector|null
+     */
     public static $route;
+
+    /**
+     * 全局中间件
+     *
+     * @var array|null
+     */
     public static $globalMiddlewares;
+
+    /**
+     * Route 中间件
+     *
+     * @var array|null
+     */
     public static $routeMiddlewares;
 
+    /**
+     * RouteManager 构造器，外部请勿调用
+     *
+     * @return  this
+     */
     public function __construct()
     {
         $middleware_config = config('middleware');
@@ -39,7 +61,16 @@ class RouteManager
         $response->emit();
     }
 
-    private function handleRequest($dispatcher, string $request_method, string $request_uri)
+    /**
+     * 请求处理
+     *
+     * @param   Dispatcher  $dispatcher      Route Dispatchr
+     * @param   string      $request_method  请求方法
+     * @param   string      $request_uri     请求 URL
+     *
+     * @return  Response                     响应
+     */
+    private function handleRequest(Dispatcher $dispatcher, string $request_method, string $request_uri)
     {
         list($code, $handler, $path_param) = array_pad($dispatcher->dispatch($request_method, $request_uri), 3, null);
 

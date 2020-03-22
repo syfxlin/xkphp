@@ -9,6 +9,10 @@ use App\Facades\Response;
 use App\Kernel\Session;
 use App\Facades\View;
 
+/**
+ * 辅助函数
+ */
+
 // Features
 
 function request($name = null, $default = null)

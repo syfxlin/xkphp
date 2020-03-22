@@ -2,13 +2,15 @@
 
 namespace App\Facades;
 
-use App\Utils\Crypt as UtilsCrypt;
-
 class Crypt extends Facade
 {
-    public static function __callStatic($name, $arguments)
+    protected static $class = \App\Utils\Crypt::class;
+
+    public static function getArgs()
     {
-        $crypt = new UtilsCrypt(base64_decode(env('APP_KEY')), env('APP_CIPHER', 'AES-256-CBC'));
-        return $crypt->$name(...$arguments);
+        return [
+            base64_decode(env('APP_KEY')),
+            env('APP_CIPHER', 'AES-256-CBC')
+        ];
     }
 }

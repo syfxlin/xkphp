@@ -6,12 +6,26 @@ use App\Application;
 
 class Session
 {
-    public static function getInstance($sessid = null)
+    /**
+     * 获取 Session 单例
+     *
+     * @param   string  $sessid  sessid
+     *
+     * @return  Session          Session 单例
+     */
+    public static function getInstance(string $sessid = null): Session
     {
         return Application::getInstance(self::class, $sessid);
     }
 
-    public function __construct($sessid = null)
+    /**
+     * Session 构造器，外部请勿调用该构造器
+     *
+     * @param   string  $sessid  sessid
+     *
+     * @return  this
+     */
+    public function __construct(string $sessid = null)
     {
         $session_config = config('session');
         if ($session_config['save_path']) {
@@ -36,17 +50,39 @@ class Session
         }
     }
 
-    public function has($name)
+    /**
+     * 判断 Session 中是否存在某个值，并且不为 null
+     *
+     * @param   string  $name  值的名称
+     *
+     * @return  bool
+     */
+    public function has(string $name): bool
     {
         return isset($_SESSION[$name]) && $_SESSION[$name] !== null;
     }
 
-    public function exists($name)
+    /**
+     * 判断 Session 中是否存在某个值
+     *
+     * @param   string  $name  值的名称
+     *
+     * @return  bool
+     */
+    public function exists(string $name): bool
     {
         return isset($_SESSION[$name]);
     }
 
-    public function get($name, $default = null)
+    /**
+     * 获取 Session 中的值
+     *
+     * @param   string  $name     值的名称
+     * @param   mixed   $default  默认值
+     *
+     * @return  mixed
+     */
+    public function get(string $name, $default = null)
     {
         if (!isset($_SESSION[$name])) {
             return $default;
@@ -54,12 +90,27 @@ class Session
         return $_SESSION[$name];
     }
 
-    public function put($key, $value)
+    /**
+     * 在 Session 中增加值
+     *
+     * @param   string  $key    值的名称
+     * @param   mixed   $value  值
+     *
+     * @return  void
+     */
+    public function put(string $key, $value): void
     {
         $_SESSION[$key] = $value;
     }
 
-    public function forget($name)
+    /**
+     * 删除 Session 中的一个或多个值
+     *
+     * @param   string  $name  值的名称或数组
+     *
+     * @return  void
+     */
+    public function forget($name): void
     {
         if (is_string($name)) {
             unset($_SESSION[$name]);
@@ -70,34 +121,57 @@ class Session
         }
     }
 
-    public function flush()
+    /**
+     * 清空 Session
+     *
+     * @return  void
+     */
+    public function flush(): void
     {
         session_unset();
     }
 
-    public function regenerate()
+    /**
+     * 重新生成 Session id
+     *
+     * @return  void
+     */
+    public function regenerate(): void
     {
         session_regenerate_id();
     }
 
-    public function pull($name, $default = null)
+    /**
+     * 取得并删除一个 Session 值
+     *
+     * @param   string  $name     值的名称
+     * @param   mixed   $default  默认值
+     *
+     * @return  mixed             值
+     */
+    public function pull(string $name, $default = null)
     {
         $value = $this->get($name, $default);
         $this->forget($name);
         return $value;
     }
 
-    public function remove($key)
-    {
-        $this->forget($key);
-    }
-
-    public function token()
+    /**
+     * 获取 CSRF Token
+     *
+     * @return  string  CSRF Token
+     */
+    public function token(): string
     {
         return $this->get('_token');
     }
 
-    public function regenerateToken()
+    /**
+     * 重新生成 CSRF Token
+     *
+     * @return  void
+     */
+    public function regenerateToken(): void
     {
         $this->put('_token', str_random(40));
     }
