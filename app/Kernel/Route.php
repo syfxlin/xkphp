@@ -2,6 +2,7 @@
 
 namespace App\Kernel;
 
+use App\Facades\Request;
 use App\Kernel\Controller;
 
 class Route

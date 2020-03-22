@@ -19,14 +19,17 @@ function request($name = null, $default = null)
     return Request::input($name, $default);
 }
 
-function response($content = '', $code = 200, $headers = []): App\Kernel\Response
+function response($content = null, $code = 200, $headers = []): App\Kernel\Response
 {
+    if ($content === null) {
+        return Response::getInstance();
+    }
     return Response::make($content, $code, $headers);
 }
 
 function redirect($url, $code = 301, $headers = [])
 {
-    response('', $code, $headers)->header('Location', $url)->emit();
+    response(null, $code, $headers)->header('Location', $url)->emit();
     exit;
 }
 
@@ -51,7 +54,13 @@ function cookie($name = null, $default = null)
     if ($name === null) {
         return $cookie;
     }
-    return $cookie->get($name, $default);
+    if (is_string($name)) {
+        return $cookie->get($name, $default);
+    } else if (is_array($name)) {
+        foreach ($name as $value) {
+            $cookie->put($value);
+        }
+    }
 }
 
 function view($name, $data = [])

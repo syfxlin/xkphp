@@ -15,14 +15,9 @@ class Response
 
     private $accept_code = [200];
 
-    public static function getInstance($content = '', $code = 200, $headers = [])
+    public static function getInstance()
     {
-        return Application::getInstance(self::class, $content, $code, $headers);
-    }
-
-    public function __construct($content = '', $code = 200, $headers = [])
-    {
-        $this->make($content, $code, $headers);
+        return Application::getInstance(self::class);
     }
 
     public function make($content = '', $code = 200, $headers = [])
@@ -121,17 +116,17 @@ class Response
         return $this;
     }
 
-    public function withCookies(array $headers): Response
+    public function withCookies(array $cookies): Response
     {
-        foreach ($headers as $value) {
+        foreach ($cookies as $value) {
             $this->cookie(
                 $value['name'],
-                $value['value'],
-                $value['expire'],
-                $value['path'],
-                $value['domain'],
-                $value['secure'],
-                $value['httponly']
+                $value['value'] ?? "",
+                $value['expire'] ?? 0,
+                $value['path'] ?? "",
+                $value['domain'] ?? "",
+                $value['secure'] ?? false,
+                $value['httponly'] ?? false
             );
         }
         return $this;

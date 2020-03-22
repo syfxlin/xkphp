@@ -29,4 +29,24 @@ class Cookie
         }
         return Crypt::decrypt($_COOKIE[$name]);
     }
+
+    public function put($cookie)
+    {
+        response()->withCookies([$cookie]);
+    }
+
+    public function forget($name)
+    {
+        if (is_string($name)) {
+            $name = [$name];
+        }
+        foreach ($name as $key) {
+            $this->put([
+                'name' => $key,
+                'value' => false,
+                'expire' => 1,
+            ]);
+            unset($_COOKIE[$key]);
+        }
+    }
 }

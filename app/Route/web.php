@@ -13,16 +13,19 @@ Route::prefix('/group')->middleware('test')->group(function () {
     Route::redirect('/user', '/group/users', 302);
 });
 
-Route::any('/home', 'HomeController@index');
+Route::get('/home', 'HomeController@index')->middleware('auth');
 
 Route::get('/users', function ($request) {
-    // $auth = new Auth();
-    return Auth::register([
-        'username' => 'syfxlin',
-        'nickname' => 'Otstar Lin',
-        'email' => 'syfxlin@gmail.com',
-        'password' => '123456',
-        'password_confirmed' => '123456'
-    ]);
-    // return Auth::check(['account' => 'syfxlin@gmail.com', 'password' => '123456']);
+    // return Auth::register([
+    //     'username' => 'syfxlin',
+    //     'nickname' => 'Otstar Lin',
+    //     'email' => 'syfxlin@gmail.com',
+    //     'password' => '12345678',
+    //     'password_confirmed' => '12345678'
+    // ]);
+    // return Auth::login(['account' => 'syfxlin@gmail.com', 'password' => '12345678'], true);
+    return Auth::user();
+    // return Auth::logout();
 });
+
+Auth::routes();
