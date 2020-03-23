@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Facades\Storage;
 use App\Kernel\Request;
 
 class HomeController

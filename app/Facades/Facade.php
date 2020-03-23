@@ -19,6 +19,13 @@ class Facade
     protected static $isInstance = false;
 
     /**
+     * 是否是静态方法
+     *
+     * @var bool
+     */
+    protected static $isStatic = false;
+
+    /**
      * Facade 代理
      *
      * @param   string  $name       方法名
@@ -28,10 +35,16 @@ class Facade
      */
     public static function __callStatic(string $name, array $arguments)
     {
+        $class = null;
         if (!static::$isInstance) {
-            return (new static::$class(...static::getArgs()))->$name(...$arguments);
+            $class = (new static::$class(...static::getArgs()));
         } else {
-            return (static::$class::getInstance(...static::getArgs()))->$name(...$arguments);
+            $class = (static::$class::getInstance(...static::getArgs()));
+        }
+        if (static::$isStatic) {
+            return $class::$name(...$arguments);
+        } else {
+            return $class->$name(...$arguments);
         }
     }
 
