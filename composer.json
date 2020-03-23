@@ -1,6 +1,6 @@
 {
-  "name": "syfxlin/xkblog",
-  "description": "一个 Swoole 和 React 组成的博客系统",
+  "name": "syfxlin/xkphp",
+  "description": "一个轻量的 PHP 框架",
   "type": "project",
   "require": {
     "illuminate/database": "^7.1",
@@ -28,6 +28,12 @@
   "scripts": {
     "start": [
       "@php -S 0.0.0.0:8000 -t public"
+    ],
+    "migration:up": [
+      "@php ./migration/run.php up"
+    ],
+    "migration:drop": [
+      "@php ./migration/run.php drop"
     ]
   },
   "require-dev": {
