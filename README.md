@@ -36,7 +36,10 @@ composer install
 ```bash
 yarn
 ```
-4. 修改 .env 文件配置，并配置 API Key（可以通过 Laravel 生成，暂时还没制作生成脚本）
+4. 修改 .env 文件配置，并配置 API Key（可以通过 Laravel 生成，暂时还没制作生成脚本）,或者执行以下代码生成
+```bash
+php -r "echo base64_encode(openssl_random_pseudo_bytes(32));"
+```
 5. 运行数据库迁移
 ```bash
 composer migration:up
