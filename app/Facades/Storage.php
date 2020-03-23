@@ -4,5 +4,5 @@ namespace App\Facades;
 
 class Storage extends Facade
 {
-    protected static $class = \App\Utils\File::class;
+    protected static $class = \App\Utils\Storage::class;
 }
