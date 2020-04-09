@@ -8,15 +8,15 @@
 
 ORM 使用 [Eloquent ORM](https://github.com/illuminate/database)，路由使用 [FastRoute](https://github.com/nikic/FastRoute)
 
-大部分接口设计参考了 Laravel，采用门面模式 (Facade) 和单例模式(Instance) 的设计。
+大部分接口设计参考了 Laravel，采用门面模式 (Facade) 和单例模式(Singleton) 的设计。
+
+集成了一个 IoC 容器，兼容 PSR-11
 
 支持和 ReactJS 集成，其他前端框架也是可以的，不过我只写了 ReactJS 的配置。
 
-支持中间件，不过我没有依据 PSR-15 标准进行设计，所以不兼容 PSR-15。
+支持 PSR-15 标准的中间件。
 
-封装了请求和响应，同样没有依据 PSR-7 标准进行设计。
-
-之所以不依据 PSR 标准进行设计是因为想把接口弄得和 Laravel 一样，而且相关标准的中间件，请求处理器已经有很多很好用的库了，本项目只是为了练手而已，所以就没依据相关标准进行设计。
+封装了请求和响应，根据 PSR-7 标准进行设计，但增加了类似 Laravel 的接口。
 
 由于首次写这种项目，所有会有很多设计缺陷和漏洞，不建议将该项目用于任何生产环境，仅用于学习就可以啦，若您有更好的建议或者发现不足的地方欢迎反馈。
 
