@@ -2,8 +2,12 @@
 
 namespace App\Kernel;
 
+use App\Application;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 use function FastRoute\simpleDispatcher;
 
@@ -48,17 +52,11 @@ class RouteManager
             }
         });
 
-        $request_method = $_SERVER['REQUEST_METHOD'];
-        $request_uri = $_SERVER['REQUEST_URI'];
+        $request = Application::make(\App\Kernel\Http\Request::class);
 
-        if (false !== $pos = strpos($request_uri, '?')) {
-            $request_uri = substr($request_uri, 0, $pos);
-        }
-        $request_uri = rawurldecode($request_uri);
+        $response = $this->handleRequest($dispatcher, $request);
 
-        $response = $this->handleRequest($dispatcher, $request_method, $request_uri);
-
-        $response->emit();
+        (new SapiEmitter)->emit($response);
     }
 
     /**
@@ -68,19 +66,25 @@ class RouteManager
      * @param   string      $request_method  请求方法
      * @param   string      $request_uri     请求 URL
      *
-     * @return  Response                     响应
+     * @return  ResponseInterface                     响应
      */
-    private function handleRequest(Dispatcher $dispatcher, string $request_method, string $request_uri)
+    private function handleRequest(Dispatcher $dispatcher, ServerRequestInterface $request): ResponseInterface
     {
-        list($code, $handler, $path_param) = array_pad($dispatcher->dispatch($request_method, $request_uri), 3, null);
+        list($code, $handler, $path_param) = array_pad(
+            $dispatcher->dispatch(
+                $request->getMethod(),
+                rawurldecode($request->getUri()->getPath())
+            ),
+            3,
+            null
+        );
 
-        $request = Request::getInstance([
-            'path' => $path_param,
-            'get' => $_GET,
-            'post' => $_POST,
-            'server' => $_SERVER,
-            'files' => $_FILES
-        ]);
+        // 修改 Request 中的 Path 参数
+        if ($path_param !== null) {
+            foreach ($path_param as $key => $value) {
+                $request = $request->withAttribute($key, $value);
+            }
+        }
 
         switch ($code) {
             case Dispatcher::NOT_FOUND:
@@ -88,7 +92,7 @@ class RouteManager
                     'status' => 404,
                     'message' => 'Not Found',
                     'errors' => [
-                        sprintf('The URI "%s" was not found.', $request_uri)
+                        sprintf('The URI "%s" was not found.', $request->getUri())
                     ]
                 ], 404);
                 break;
@@ -98,12 +102,12 @@ class RouteManager
                     'status' => 405,
                     'message' => 'Method Not Allowed',
                     'errors' => [
-                        sprintf('Method "%s" is not allowed.', $request_method)
+                        sprintf('Method "%s" is not allowed.', $request->getMethod())
                     ]
                 ], 405);
                 break;
             case Dispatcher::FOUND:
-                $response = call_user_func($handler, $request);
+                $response = $handler($request);
                 break;
         }
 

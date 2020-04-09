@@ -5,6 +5,7 @@ namespace App\Kernel;
 use App\Facades\Hash;
 use App\Facades\Route;
 use App\Facades\Validator;
+use App\Kernel\Http\Cookie;
 use App\Models\User;
 
 class Auth
@@ -215,12 +216,14 @@ class Auth
      */
     protected function queueRememberTokenCookie(User $user): void
     {
-        cookie()->put([
-            'name' => $this->getRememeberName(),
-            'value' => $user['id'] . '|' . $user['remember_token'] . '|' . $user['password'],
-            'expire' => time() + 60 * config('session.life_time'),
-            'httponly' => true
-        ]);
+        cookie()->put(
+            Cookie::make(
+                $this->getRememeberName(),
+                $user['id'] . '|' . $user['remember_token'] . '|' . $user['password']
+            )
+                ->withMaxAge(60 * config('session.cookie_lifetime'))
+                ->withHttpOnly(true)
+        );
     }
 
     /**
@@ -294,7 +297,7 @@ class Auth
         // 检查Cookie
         if (!self::$user) {
             $remember_token = cookie()->get($this->getRememeberName());
-            if (!is_null($remember_token)) {
+            if ($remember_token !== null && $remember_token !== '') {
                 self::$user = User::getUserByToken($remember_token) ?? false;
                 if (self::$user) {
                     $this->updateSession(self::$user['id']);

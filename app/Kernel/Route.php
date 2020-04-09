@@ -4,6 +4,8 @@ namespace App\Kernel;
 
 use App\Kernel\Controller;
 use Closure;
+use App\Kernel\MiddlewareRunner;
+use Psr\Http\Message\ResponseInterface;
 
 class Route
 {
@@ -56,15 +58,11 @@ class Route
             // Make response hander
             $handler = function ($request) use ($handler) {
                 $result = $handler($request);
-                return is_object($result) && get_class($result) === \App\Kernel\Response::class ? $result : response($result);
+                return is_object($result) && $result instanceof ResponseInterface ? $result : response($result);
             };
             // Make middlewares hander
-            foreach (array_merge(self::$globalMiddlewares, $this->middlewares) as $middleware) {
-                $handler = function ($request) use ($middleware, $handler) {
-                    return (new $middleware())->handle($request, $handler);
-                };
-            }
-            return $handler($request);
+            $runner = new MiddlewareRunner(array_merge(self::$globalMiddlewares, $this->middlewares, [$handler]));
+            return $runner($request);
         };
     }
 
@@ -82,8 +80,8 @@ class Route
         if (is_string($handler) && strpos($handler, '@') !== false) {
             list($c_name, $f_name) = explode('@', $handler);
             $c_name = 'App\Controllers\\' . $c_name;
-            self::$route->addRoute($httpMethod, $route, $this->getHandle(function ($request) use ($c_name, $f_name) {
-                return Controller::invokeController($c_name, $f_name, [], ['request' => $request]);
+            self::$route->addRoute($httpMethod, $route, $this->getHandle(function () use ($c_name, $f_name) {
+                return Controller::invokeController($c_name . "@" . $f_name);
             }));
         } else {
             self::$route->addRoute($httpMethod, $route, $this->getHandle($handler));
@@ -244,7 +242,7 @@ class Route
     public function redirect(string $old_route, string $new_route, int $code = 301): Route
     {
         self::get($old_route, function () use ($new_route, $code) {
-            redirect($new_route, $code);
+            return redirect($new_route, $code);
         });
         return $this;
     }

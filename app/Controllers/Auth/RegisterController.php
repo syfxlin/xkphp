@@ -5,7 +5,7 @@ namespace App\Controllers\Auth;
 use App\Facades\Auth;
 use App\Facades\Validator;
 use App\Kernel\Controller;
-use App\Kernel\Request;
+use App\Kernel\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -19,7 +19,7 @@ class RegisterController extends Controller
             'password_confirmed' => $request->input('password_confirmed'),
         ]);
         if ($result === true) {
-            redirect('/home');
+            return redirect('/home');
         }
         return view('auth/register', [
             'errors' => Validator::convertViewErrors($result)

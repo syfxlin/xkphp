@@ -3,20 +3,22 @@
 namespace App\Middleware;
 
 use App\Facades\Auth;
-use App\Kernel\Response;
-use Closure;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Authenticate
+class Authenticate implements MiddlewareInterface
 {
     /**
      * Auth 中间件
      *
-     * @param   Request  $request  请求对象
-     * @param   Closure  $next     事件闭包
+     * @param   ServerRequestInterface  $request  请求对象
+     * @param   RequestHandlerInterface  $next     事件闭包
      *
-     * @return  Response
+     * @return  ResponseInterface
      */
-    public function handle($request, Closure $next): Response
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
     {
         if (!Auth::check()) {
             return redirect('/login');

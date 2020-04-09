@@ -4,7 +4,7 @@ namespace App\Controllers\Auth;
 
 use App\Facades\Auth;
 use App\Facades\Validator;
-use App\Kernel\Request;
+use App\Kernel\Http\Request;
 use App\Kernel\Controller;
 
 class LoginController extends Controller
@@ -16,7 +16,7 @@ class LoginController extends Controller
             'password' => $request->input('password'),
         ], $request->input('remember_me') === 'on');
         if ($logged === true) {
-            redirect('/home');
+            return redirect('/home');
         }
         return view('auth/login', [
             'errors' => Validator::convertViewErrors($logged)
@@ -31,6 +31,6 @@ class LoginController extends Controller
     public function logout()
     {
         Auth::logout();
-        redirect('/login');
+        return redirect('/login');
     }
 }

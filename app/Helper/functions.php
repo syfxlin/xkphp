@@ -1,13 +1,14 @@
 <?php
 
+use App\Application;
 use App\Facades\Config;
 use App\Facades\Crypt;
 use App\Facades\Hash;
-use App\Facades\Request;
-use App\Kernel\Cookie;
-use App\Facades\Response;
-use App\Kernel\Session;
+use App\Kernel\Http\CookieManager;
+use App\Kernel\Http\Request;
+use App\Kernel\Http\Response;
 use App\Facades\View;
+use App\Kernel\Http\SessionManager;
 
 /**
  * 辅助函数
@@ -17,29 +18,29 @@ use App\Facades\View;
 
 function request($name = null, $default = null)
 {
+    $request = Application::make(Request::class);
     if ($name === null) {
-        return Request::make();
+        return $request;
     }
-    return Request::input($name, $default);
+    return $request->input($name, $default);
 }
 
-function response($content = null, $code = 200, $headers = []): App\Kernel\Response
+function response($content = null, $code = 200, $headers = []): Response
 {
     if ($content === null) {
-        return Response::getInstance();
+        return Response::make();
     }
     return Response::make($content, $code, $headers);
 }
 
-function redirect($url, $code = 301, $headers = [])
+function redirect($url, $code = 302, $headers = [])
 {
-    response(null, $code, $headers)->header('Location', $url)->emit();
-    exit;
+    return Response::redirect($url, $code, $headers);
 }
 
 function session($name = null, $default = null)
 {
-    $session = Session::getInstance();
+    $session = Application::make(SessionManager::class);
     if ($name === null) {
         return $session;
     }
@@ -54,13 +55,14 @@ function session($name = null, $default = null)
 
 function cookie($name = null, $default = null)
 {
-    $cookie = Cookie::getInstance();
+    $cookie = Application::make(CookieManager::class);
     if ($name === null) {
         return $cookie;
     }
     if (is_string($name)) {
         return $cookie->get($name, $default);
-    } else if (is_array($name)) {
+    }
+    if (is_array($name)) {
         foreach ($name as $value) {
             $cookie->put($value);
         }
@@ -69,8 +71,7 @@ function cookie($name = null, $default = null)
 
 function view($name, $data = [])
 {
-    $view = View::make($name, $data);
-    return $view;
+    return View::make($name, $data);
 }
 
 function config($name, $default = null)
@@ -86,7 +87,7 @@ function config($name, $default = null)
 
 function str_random($length)
 {
-    $str = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm";
+    $str = 'QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm';
     while (strlen($str) < $length) {
         $str .= $str;
     }
@@ -130,8 +131,7 @@ function view_path($view)
 // Process
 function abort($code = 403, $content = '', $headers = [])
 {
-    response($content, $code, $headers)->emit();
-    exit;
+    return Response::make($content, $code, $headers);
 }
 
 function bcrypt($value)

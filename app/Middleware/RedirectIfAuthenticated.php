@@ -6,8 +6,12 @@ use App\Facades\Auth;
 use App\Kernel\Request;
 use App\Kernel\Response;
 use Closure;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class RedirectIfAuthenticated
+class RedirectIfAuthenticated implements MiddlewareInterface
 {
     /**
      * Guest 中间件
@@ -17,7 +21,7 @@ class RedirectIfAuthenticated
      *
      * @return  Response
      */
-    public function handle(Request $request, Closure $next): Response
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
     {
         if (Auth::check()) {
             return redirect('/home');
