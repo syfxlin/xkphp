@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Kernel\Http;
 
 use Psr\Http\Message\UriInterface;
@@ -58,18 +57,22 @@ trait RequestTrait
 
     private function setMethod($method): void
     {
-        if (!in_array($method, [
-            'GET',
-            'HEAD',
-            'POST',
-            'PUT',
-            'DELETE',
-            'CONNECT',
-            'OPTIONS',
-            'TRACE',
-            'PATCH'
-        ])) {
-            throw new RuntimeException("Unsupported HTTP method \"$method\" provided");
+        if (
+            !in_array($method, [
+                'GET',
+                'HEAD',
+                'POST',
+                'PUT',
+                'DELETE',
+                'CONNECT',
+                'OPTIONS',
+                'TRACE',
+                'PATCH'
+            ])
+        ) {
+            throw new RuntimeException(
+                "Unsupported HTTP method \"$method\" provided"
+            );
         }
         $this->method = $method;
     }
@@ -102,7 +105,8 @@ trait RequestTrait
         if (($preserveHost && $this->hasHeader('Host')) || !$uri->getHost()) {
             return $new;
         }
-        $host = $uri->getHost() . ($uri->getPort() ? ':' . $uri->getPath() : '');
+        $host =
+            $uri->getHost() . ($uri->getPort() ? ':' . $uri->getPath() : '');
         $new->headerAlias['host'] = 'Host';
         $new->headers['Host'] = [$host];
         return $new;

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Kernel\Http;
-
 
 use App\Application;
 
@@ -77,31 +75,52 @@ class CookieManager
         }
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function hasQueue(string $name): bool
     {
         return isset($this->response_cookies[$name]);
     }
 
+    /**
+     * @param string $name
+     */
     public function unqueue(string $name): void
     {
         unset($this->response_cookies[$name]);
     }
 
+    /**
+     * @param Cookie $cookie
+     */
     public function queue(Cookie $cookie): void
     {
         $this->put($cookie);
     }
 
-    public function queued(string $name, Cookie $default = null)
+    /**
+     * @param string $name
+     * @param Cookie|null $default
+     * @return Cookie
+     */
+    public function queued(string $name, Cookie $default = null): Cookie
     {
         return $this->response_cookies[$name] ?? $default;
     }
 
+    /**
+     * @return array
+     */
     public function getQueues(): array
     {
         return $this->response_cookies;
     }
 
+    /**
+     * @return CookieManager
+     */
     public static function make(): CookieManager
     {
         return new static();

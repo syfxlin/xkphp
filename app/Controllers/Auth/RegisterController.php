@@ -16,7 +16,7 @@ class RegisterController extends Controller
             'nickname' => $request->input('nickname'),
             'email' => $request->input('email'),
             'password' => $request->input('password'),
-            'password_confirmed' => $request->input('password_confirmed'),
+            'password_confirmed' => $request->input('password_confirmed')
         ]);
         if ($result === true) {
             return redirect('/home');

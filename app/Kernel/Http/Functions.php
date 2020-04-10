@@ -2,12 +2,15 @@
 
 namespace App\Kernel\Http;
 
-use Http\UploadFile;
 use Psr\Http\Message\UploadedFileInterface;
 
 class Functions
 {
-    private static function resolveStructure($tree): array
+    /**
+     * @param array $tree
+     * @return array
+     */
+    private static function resolveStructure(array $tree): array
     {
         $result = [];
         foreach ($tree['tmp_name'] as $key => $value) {
@@ -26,6 +29,10 @@ class Functions
         return $result;
     }
 
+    /**
+     * @param array $files
+     * @return array
+     */
     public static function convertFiles(array $files): array
     {
         $result = [];
@@ -34,7 +41,11 @@ class Functions
                 $result[$key] = $value;
                 continue;
             }
-            if (is_array($value) && isset($value['tmp_name']) && is_array($value['tmp_name'])) {
+            if (
+                is_array($value) &&
+                isset($value['tmp_name']) &&
+                is_array($value['tmp_name'])
+            ) {
                 $result[$key] = self::resolveStructure($value);
                 continue;
             }
@@ -56,6 +67,10 @@ class Functions
         return $result;
     }
 
+    /**
+     * @param array $server
+     * @return array
+     */
     public static function parseHeaders(array $server): array
     {
         $headers = [];

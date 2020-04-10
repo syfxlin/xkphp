@@ -226,8 +226,10 @@ class Request implements ServerRequestInterface
         foreach ($uploaded_files as $file) {
             if (is_array($file)) {
                 $this->validateFiles($file);
-            } else if (!$file instanceof UploadedFileInterface) {
-                throw new \RuntimeException('Invalid leaf in uploaded files structure');
+            } elseif (!$file instanceof UploadedFileInterface) {
+                throw new \RuntimeException(
+                    'Invalid leaf in uploaded files structure'
+                );
             }
         }
     }
@@ -249,21 +251,29 @@ class Request implements ServerRequestInterface
     ): Request {
         $files = Functions::convertFiles($files ?: $_FILES);
         $server = $server ?: $_SERVER;
-        $uri = (isset($server['HTTPS']) && $server['HTTPS'] === 'on' ? 'https://' : 'http://');
+        $uri =
+            isset($server['HTTPS']) && $server['HTTPS'] === 'on'
+                ? 'https://'
+                : 'http://';
         if (isset($server['HTTP_HOST'])) {
             $uri .= $server['HTTP_HOST'];
         } else {
-            $uri .= $server['SERVER_NAME'] .
+            $uri .=
+                $server['SERVER_NAME'] .
                 (isset($server['SERVER_PORT']) &&
-                    $server['SERVER_PORT'] !== '80' &&
-                    $server['SERVER_PORT'] !== '443'
+                $server['SERVER_PORT'] !== '80' &&
+                $server['SERVER_PORT'] !== '443'
                     ? ':' . $server['SERVER_PORT']
                     : '');
         }
         $uri .= $server['REQUEST_URI'];
         $protocol = '1.1';
         if (isset($server['SERVER_PROTOCOL'])) {
-            preg_match('|^(HTTP/)?(?P<version>[1-9]\d*(?:\.\d)?)$|', $server['SERVER_PROTOCOL'], $matches);
+            preg_match(
+                '|^(HTTP/)?(?P<version>[1-9]\d*(?:\.\d)?)$|',
+                $server['SERVER_PROTOCOL'],
+                $matches
+            );
             $protocol = $matches['version'];
         }
         $cookies = $cookies ?: $_COOKIE;
@@ -391,7 +401,10 @@ class Request implements ServerRequestInterface
         }
 
         foreach ($key as $value) {
-            if (!isset($this->query[$value]) && !isset($this->parsed_body[$value])) {
+            if (
+                !isset($this->query[$value]) &&
+                !isset($this->parsed_body[$value])
+            ) {
                 return false;
             }
         }
@@ -441,7 +454,6 @@ class Request implements ServerRequestInterface
         }
     }
 
-
     /**
      * 获取当前的 PATH
      *
@@ -460,7 +472,10 @@ class Request implements ServerRequestInterface
     public function url(): string
     {
         $uri = $this->getUri();
-        return $uri->getScheme() . '://' . $uri->getAuthority() . $uri->getPath();
+        return $uri->getScheme() .
+            '://' .
+            $uri->getAuthority() .
+            $uri->getPath();
     }
 
     /**

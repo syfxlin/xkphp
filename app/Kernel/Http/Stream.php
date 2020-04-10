@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Kernel\Http;
-
 
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
@@ -150,11 +148,11 @@ class Stream implements StreamInterface
             return false;
         }
         $mode = stream_get_meta_data($this->resource)['mode'];
-        return (strpos($mode, 'x') !== false
-            || strpos($mode, 'w') !== false
-            || strpos($mode, 'c') !== false
-            || strpos($mode, 'a') !== false
-            || strpos($mode, '+') !== false);
+        return strpos($mode, 'x') !== false ||
+            strpos($mode, 'w') !== false ||
+            strpos($mode, 'c') !== false ||
+            strpos($mode, 'a') !== false ||
+            strpos($mode, '+') !== false;
     }
 
     /**
@@ -182,8 +180,7 @@ class Stream implements StreamInterface
             return false;
         }
         $mode = stream_get_meta_data($this->resource)['mode'];
-        return (strpos($mode, 'r') !== false
-            || strpos($mode, '+') !== false);
+        return strpos($mode, 'r') !== false || strpos($mode, '+') !== false;
     }
 
     /**

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Kernel\Http;
 
 use App\Application;
@@ -86,7 +85,7 @@ class Response implements ResponseInterface
         508 => 'Loop Detected',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
-        599 => 'Network Connect Timeout Error',
+        599 => 'Network Connect Timeout Error'
     ];
 
     /**
@@ -115,8 +114,11 @@ class Response implements ResponseInterface
      * @param int $status
      * @param array $headers
      */
-    public function __construct($content = '', int $status = 200, array $headers = [])
-    {
+    public function __construct(
+        $content = '',
+        int $status = 200,
+        array $headers = []
+    ) {
         if ($content === null) {
             $content = '';
         }
@@ -124,7 +126,11 @@ class Response implements ResponseInterface
         $this->reason_phrase = '';
         $this->setHeaders($headers);
         if (!$content instanceof StreamInterface) {
-            $this->stream = Stream::make($this->convert($content), 'php://temp', 'wb+');
+            $this->stream = Stream::make(
+                $this->convert($content),
+                'php://temp',
+                'wb+'
+            );
         } else {
             $this->stream = $content;
         }
@@ -152,7 +158,8 @@ class Response implements ResponseInterface
     {
         $new = clone $this;
         $new->status = $code;
-        $new->reason_phrase = $reasonPhrase !== '' ? $reasonPhrase : (self::$phrases[$code] ?? '');
+        $new->reason_phrase =
+            $reasonPhrase !== '' ? $reasonPhrase : self::$phrases[$code] ?? '';
     }
 
     /**
@@ -332,7 +339,11 @@ class Response implements ResponseInterface
      */
     private function convert($content): string
     {
-        if (!in_array($this->status, $this->accept_code) && $this->status >= 400 && !Application::make(Request::class)->ajax()) {
+        if (
+            !in_array($this->status, $this->accept_code) &&
+            $this->status >= 400 &&
+            !Application::make(Request::class)->ajax()
+        ) {
             return view('errors/errors', $content)->render();
         }
         if ($content === null) {
@@ -343,7 +354,10 @@ class Response implements ResponseInterface
             return $content;
         }
         // View
-        if (is_object($content) && get_class($content) === \App\Kernel\View::class) {
+        if (
+            is_object($content) &&
+            get_class($content) === \App\Kernel\View::class
+        ) {
             return $content->render();
         }
         // JSON
@@ -357,9 +371,15 @@ class Response implements ResponseInterface
      * @param array $headers
      * @return Response
      */
-    public static function text(string $text, int $status = 200, array $headers = []): Response
-    {
-        return (new static($text, $status, $headers))->withHeader('Content-Type', 'text/plain; charset=utf-8');
+    public static function text(
+        string $text,
+        int $status = 200,
+        array $headers = []
+    ): Response {
+        return (new static($text, $status, $headers))->withHeader(
+            'Content-Type',
+            'text/plain; charset=utf-8'
+        );
     }
 
     /**
@@ -368,9 +388,15 @@ class Response implements ResponseInterface
      * @param array $headers
      * @return Response
      */
-    public static function html(string $html, int $status = 200, array $headers = []): Response
-    {
-        return (new static($html, $status, $headers))->withHeader('Content-Type', 'text/html; charset=utf-8');
+    public static function html(
+        string $html,
+        int $status = 200,
+        array $headers = []
+    ): Response {
+        return (new static($html, $status, $headers))->withHeader(
+            'Content-Type',
+            'text/html; charset=utf-8'
+        );
     }
 
     /**
@@ -380,9 +406,17 @@ class Response implements ResponseInterface
      * @param int $options
      * @return Response
      */
-    public static function json($data, int $status = 200, array $headers = [], int $options = 0): Response
-    {
-        return (new static(json_encode($data, $options), $status, $headers))->withHeader('Content-Type', 'application/json');
+    public static function json(
+        $data,
+        int $status = 200,
+        array $headers = [],
+        int $options = 0
+    ): Response {
+        return (new static(
+            json_encode($data, $options),
+            $status,
+            $headers
+        ))->withHeader('Content-Type', 'application/json');
     }
 
     /**
@@ -391,9 +425,15 @@ class Response implements ResponseInterface
      * @param array $headers
      * @return Response
      */
-    public static function redirect(string $url, int $status = 302, array $headers = []): Response
-    {
-        return (new static('', $status, $headers))->withHeader('Location', $url);
+    public static function redirect(
+        string $url,
+        int $status = 302,
+        array $headers = []
+    ): Response {
+        return (new static('', $status, $headers))->withHeader(
+            'Location',
+            $url
+        );
     }
 
     /**
@@ -402,8 +442,11 @@ class Response implements ResponseInterface
      * @param array $headers
      * @return Response
      */
-    public static function make($content = '', int $status = 200, array $headers = []): Response
-    {
+    public static function make(
+        $content = '',
+        int $status = 200,
+        array $headers = []
+    ): Response {
         return new static($content, $status, $headers);
     }
 }

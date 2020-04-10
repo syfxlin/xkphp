@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use RuntimeException;
+
 /**
  * 文件操作类，具体使用方式参考 Laravel
  */
@@ -20,7 +22,7 @@ class File
     public function get(string $path, bool $lock = false)
     {
         if (!$this->exists($path)) {
-            throw new \RuntimeException("File does not exist at path $path");
+            throw new RuntimeException("File does not exist at path $path");
         }
         if (!$lock) {
             return file_get_contents($path);
@@ -124,7 +126,7 @@ class File
         return filetype($path);
     }
 
-    public function mimeType(string $path)
+    public function mimeType(string $path): string
     {
         return mime_content_type($path);
     }
@@ -156,16 +158,18 @@ class File
 
     public function files(string $path): array
     {
-        return array_values(array_filter(scandir($path), function ($item) use ($path) {
-            return !is_dir("$path/$item");
-        }));
+        return array_values(
+            array_filter(scandir($path), function ($item) use ($path) {
+                return !is_dir("$path/$item");
+            })
+        );
     }
 
     private function walkAllFiles(string $path, $root = null): array
     {
         $files = [];
         foreach (scandir($path) as $item) {
-            if ($item === "." || $item === "..") {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             $item_path = "$path/$item";
@@ -173,7 +177,7 @@ class File
             if (is_file($item_path)) {
                 $files[] = $item;
             } else {
-                $files = array_merge($files, $this->walkAllFiles($item_path, $item));
+                array_push($files, ...$this->walkAllFiles($item_path, $item));
             }
         }
         return $files;
@@ -186,23 +190,25 @@ class File
 
     public function directories(string $path): array
     {
-        return array_values(array_filter(scandir($path), function ($item) use ($path) {
-            return is_dir("$path/$item") && $item !== "." && $item !== "..";
-        }));
+        return array_values(
+            array_filter(scandir($path), function ($item) use ($path) {
+                return is_dir("$path/$item") && $item !== '.' && $item !== '..';
+            })
+        );
     }
 
     private function walkAllDirs(string $path, $root = null): array
     {
         $dirs = [];
         foreach (scandir($path) as $item) {
-            if ($item === "." || $item === "..") {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             $item_path = "$path/$item";
             $item = $root === null ? $item : "$root/$item";
             if (is_dir($item_path)) {
                 $dirs[] = $item;
-                $dirs = array_merge($dirs, $this->walkAllDirs($item_path, $item));
+                array_push($dirs, ...$this->walkAllDirs($item_path, $item));
             }
         }
         return $dirs;
@@ -213,8 +219,12 @@ class File
         return $this->walkAllDirs($path);
     }
 
-    public function makeDirectory(string $path, int $mode = 0755, bool $recursive = false, bool $force = false): bool
-    {
+    public function makeDirectory(
+        string $path,
+        int $mode = 0755,
+        bool $recursive = false,
+        bool $force = false
+    ): bool {
         if ($force) {
             return @mkdir($path, $mode, $recursive);
         }
@@ -227,7 +237,7 @@ class File
             return false;
         }
         foreach (scandir($path) as $item) {
-            if ($item === "." || $item === "..") {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             if (is_dir("$path/$item")) {
@@ -247,8 +257,11 @@ class File
         return $this->deleteDirectory($path, true);
     }
 
-    public function moveDirectory(string $source, string $target, bool $overwrite = false): bool
-    {
+    public function moveDirectory(
+        string $source,
+        string $target,
+        bool $overwrite = false
+    ): bool {
         if ($overwrite && is_dir($target)) {
             $this->deleteDirectory($target);
         }
@@ -264,7 +277,7 @@ class File
             $this->makeDirectory($target, 0777, true);
         }
         foreach (scandir($source) as $item) {
-            if ($item === "." || $item === "..") {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
             if (is_dir("$source/$item")) {

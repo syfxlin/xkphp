@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Application;
+use App\Kernel\Http\Request;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -52,25 +53,25 @@ class RouteManager
             }
         });
 
-        $request = Application::make(\App\Kernel\Http\Request::class);
+        $request = Application::make(Request::class);
 
         $response = $this->handleRequest($dispatcher, $request);
 
-        (new SapiEmitter)->emit($response);
+        (new SapiEmitter())->emit($response);
     }
 
     /**
      * 请求处理
      *
-     * @param   Dispatcher  $dispatcher      Route Dispatchr
-     * @param   string      $request_method  请求方法
-     * @param   string      $request_uri     请求 URL
-     *
+     * @param Dispatcher $dispatcher Route Dispatcher
+     * @param ServerRequestInterface $request
      * @return  ResponseInterface                     响应
      */
-    private function handleRequest(Dispatcher $dispatcher, ServerRequestInterface $request): ResponseInterface
-    {
-        list($code, $handler, $path_param) = array_pad(
+    private function handleRequest(
+        Dispatcher $dispatcher,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        [$code, $handler, $path_param] = array_pad(
             $dispatcher->dispatch(
                 $request->getMethod(),
                 rawurldecode($request->getUri()->getPath())
@@ -88,23 +89,35 @@ class RouteManager
 
         switch ($code) {
             case Dispatcher::NOT_FOUND:
-                $response = response([
-                    'status' => 404,
-                    'message' => 'Not Found',
-                    'errors' => [
-                        sprintf('The URI "%s" was not found.', $request->getUri())
-                    ]
-                ], 404);
+                $response = response(
+                    [
+                        'status' => 404,
+                        'message' => 'Not Found',
+                        'errors' => [
+                            sprintf(
+                                'The URI "%s" was not found.',
+                                $request->getUri()
+                            )
+                        ]
+                    ],
+                    404
+                );
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $handler;
-                $response = response([
-                    'status' => 405,
-                    'message' => 'Method Not Allowed',
-                    'errors' => [
-                        sprintf('Method "%s" is not allowed.', $request->getMethod())
-                    ]
-                ], 405);
+                $response = response(
+                    [
+                        'status' => 405,
+                        'message' => 'Method Not Allowed',
+                        'errors' => [
+                            sprintf(
+                                'Method "%s" is not allowed.',
+                                $request->getMethod()
+                            )
+                        ]
+                    ],
+                    405
+                );
                 break;
             case Dispatcher::FOUND:
                 $response = $handler($request);

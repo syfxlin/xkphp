@@ -5,12 +5,24 @@ namespace App\Kernel;
 use App\Kernel\Controller;
 use Closure;
 use App\Kernel\MiddlewareRunner;
+use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
 
 class Route
 {
+    /**
+     * @var RouteCollector
+     */
     public static $route;
+
+    /**
+     * @var array
+     */
     public static $globalMiddlewares;
+
+    /**
+     * @var array
+     */
     public static $routeMiddlewares;
 
     /**
@@ -52,16 +64,26 @@ class Route
     {
         // 注册组中间件
         if (self::$useGroupMiddlewares !== null) {
-            $this->middlewares = array_merge($this->middlewares, self::$useGroupMiddlewares);
+            $this->middlewares = array_merge(
+                $this->middlewares,
+                self::$useGroupMiddlewares
+            );
         }
         return function ($request) use ($handler) {
-            // Make response hander
+            // Make response handler
             $handler = function ($request) use ($handler) {
                 $result = $handler($request);
-                return is_object($result) && $result instanceof ResponseInterface ? $result : response($result);
+                return is_object($result) &&
+                    $result instanceof ResponseInterface
+                    ? $result
+                    : response($result);
             };
-            // Make middlewares hander
-            $runner = new MiddlewareRunner(array_merge(self::$globalMiddlewares, $this->middlewares, [$handler]));
+            // Make middlewares handler
+            $runner = new MiddlewareRunner(
+                array_merge(self::$globalMiddlewares, $this->middlewares, [
+                    $handler
+                ])
+            );
             return $runner($request);
         };
     }
@@ -78,13 +100,23 @@ class Route
     public function addRoute($httpMethod, string $route, $handler): Route
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
-            list($c_name, $f_name) = explode('@', $handler);
+            [$c_name, $f_name] = explode('@', $handler);
             $c_name = 'App\Controllers\\' . $c_name;
-            self::$route->addRoute($httpMethod, $route, $this->getHandle(function () use ($c_name, $f_name) {
-                return Controller::invokeController($c_name . "@" . $f_name);
-            }));
+            self::$route->addRoute(
+                $httpMethod,
+                $route,
+                $this->getHandle(function () use ($c_name, $f_name) {
+                    return Controller::invokeController(
+                        $c_name . '@' . $f_name
+                    );
+                })
+            );
         } else {
-            self::$route->addRoute($httpMethod, $route, $this->getHandle($handler));
+            self::$route->addRoute(
+                $httpMethod,
+                $route,
+                $this->getHandle($handler)
+            );
         }
         return $this;
     }
@@ -99,7 +131,7 @@ class Route
      */
     public function get(string $route, $handler): Route
     {
-        self::addRoute('GET', $route, $handler);
+        $this->addRoute('GET', $route, $handler);
         return $this;
     }
 
@@ -113,7 +145,7 @@ class Route
      */
     public function post(string $route, $handler): Route
     {
-        self::addRoute('POST', $route, $handler);
+        $this->addRoute('POST', $route, $handler);
         return $this;
     }
 
@@ -127,7 +159,7 @@ class Route
      */
     public function put(string $route, $handler): Route
     {
-        self::addRoute('PUT', $route, $handler);
+        $this->addRoute('PUT', $route, $handler);
         return $this;
     }
 
@@ -141,7 +173,7 @@ class Route
      */
     public function delete(string $route, $handler): Route
     {
-        self::addRoute('DELETE', $route, $handler);
+        $this->addRoute('DELETE', $route, $handler);
         return $this;
     }
 
@@ -155,7 +187,7 @@ class Route
      */
     public function patch(string $route, $handler): Route
     {
-        self::addRoute('PATCH', $route, $handler);
+        $this->addRoute('PATCH', $route, $handler);
         return $this;
     }
 
@@ -169,21 +201,22 @@ class Route
      */
     public function head(string $route, $handler): Route
     {
-        self::addRoute('HEAD', $route, $handler);
+        $this->addRoute('HEAD', $route, $handler);
         return $this;
     }
 
     /**
      * 注册部分方法的路由
      *
-     * @param   string  $route    Route URL
-     * @param   mixed   $handler  路由事件
+     * @param array $httpMethod
+     * @param string $route Route URL
+     * @param mixed $handler 路由事件
      *
      * @return  Route
      */
     public function match(array $httpMethod, string $route, $handler): Route
     {
-        self::addRoute($httpMethod, $route, $handler);
+        $this->addRoute($httpMethod, $route, $handler);
         return $this;
     }
 
@@ -197,7 +230,11 @@ class Route
      */
     public function any(string $route, $handler): Route
     {
-        self::addRoute(['GET', 'POST', 'PUT', 'DELTE', 'PATCH'], $route, $handler);
+        $this->addRoute(
+            ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            $route,
+            $handler
+        );
         return $this;
     }
 
@@ -239,9 +276,12 @@ class Route
      *
      * @return  Route
      */
-    public function redirect(string $old_route, string $new_route, int $code = 301): Route
-    {
-        self::get($old_route, function () use ($new_route, $code) {
+    public function redirect(
+        string $old_route,
+        string $new_route,
+        int $code = 301
+    ): Route {
+        $this->get($old_route, function () use ($new_route, $code) {
             return redirect($new_route, $code);
         });
         return $this;
@@ -277,7 +317,7 @@ class Route
      */
     public function view(string $route, string $view, array $data = []): Route
     {
-        self::get($route, function () use ($view, $data) {
+        $this->get($route, function () use ($view, $data) {
             return view($view, $data);
         });
         return $this;

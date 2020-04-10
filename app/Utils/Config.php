@@ -20,12 +20,12 @@ class Config
      */
     public function path(string $config_name): string
     {
-        return realpath(__DIR__ . "/../../config/$config_name.php");
+        return dirname(__DIR__, 2) . "/config/$config_name.php";
     }
 
     /**
      * 获取所有配置
-     * 
+     *
      * @return array   所有配置
      */
     public function all(): array
@@ -37,7 +37,7 @@ class Config
      * 获取指定配置
      *
      * @param   string  $name     配置名称，可以使用 ”.“ 来读取子配置
-     * @param   mixed   $default  默认配置，如果设置到指定的配置就用该值代替 
+     * @param   mixed   $default  默认配置，如果设置到指定的配置就用该值代替
      *
      * @return  mixed             配置值
      */
@@ -45,7 +45,8 @@ class Config
     {
         $names = explode('.', $name);
         $config_name = array_shift($names);
-        $config = isset(self::$config[$config_name]) ? self::$config[$config_name] : require $this->path($config_name);
+        $config =
+            self::$config[$config_name] ?? (require $this->path($config_name));
         foreach ($names as $item) {
             if (!isset($config[$item])) {
                 return $default;
@@ -80,11 +81,11 @@ class Config
      *
      * @return  void
      */
-    public function set($name, $value = null)
+    public function set($name, $value = null): void
     {
         if (is_array($name)) {
-            foreach ($name as $key => $value) {
-                $this->setItem($key, $value);
+            foreach ($name as $key => $v) {
+                $this->setItem($key, $v);
             }
         } else {
             $this->setItem($name, $value);
@@ -111,7 +112,7 @@ class Config
      *
      * @return  void
      */
-    public function push(string $name, $value)
+    public function push(string $name, $value): void
     {
         $this->setItem($name, $value);
     }

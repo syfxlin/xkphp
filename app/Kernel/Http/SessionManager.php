@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Kernel\Http;
-
 
 class SessionManager
 {
@@ -17,7 +15,7 @@ class SessionManager
     /**
      * @var array
      */
-    private $sessions = [];
+    private $sessions;
 
     public function __construct(string $id, string $name, array &$data)
     {
@@ -141,7 +139,7 @@ class SessionManager
     {
         if (is_string($name)) {
             unset($this->sessions[$name]);
-        } else if (is_array($name)) {
+        } elseif (is_array($name)) {
             foreach ($name as $key) {
                 unset($this->sessions[$key]);
             }
@@ -209,15 +207,19 @@ class SessionManager
      * @param array $options
      * @return SessionManager
      */
-    public static function make(string $id = null, array $options = []): SessionManager
-    {
+    public static function make(
+        string $id = null,
+        array $options = []
+    ): SessionManager {
         if ($id !== null) {
             session_id($id);
         }
-        session_start(array_merge($options, [
-            'use_cookies'      => false,
-            'use_only_cookies' => true,
-        ]));
+        session_start(
+            array_merge($options, [
+                'use_cookies' => false,
+                'use_only_cookies' => true
+            ])
+        );
         $id = session_id();
         $name = session_name();
         return new static($id, $name, $_SESSION);

@@ -60,12 +60,18 @@ class Auth
             'email' => 'required|string:3,255|email|unique_users',
             'password' => 'required|string:8,255',
             'password_confirmed' => 'required|string:8,255|eqField:password'
-        ])->addValidator('unique_users', function ($data) {
-            return !User::existUserByAccount([
-                'username' => $data,
-                'email' => $data
-            ]);
-        }, 'Duplicate username or email.')->validate();
+        ])
+            ->addValidator(
+                'unique_users',
+                function ($data) {
+                    return !User::existUserByAccount([
+                        'username' => $data,
+                        'email' => $data
+                    ]);
+                },
+                'Duplicate username or email.'
+            )
+            ->validate();
     }
 
     /**
@@ -139,24 +145,30 @@ class Auth
     {
         $db_user = User::getUserByAccount($user);
         if (!$db_user) {
-            return [[
-                'name' => 'account',
-                'msg' => sprintf('No "%s" users found', $user['account'])
-            ]];
+            return [
+                [
+                    'name' => 'account',
+                    'msg' => sprintf('No "%s" users found', $user['account'])
+                ]
+            ];
         }
         if (!Hash::check($user['password'], $db_user['password'])) {
-            return [[
-                'name' => 'password',
-                'msg' => 'Account does not match the password.'
-            ]];
+            return [
+                [
+                    'name' => 'password',
+                    'msg' => 'Account does not match the password.'
+                ]
+            ];
         }
         unset($user['account'], $user['password']);
         foreach ($user as $key => $value) {
             if ($db_user[$key] !== $value) {
-                return [[
-                    'name' => $key,
-                    'msg' => 'These credentials do not match our records.'
-                ]];
+                return [
+                    [
+                        'name' => $key,
+                        'msg' => 'These credentials do not match our records.'
+                    ]
+                ];
             }
         }
         return $db_user;
@@ -219,7 +231,11 @@ class Auth
         cookie()->put(
             Cookie::make(
                 $this->getRememeberName(),
-                $user['id'] . '|' . $user['remember_token'] . '|' . $user['password']
+                $user['id'] .
+                    '|' .
+                    $user['remember_token'] .
+                    '|' .
+                    $user['password']
             )
                 ->withMaxAge(60 * config('session.cookie_lifetime'))
                 ->withHttpOnly(true)
@@ -291,7 +307,7 @@ class Auth
         }
         // 检查Session
         $id = session()->get($this->getName());
-        if (!is_null($id)) {
+        if ($id !== null) {
             self::$user = User::getUserById($id) ?? false;
         }
         // 检查Cookie
@@ -326,11 +342,23 @@ class Auth
     public function routes(): void
     {
         // TODO: 找回密码
-        Route::get('/login', 'Auth\LoginController@loginForm')->middleware('guest');
-        Route::post('/login', 'Auth\LoginController@login')->middleware('guest');
-        Route::any('/logout', 'Auth\LoginController@logout')->middleware('auth');
+        Route::get('/login', 'Auth\LoginController@loginForm')->middleware(
+            'guest'
+        );
+        Route::post('/login', 'Auth\LoginController@login')->middleware(
+            'guest'
+        );
+        Route::any('/logout', 'Auth\LoginController@logout')->middleware(
+            'auth'
+        );
 
-        Route::get('/register', 'Auth\RegisterController@registerForm')->middleware('guest');
-        Route::post('/register', 'Auth\RegisterController@register')->middleware('guest');
+        Route::get(
+            '/register',
+            'Auth\RegisterController@registerForm'
+        )->middleware('guest');
+        Route::post(
+            '/register',
+            'Auth\RegisterController@register'
+        )->middleware('guest');
     }
 }

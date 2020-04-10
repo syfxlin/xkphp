@@ -3,8 +3,7 @@
 namespace App\Middleware;
 
 use App\Facades\Auth;
-use App\Kernel\Request;
-use App\Kernel\Response;
+use App\Kernel\MiddlewareRunner;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,13 +15,15 @@ class RedirectIfAuthenticated implements MiddlewareInterface
     /**
      * Guest 中间件
      *
-     * @param   Request  $request  请求对象
-     * @param   Closure  $next     事件闭包
+     * @param   ServerRequestInterface  $request  请求对象
+     * @param   MiddlewareRunner  $next     事件闭包
      *
-     * @return  Response
+     * @return  ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $next
+    ): ResponseInterface {
         if (Auth::check()) {
             return redirect('/home');
         }

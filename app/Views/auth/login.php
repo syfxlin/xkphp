@@ -10,11 +10,11 @@
 <body>
   <form action="/login" method="post">
     <input type="text" name="account">
-    <?php if ($error('account')) : ?>
+    <?php if ($error('account')): ?>
       <p><?php $echo($error('account')); ?></p>
     <?php endif; ?>
     <input type="password" name="password">
-    <?php if ($error('password')) : ?>
+    <?php if ($error('password')): ?>
       <p><?php $echo($error('password')); ?></p>
     <?php endif; ?>
     <input type="checkbox" name="remember_me">

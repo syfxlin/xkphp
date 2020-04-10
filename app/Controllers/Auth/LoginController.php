@@ -11,10 +11,13 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $logged = Auth::login([
-            'account' => $request->input('account'),
-            'password' => $request->input('password'),
-        ], $request->input('remember_me') === 'on');
+        $logged = Auth::login(
+            [
+                'account' => $request->input('account'),
+                'password' => $request->input('password')
+            ],
+            $request->input('remember_me') === 'on'
+        );
         if ($logged === true) {
             return redirect('/home');
         }

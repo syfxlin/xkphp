@@ -10,12 +10,10 @@ class DB extends Capsule
 {
     public function __construct()
     {
-        $capsule = new Capsule();
-
-        $capsule->addConnection(config('database'));
-
-        $capsule->setEventDispatcher(new Dispatcher(new Container));
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
+        parent::__construct();
+        $this->addConnection(config('database'));
+        $this->setEventDispatcher(new Dispatcher(new Container()));
+        $this->setAsGlobal();
+        $this->bootEloquent();
     }
 }

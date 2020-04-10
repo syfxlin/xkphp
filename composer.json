@@ -12,7 +12,10 @@
     "psr/http-server-middleware": "^1.0",
     "laminas/laminas-diactoros": "^2.2",
     "laminas/laminas-httphandlerrunner": "^1.1",
-    "dflydev/fig-cookies": "^2.0"
+    "dflydev/fig-cookies": "^2.0",
+    "ext-openssl": "*",
+    "ext-json": "*",
+    "ext-fileinfo": "*"
   },
   "license": "Apache 2.0",
   "authors": [

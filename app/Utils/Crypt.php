@@ -23,8 +23,6 @@ class Crypt
      *
      * @param   string  $key     .env APP_KEY
      * @param   string  $cipher  .env APP_CIPHER
-     *
-     * @return  this
      */
     public function __construct(string $key, string $cipher = 'AES-256-CBC')
     {
@@ -32,7 +30,9 @@ class Crypt
             $this->key = $key;
             $this->cipher = $cipher;
         } else {
-            throw new \RuntimeException('The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.');
+            throw new \RuntimeException(
+                'The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.'
+            );
         }
     }
 
@@ -62,7 +62,9 @@ class Crypt
      */
     public function encrypt($value, bool $serialize = false): string
     {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->cipher));
+        $iv = openssl_random_pseudo_bytes(
+            openssl_cipher_iv_length($this->cipher)
+        );
         $value = \openssl_encrypt(
             $serialize ? serialize($value) : $value,
             $this->cipher,
@@ -76,7 +78,10 @@ class Crypt
         }
         $iv = base64_encode($iv);
         $mac = hash_hmac('sha256', $iv . $value, $this->key);
-        $json = json_encode(compact('iv', 'value', 'mac'), JSON_UNESCAPED_SLASHES);
+        $json = json_encode(
+            compact('iv', 'value', 'mac'),
+            JSON_UNESCAPED_SLASHES
+        );
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \RuntimeException('Could not encrypt the data.');
         }
@@ -120,24 +125,32 @@ class Crypt
      *
      * @return  bool              是否合法
      */
-    public function vaild($payload)
+    public function vaild($payload): bool
     {
         if (
-            !is_array($payload) || !isset($payload['iv'], $payload['value'], $payload['mac']) ||
-            strlen(base64_decode($payload['iv'], true)) !== openssl_cipher_iv_length($this->cipher)
+            !is_array($payload) ||
+            !isset($payload['iv'], $payload['value'], $payload['mac']) ||
+            strlen(base64_decode($payload['iv'], true)) !==
+                openssl_cipher_iv_length($this->cipher)
         ) {
             throw new \RuntimeException('The payload is invalid.');
         }
-        if (!hash_equals(
-            $payload['mac'],
-            hash_hmac('sha256', $payload['iv'] . $payload['value'], $this->key)
-        )) {
+        if (
+            !hash_equals(
+                $payload['mac'],
+                hash_hmac(
+                    'sha256',
+                    $payload['iv'] . $payload['value'],
+                    $this->key
+                )
+            )
+        ) {
             throw new \RuntimeException('The MAC is invalid.');
         }
         return true;
     }
 
-    public function encryptSerialize($value)
+    public function encryptSerialize($value): string
     {
         return $this->encrypt($value, true);
     }

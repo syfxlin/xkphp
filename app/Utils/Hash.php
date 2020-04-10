@@ -27,9 +27,16 @@ class Hash
      *
      * @return  string                Hash
      */
-    public function make(string $value, $algo = null, array $options = null): string
-    {
-        $hash = password_hash($value, $algo ?? $this->algo, $options ?? $this->options);
+    public function make(
+        string $value,
+        $algo = null,
+        array $options = null
+    ): string {
+        $hash = password_hash(
+            $value,
+            $algo ?? $this->algo,
+            $options ?? $this->options
+        );
 
         if ($hash === false) {
             throw new \RuntimeException('Algo hashing not supported.');
@@ -60,8 +67,15 @@ class Hash
      *
      * @return  bool                       Hash 是否需要刷新
      */
-    public function needsRehash(string $hashed_value, $algo = null, array $options = null): bool
-    {
-        return password_needs_rehash($hashed_value, $algo ?? $this->algo, $options ?? $this->options);
+    public function needsRehash(
+        string $hashed_value,
+        $algo = null,
+        array $options = null
+    ): bool {
+        return password_needs_rehash(
+            $hashed_value,
+            $algo ?? $this->algo,
+            $options ?? $this->options
+        );
     }
 }

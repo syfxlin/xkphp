@@ -1,19 +1,25 @@
 <?php
 
+use App\Middleware\AddQueuedCookies;
+use App\Middleware\Authenticate;
+use App\Middleware\EncryptCookies;
+use App\Middleware\RedirectIfAuthenticated;
+use App\Middleware\VerifyCsrfToken;
+
 return [
     /**
      * 全局中间件
      */
     'global' => [
-        \App\Middleware\EncryptCookies::class,
-        \App\Middleware\VerifyCsrfToken::class,
-        \App\Middleware\AddQueuedCookies::class
+        EncryptCookies::class,
+        VerifyCsrfToken::class,
+        AddQueuedCookies::class
     ],
     /**
      * 在 Route 中按需引入的中间件
      */
     'route' => [
-        'auth' => \App\Middleware\Authenticate::class,
-        'guest' => \App\Middleware\RedirectIfAuthenticated::class
+        'auth' => Authenticate::class,
+        'guest' => RedirectIfAuthenticated::class
     ]
 ];

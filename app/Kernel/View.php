@@ -126,7 +126,9 @@ class View
     {
         $view_file = view_path($view);
         if (!file_exists($view_file)) {
-            throw new \UnexpectedValueException("The view $view_file does not exist");
+            throw new \UnexpectedValueException(
+                "The view $view_file does not exist"
+            );
         }
         return $view_file;
     }
@@ -136,10 +138,13 @@ class View
      *
      * @return  array  通用的视图数据或方法
      */
-    private function pushCommon()
+    private function pushCommon(): array
     {
         return [
-            'csrf' => '<input type="hidden" name="_token" value="' . csrf_token() . '">',
+            'csrf' =>
+                '<input type="hidden" name="_token" value="' .
+                csrf_token() .
+                '">',
             'csrf_token' => csrf_token(),
             'request' => request(),
             'auth' => Auth::check(),
@@ -169,7 +174,9 @@ class View
             },
             'endsection' => function () {
                 if ($this->section_name === null) {
-                    throw new \RuntimeException("Endsection does not have a corresponding start section.");
+                    throw new \RuntimeException(
+                        'Endsection does not have a corresponding start section.'
+                    );
                 }
                 $this->section[$this->section_name] = ob_get_clean();
             },
@@ -177,11 +184,7 @@ class View
                 echo $this->section[$name];
             },
             'error' => function ($name) {
-                if (isset($this->data['errors'][$name])) {
-                    return $this->data['errors'][$name];
-                } else {
-                    return false;
-                }
+                return $this->data['errors'][$name] ?? false;
             }
         ];
     }

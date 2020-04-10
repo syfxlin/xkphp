@@ -37,9 +37,9 @@ class Facade
     {
         $class = null;
         if (!static::$isInstance) {
-            $class = (new static::$class(...static::getArgs()));
+            $class = new static::$class(...static::getArgs());
         } else {
-            $class = (static::$class::getInstance(...static::getArgs()));
+            $class = static::$class::getInstance(...static::getArgs());
         }
         if (static::$isStatic) {
             return $class::$name(...$arguments);
@@ -53,7 +53,7 @@ class Facade
      *
      * @return  array
      */
-    public static function getArgs()
+    public static function getArgs(): array
     {
         return [];
     }

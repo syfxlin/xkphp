@@ -3,6 +3,7 @@
 namespace App\Kernel\Http;
 
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
 
 class Uri implements UriInterface
 {
@@ -48,16 +49,28 @@ class Uri implements UriInterface
         $parts = parse_url($uri);
 
         if ($parts === false) {
-            throw new \RuntimeException('The source URI string appears to be malformed');
+            throw new RuntimeException(
+                'The source URI string appears to be malformed'
+            );
         }
 
-        $this->scheme = isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
-        $this->user_info = isset($parts['user']) ? $this->encodingUrl($parts['user']) : '';
+        $this->scheme = isset($parts['scheme'])
+            ? strtolower($parts['scheme'])
+            : '';
+        $this->user_info = isset($parts['user'])
+            ? $this->encodingUrl($parts['user'])
+            : '';
         $this->host = isset($parts['host']) ? strtolower($parts['host']) : '';
         $this->port = $parts['port'] ?? null;
-        $this->path = isset($parts['path']) ? $this->parsePath($parts['path']) : '';
-        $this->query = isset($parts['query']) ? $this->parseQuery($parts['query']) : '';
-        $this->fragment  = isset($parts['fragment']) ? $this->encodingUrl($parts['fragment']) : '';
+        $this->path = isset($parts['path'])
+            ? $this->parsePath($parts['path'])
+            : '';
+        $this->query = isset($parts['query'])
+            ? $this->parseQuery($parts['query'])
+            : '';
+        $this->fragment = isset($parts['fragment'])
+            ? $this->encodingUrl($parts['fragment'])
+            : '';
 
         if (isset($parts['pass'])) {
             $this->user_info .= ':' . $parts['pass'];
@@ -106,7 +119,7 @@ class Uri implements UriInterface
     {
         $auth = $this->user_info === '' ? '' : $this->user_info . '@';
         $auth .= $this->host;
-        $auth .= $this->port === null ? '' : ':' . (string) $this->port;
+        $auth .= $this->port === null ? '' : ':' . $this->port;
         return $auth;
     }
 
@@ -164,7 +177,7 @@ class Uri implements UriInterface
     public function withScheme($scheme): UriInterface
     {
         if (!is_string($scheme)) {
-            throw new \RuntimeException('scheme expects a string argument');
+            throw new RuntimeException('scheme expects a string argument');
         }
         $scheme = strtolower($scheme);
         if ($scheme === $this->scheme) {
@@ -180,8 +193,13 @@ class Uri implements UriInterface
      */
     public function withUserInfo($user, $password = null): UriInterface
     {
-        if (!is_string($user) || ($password !== null && !is_string($password))) {
-            throw new \RuntimeException('user or password expects a string argument');
+        if (
+            !is_string($user) ||
+            ($password !== null && !is_string($password))
+        ) {
+            throw new RuntimeException(
+                'user or password expects a string argument'
+            );
         }
         $user = $this->encodingUrl($user);
         $new = clone $this;
@@ -198,7 +216,7 @@ class Uri implements UriInterface
     public function withHost($host): UriInterface
     {
         if (!is_string($host)) {
-            throw new \RuntimeException('host expects a string argument');
+            throw new RuntimeException('host expects a string argument');
         }
         $host = strtolower($host);
         if ($host === $this->host) {
@@ -215,7 +233,7 @@ class Uri implements UriInterface
     public function withPort($port): UriInterface
     {
         if (!is_int($port) && $port !== null) {
-            throw new \RuntimeException('port expects a string argument');
+            throw new RuntimeException('port expects a string argument');
         }
         if ($port === $this->port) {
             return $this;
@@ -231,7 +249,7 @@ class Uri implements UriInterface
     public function withPath($path): UriInterface
     {
         if (!is_string($path)) {
-            throw new \RuntimeException('path expects a string argument');
+            throw new RuntimeException('path expects a string argument');
         }
         $path = $this->parsePath($path);
         if ($path === $this->path) {
@@ -248,7 +266,7 @@ class Uri implements UriInterface
     public function withQuery($query): UriInterface
     {
         if (!is_string($query)) {
-            throw new \RuntimeException('query expects a string argument');
+            throw new RuntimeException('query expects a string argument');
         }
         $query = $this->parseQuery($query);
         if ($query === $this->query) {
@@ -265,7 +283,7 @@ class Uri implements UriInterface
     public function withFragment($fragment): UriInterface
     {
         if (!is_string($fragment)) {
-            throw new \RuntimeException('fragment expects a string argument');
+            throw new RuntimeException('fragment expects a string argument');
         }
         $fragment = $this->encodingUrl($fragment);
         if ($fragment === $this->fragment) {

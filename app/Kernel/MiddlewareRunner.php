@@ -17,10 +17,9 @@ class MiddlewareRunner implements RequestHandlerInterface
         $this->middlewares = array_map(function ($middleware) {
             // 若是 string 就认为是类名这进行实例化
             if (is_string($middleware)) {
-                return new $middleware;
-            } else {
-                return $middleware;
+                return new $middleware();
             }
+            return $middleware;
         }, $middlewares);
     }
 
@@ -48,7 +47,9 @@ class MiddlewareRunner implements RequestHandlerInterface
         if ($middleware instanceof RequestHandlerInterface) {
             return $middleware->handle($request);
         }
-        throw new \RuntimeException("No final request handler (Must return ResponseInterface)");
+        throw new \RuntimeException(
+            'No final request handler (Must return ResponseInterface)'
+        );
     }
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface

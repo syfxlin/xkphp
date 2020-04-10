@@ -42,7 +42,9 @@ trait MessageTrait
     public function withProtocolVersion($version)
     {
         if (!in_array($version, ['1.0', '1.1', '2', '3'], true)) {
-            throw new RuntimeException("Unsupported HTTP protocol version \"$version\" provided");
+            throw new RuntimeException(
+                "Unsupported HTTP protocol version \"$version\" provided"
+            );
         }
         $new = clone $this;
         $new->protocol = $version;
@@ -111,7 +113,10 @@ trait MessageTrait
      */
     public function withAddedHeader($name, $value)
     {
-        return $this->withHeader($name, array_merge($this->getHeader($name), $value));
+        return $this->withHeader(
+            $name,
+            array_merge($this->getHeader($name), $value)
+        );
     }
 
     /**

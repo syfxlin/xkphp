@@ -16,15 +16,11 @@ class User extends Model
      *
      * @return  User|null User 对象
      */
-    public static function getUserByAccount($user)
+    public static function getUserByAccount($user): ?User
     {
-        return User::where(
-            'username',
-            $user['account'] ?? $user['username']
-        )->orWhere(
-            'email',
-            $user['account'] ?? $user['email']
-        )->first();
+        return self::where('username', $user['account'] ?? $user['username'])
+            ->orWhere('email', $user['account'] ?? $user['email'])
+            ->first();
     }
 
     /**
@@ -46,15 +42,14 @@ class User extends Model
      *
      * @return  User|null     User 对象
      */
-    public static function getUserByToken(string $remember_token)
+    public static function getUserByToken(string $remember_token): ?User
     {
-        list($id, $token, $password_hash) = explode('|', $remember_token);
-        $db_user = User::where([
+        [$id, $token, $password_hash] = explode('|', $remember_token);
+        return self::where([
             'id' => $id,
             'remember_token' => $token,
             'password' => $password_hash
         ])->first();
-        return $db_user;
     }
 
     /**
@@ -64,10 +59,9 @@ class User extends Model
      *
      * @return  User|null     User 对象
      */
-    public static function getUserById(int $id)
+    public static function getUserById(int $id): ?User
     {
-        $db_user = User::where('id', $id)->first();
-        return $db_user;
+        return self::where('id', $id)->first();
     }
 
     /**
@@ -78,9 +72,9 @@ class User extends Model
      *
      * @return  User|null     User 对象
      */
-    public static function updateToken(int $id, string $token)
+    public static function updateToken(int $id, string $token): ?User
     {
-        return User::where('id', $id)->update([
+        return self::where('id', $id)->update([
             'remember_token' => $token
         ]);
     }

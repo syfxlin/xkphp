@@ -10,6 +10,26 @@ use App\Kernel\Http\Request;
 use App\Kernel\Http\SessionManager;
 use RuntimeException;
 
+/**
+ * @method static Container bind($abstract, $concrete = null, bool $shared = false, bool $alias = false)
+ * @method static mixed make(string $abstract, array $args = [])
+ * @method static Container singleton(string $abstract, $concrete = null, $alias = false)
+ * @method static Container instance(string $abstract, $instance)
+ * @method static mixed build($class, array $args = [])
+ * @method static void useAutoBind(bool $use)
+ * @method static bool has($id)
+ * @method static mixed get($id)
+ * @method static bool hasMethod(string $method)
+ * @method static void bindMethod(string $method, $callback)
+ * @method static mixed call($method, array $args = [])
+ * @method static bool isAlias($name)
+ * @method static void alias($abstract, $alias)
+ * @method static string getAlias($abstract)
+ * @method static string getAbstract($alias)
+ * @method static void removeAlias($alias)
+ *
+ * @see \App\Kernel\Container
+ */
 class Application
 {
     /**
@@ -63,7 +83,8 @@ class Application
             // Session
             $session_config = config('session');
             $cookies = Application::make(Request::class)->getCookieParams();
-            $session_id = $cookies[$session_config['name'] ?? session_name()] ?? null;
+            $session_id =
+                $cookies[$session_config['name'] ?? session_name()] ?? null;
             if (isset($session_config['id'])) {
                 $session_id = $session_config['id'];
                 unset($session_config['id']);

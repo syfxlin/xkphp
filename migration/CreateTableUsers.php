@@ -4,12 +4,12 @@ namespace Migration;
 
 class CreateTableUsers extends Migration
 {
-    public function up()
+    public function up(): void
     {
         $this->create('test', ['id' => 'int']);
     }
 
-    public function drop()
+    public function drop(): void
     {
         $this->delete('test');
     }

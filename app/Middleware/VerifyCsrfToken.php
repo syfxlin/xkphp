@@ -3,9 +3,7 @@
 namespace App\Middleware;
 
 use App\Facades\Crypt;
-use App\Kernel\Http\Request;
-use App\Kernel\Http\Response;
-use Closure;
+use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -23,13 +21,15 @@ class VerifyCsrfToken implements MiddlewareInterface
     /**
      * 中间件事件
      *
-     * @param   Request  $request  请求对象
-     * @param   Closure  $next     事件闭包
+     * @param   ServerRequestInterface  $request  请求对象
+     * @param   MiddlewareRunner  $next     事件闭包
      *
-     * @return  Response
+     * @return  ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $next
+    ): ResponseInterface {
         if (
             $this->isReading($request) ||
             $this->skipVerify($request) ||
@@ -37,19 +37,20 @@ class VerifyCsrfToken implements MiddlewareInterface
         ) {
             return $this->setToken($request, $next($request));
         }
-        return response([
-            'status' => 419,
-            'message' => 'Request Expired',
-            'errors' => [
-                'CSRF Token needs to be updated.'
-            ]
-        ], 419);
+        return response(
+            [
+                'status' => 419,
+                'message' => 'Request Expired',
+                'errors' => ['CSRF Token needs to be updated.']
+            ],
+            419
+        );
     }
 
     /**
      * 验证 Token 是否有效
      *
-     * @param   Request $request  请求对象
+     * @param   ServerRequestInterface $request  请求对象
      *
      * @return  bool              Token 是否有效
      */
@@ -58,13 +59,14 @@ class VerifyCsrfToken implements MiddlewareInterface
         $token = $this->getToken($request);
         $s_token = $request->session()->token();
         return is_string($s_token) &&
-            is_string($token) && hash_equals($s_token, $token);
+            is_string($token) &&
+            hash_equals($s_token, $token);
     }
 
     /**
      * 是否是只读请求
      *
-     * @param   Request $request  请求对象
+     * @param   ServerRequestInterface $request  请求对象
      *
      * @return  bool              是否是只读请求
      */
@@ -76,7 +78,7 @@ class VerifyCsrfToken implements MiddlewareInterface
     /**
      * 是否排除 CSRF 验证
      *
-     * @param   Request $request  请求对象
+     * @param ServerRequestInterface $request 请求对象
      *
      * @return  bool              是否排除 CSRF 验证
      */
@@ -93,14 +95,14 @@ class VerifyCsrfToken implements MiddlewareInterface
     /**
      * 获取 CSRF Token
      *
-     * @param   Request $request  请求对象
+     * @param ServerRequestInterface $request 请求对象
      *
      * @return  mixed
      */
     protected function getToken(ServerRequestInterface $request)
     {
         $token = $request->input('_token') ?: $request->header('X-CSRF-TOKEN');
-        if (!$token && $header = $request->header('X-XSRF-TOKEN')) {
+        if (!$token && ($header = $request->header('X-XSRF-TOKEN'))) {
             $token = Crypt::decrypt($header);
         }
         return $token;
@@ -109,14 +111,20 @@ class VerifyCsrfToken implements MiddlewareInterface
     /**
      * 设置 CSRF Token
      *
-     * @param   Request   $request   请求对象
-     * @param   Response  $response  响应对象
+     * @param ServerRequestInterface $request 请求对象
+     * @param ResponseInterface $response 响应对象
      *
-     * @return  Response             响应对象
+     * @return  ResponseInterface             响应对象
      */
-    protected function setToken(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
+    protected function setToken(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ResponseInterface {
         $config = config('session');
-        return $response->cookie('XSRF-TOKEN', $request->session()->token(), 60 * $config['cookie_lifetime']);
+        return $response->cookie(
+            'XSRF-TOKEN',
+            $request->session()->token(),
+            60 * $config['cookie_lifetime']
+        );
     }
 }

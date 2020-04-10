@@ -1,31 +1,45 @@
 <?php
 
-
 namespace App\Kernel\Http;
-
 
 class Cookie
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $name;
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $value;
-    /** @var int */
+    /**
+     * @var int
+     */
     private $expires = 0;
-    /** @var int */
+    /**
+     * @var int
+     */
     private $max_age = 0;
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $path;
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $domain;
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $secure = false;
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $http_only = false;
 
     private function __construct(string $name, string $value = null)
     {
-        $this->name  = $name;
+        $this->name = $name;
         $this->value = $value;
     }
 
@@ -81,7 +95,7 @@ class Cookie
         if ($expires instanceof \DateTimeInterface) {
             $expires = $expires->getTimestamp();
         } else {
-            $expires = strtotime($expires);
+            $expires = (int) strtotime($expires);
         }
         $new = clone $this;
         $new->expires = $expires;
@@ -157,10 +171,14 @@ class Cookie
     public static function makeFromString(string $cookie_str): Cookie
     {
         $commands = preg_split('/;\\s*/', $cookie_str);
-        list($name, $value) = array_pad(explode('=', array_shift($commands)), 2, null);
+        [$name, $value] = array_pad(
+            explode('=', array_shift($commands)),
+            2,
+            null
+        );
         $cookie = new static($name, $value);
         foreach ($commands as $command) {
-            list($com_key, $com_value) = array_pad(explode('=', $command), 2, null);
+            [$com_key, $com_value] = array_pad(explode('=', $command), 2, null);
             switch (strtolower($com_key)) {
                 case 'expires':
                     $cookie = $cookie->withExpires($com_value);
@@ -201,7 +219,7 @@ class Cookie
      */
     public static function makeToArray(array $cookies): array
     {
-        return array_map(function (Cookie $cookie) {
+        return array_map(static function (Cookie $cookie) {
             return $cookie->__toString();
         }, $cookies);
     }
