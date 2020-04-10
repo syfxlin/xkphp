@@ -5,7 +5,7 @@ namespace App\Middleware;
 use App\Application;
 use App\Facades\App;
 use App\Facades\Crypt;
-use App\Kernel\Http\CookieManager;
+use App\Http\CookieManager;
 use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -3,7 +3,7 @@
 namespace App\Middleware;
 
 use App\Facades\Crypt;
-use App\Kernel\Http\Cookie;
+use App\Http\Cookie;
 use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

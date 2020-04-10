@@ -4,7 +4,7 @@ namespace App\Kernel;
 
 use App\Application;
 use App\Facades\App;
-use App\Kernel\Http\Request;
+use App\Http\Request;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;

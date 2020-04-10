@@ -4,7 +4,7 @@ use App\Facades\Auth;
 use App\Facades\Cookie;
 use App\Facades\Response;
 use App\Facades\Route;
-use App\Kernel\Http\Request;
+use App\Http\Request;
 
 Auth::routes();
 

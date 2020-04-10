@@ -4,7 +4,7 @@ namespace App\Controllers\Auth;
 
 use App\Facades\Auth;
 use App\Facades\Validator;
-use App\Kernel\Http\Request;
+use App\Http\Request;
 use App\Kernel\Controller;
 
 class LoginController extends Controller

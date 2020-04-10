@@ -5,7 +5,7 @@ namespace App\Kernel;
 use App\Facades\Hash;
 use App\Facades\Route;
 use App\Facades\Validator;
-use App\Kernel\Http\Cookie;
+use App\Http\Cookie;
 use App\Models\User;
 
 class Auth

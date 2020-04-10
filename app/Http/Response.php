@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Kernel\Http;
+namespace App\Http;
 
 use App\Application;
 use App\Facades\App;
+use App\Http\Cookie;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;

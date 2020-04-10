@@ -6,9 +6,9 @@ use App\Facades\App;
 use App\Facades\Crypt;
 use Dotenv\Dotenv;
 use App\Kernel\Container;
-use App\Kernel\Http\CookieManager;
-use App\Kernel\Http\Request;
-use App\Kernel\Http\SessionManager;
+use App\Http\CookieManager;
+use App\Http\Request;
+use App\Http\SessionManager;
 use RuntimeException;
 
 /**

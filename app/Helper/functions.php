@@ -4,11 +4,11 @@ use App\Facades\App;
 use App\Facades\Config;
 use App\Facades\Crypt;
 use App\Facades\Hash;
-use App\Kernel\Http\CookieManager;
-use App\Kernel\Http\Request;
-use App\Kernel\Http\Response;
+use App\Http\CookieManager;
+use App\Http\Request;
+use App\Http\Response;
 use App\Facades\View;
-use App\Kernel\Http\SessionManager;
+use App\Http\SessionManager;
 
 /**
  * 辅助函数

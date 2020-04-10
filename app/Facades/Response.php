@@ -12,14 +12,14 @@ class Response
      * @param string $text
      * @param int $status
      * @param array $headers
-     * @return \App\Kernel\Http\Response
+     * @return \App\Http\Response
      */
     public static function text(
         string $text,
         int $status = 200,
         array $headers = []
-    ): \App\Kernel\Http\Response {
-        return \App\Kernel\Http\Response::text($text, $status, $headers);
+    ): \App\Http\Response {
+        return \App\Http\Response::text($text, $status, $headers);
     }
 
     /**
@@ -32,8 +32,8 @@ class Response
         string $html,
         int $status = 200,
         array $headers = []
-    ): \App\Kernel\Http\Response {
-        return \App\Kernel\Http\Response::html($html, $status, $headers);
+    ): \App\Http\Response {
+        return \App\Http\Response::html($html, $status, $headers);
     }
 
     /**
@@ -48,8 +48,8 @@ class Response
         int $status = 200,
         array $headers = [],
         int $options = 0
-    ): \App\Kernel\Http\Response {
-        return \App\Kernel\Http\Response::json(
+    ): \App\Http\Response {
+        return \App\Http\Response::json(
             $data,
             $status,
             $headers,
@@ -67,8 +67,8 @@ class Response
         string $url,
         int $status = 302,
         array $headers = []
-    ): \App\Kernel\Http\Response {
-        return \App\Kernel\Http\Response::redirect($url, $status, $headers);
+    ): \App\Http\Response {
+        return \App\Http\Response::redirect($url, $status, $headers);
     }
 
     /**
@@ -81,7 +81,7 @@ class Response
         $content = '',
         int $status = 200,
         array $headers = []
-    ): \App\Kernel\Http\Response {
-        return \App\Kernel\Http\Response::make($content, $status, $headers);
+    ): \App\Http\Response {
+        return \App\Http\Response::make($content, $status, $headers);
     }
 }

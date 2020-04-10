@@ -5,7 +5,7 @@ namespace App\Controllers\Auth;
 use App\Facades\Auth;
 use App\Facades\Validator;
 use App\Kernel\Controller;
-use App\Kernel\Http\Request;
+use App\Http\Request;
 
 class RegisterController extends Controller
 {

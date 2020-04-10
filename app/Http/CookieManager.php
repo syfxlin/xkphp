@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Kernel\Http;
+namespace App\Http;
 
 use App\Facades\App;
+use App\Http\Cookie;
+use App\Http\Request;
 
 class CookieManager
 {

@@ -23,12 +23,12 @@ namespace App\Facades;
  * @method static string token()
  * @method static void regenerateToken()
  *
- * @see \App\Kernel\Http\SessionManager
+ * @see \App\Http\SessionManager
  */
 class Session extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \App\Kernel\Http\SessionManager::class;
+        return \App\Http\SessionManager::class;
     }
 }

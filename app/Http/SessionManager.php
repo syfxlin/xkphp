@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Kernel\Http;
+namespace App\Http;
+
+use App\Http\Cookie;
 
 class SessionManager
 {

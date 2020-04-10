@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Kernel\Http;
+namespace App\Http;
 
+use App\Http\Cookie;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;
