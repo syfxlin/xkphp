@@ -31,3 +31,4 @@ public/
 !public/index.php
 
 .idea
+.phpunit.result.cache

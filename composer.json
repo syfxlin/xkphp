@@ -27,7 +27,8 @@
   "autoload": {
     "psr-4": {
       "App\\": "app/",
-      "Migration\\": "migration/"
+      "Migration\\": "migration/",
+      "Test\\": "tests/"
     },
     "files": [
       "app/Helper/functions.php"
