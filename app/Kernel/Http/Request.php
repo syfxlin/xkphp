@@ -3,6 +3,7 @@
 namespace App\Kernel\Http;
 
 use App\Application;
+use App\Facades\App;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -221,7 +222,7 @@ class Request implements ServerRequestInterface
     /**
      * @param array $uploaded_files
      */
-    private function validateFiles(array $uploaded_files): void
+    protected function validateFiles(array $uploaded_files): void
     {
         foreach ($uploaded_files as $file) {
             if (is_array($file)) {
@@ -328,9 +329,9 @@ class Request implements ServerRequestInterface
      * @param   string       $name     要获取的 Header 的名称
      * @param   string|null  $default  默认值
      *
-     * @return  string|null
+     * @return  string|null|array
      */
-    public function header(string $name, $default = null): ?string
+    public function header(string $name, $default = null)
     {
         $header = $this->getHeader($name);
         return $header === [] ? $default : $header;
@@ -440,7 +441,7 @@ class Request implements ServerRequestInterface
      */
     public function session($name = null, $default = null)
     {
-        $session = Application::make(SessionManager::class);
+        $session = App::make(SessionManager::class);
         if ($name === null) {
             return $session;
         }
@@ -517,7 +518,7 @@ class Request implements ServerRequestInterface
      *
      * @return  UploadedFileInterface
      */
-    public function file(string $name): UploadedFileInterface
+    public function file(string $name): ?UploadedFileInterface
     {
         if (!isset($this->files[$name])) {
             return null;

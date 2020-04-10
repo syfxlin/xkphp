@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Application;
+use App\Facades\App;
 use App\Kernel\Http\Request;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
@@ -53,7 +54,7 @@ class RouteManager
             }
         });
 
-        $request = Application::make(Request::class);
+        $request = App::make(Request::class);
 
         $response = $this->handleRequest($dispatcher, $request);
 

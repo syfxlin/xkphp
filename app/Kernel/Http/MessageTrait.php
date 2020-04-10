@@ -70,7 +70,7 @@ trait MessageTrait
     /**
      * @inheritDoc
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         if (!$this->hasHeader($name)) {
             return [];
@@ -78,7 +78,7 @@ trait MessageTrait
         return $this->headers[$this->headerAlias[strtolower($name)]];
     }
 
-    public function setHeaders(array $headers): void
+    protected function setHeaders(array $headers): void
     {
         $this->headers = $headers;
         foreach ($headers as $key => $value) {

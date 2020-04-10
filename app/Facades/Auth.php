@@ -5,6 +5,9 @@ namespace App\Facades;
 use App\Models\User;
 
 /**
+ * Class Auth
+ * @package App\Facades
+ *
  * @method static array|bool login(array $user, bool $remember = false)
  * @method static void logout()
  * @method static array|bool register(array $user)
@@ -19,5 +22,8 @@ use App\Models\User;
  */
 class Auth extends Facade
 {
-    protected static $class = \App\Kernel\Auth::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Kernel\Auth::class;
+    }
 }

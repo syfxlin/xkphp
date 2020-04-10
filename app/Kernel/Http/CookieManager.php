@@ -2,7 +2,7 @@
 
 namespace App\Kernel\Http;
 
-use App\Application;
+use App\Facades\App;
 
 class CookieManager
 {
@@ -20,7 +20,7 @@ class CookieManager
      */
     public function has(string $name): bool
     {
-        return Application::make(Request::class)->cookie($name, null) !== null;
+        return App::make(Request::class)->cookie($name, null) !== null;
     }
 
     /**
@@ -33,7 +33,7 @@ class CookieManager
      */
     public function get(string $name, $default = null): ?string
     {
-        return Application::make(Request::class)->cookie($name, $default);
+        return App::make(Request::class)->cookie($name, $default);
     }
 
     /**

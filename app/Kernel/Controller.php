@@ -2,7 +2,7 @@
 
 namespace App\Kernel;
 
-use App\Application;
+use App\Facades\App;
 
 class Controller
 {
@@ -18,6 +18,6 @@ class Controller
      */
     public static function invokeController(string $method)
     {
-        return Application::call($method);
+        return App::call($method);
     }
 }

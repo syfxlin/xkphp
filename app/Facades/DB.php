@@ -3,6 +3,9 @@
 namespace App\Facades;
 
 /**
+ * Class DB
+ * @package App\Facades
+ *
  * @method static \Illuminate\Database\ConnectionInterface connection(string $name = null)
  * @method static string getDefaultConnection()
  * @method static void setDefaultConnection(string $name)
@@ -30,6 +33,13 @@ namespace App\Facades;
  */
 class DB extends Facade
 {
-    protected static $class = \App\Database\DB::class;
-    protected static $isStatic = true;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Database\DB::class;
+    }
+
+    protected static function isStatic(): bool
+    {
+        return true;
+    }
 }

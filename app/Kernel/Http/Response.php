@@ -3,6 +3,7 @@
 namespace App\Kernel\Http;
 
 use App\Application;
+use App\Facades\App;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
@@ -233,7 +234,7 @@ class Response implements ResponseInterface
      * @param string $name
      * @return Cookie
      */
-    public function getCookie(string $name): Cookie
+    public function getCookie(string $name): ?Cookie
     {
         return $this->cookies[$name] ?? null;
     }
@@ -342,7 +343,7 @@ class Response implements ResponseInterface
         if (
             !in_array($this->status, $this->accept_code) &&
             $this->status >= 400 &&
-            !Application::make(Request::class)->ajax()
+            !App::make(Request::class)->ajax()
         ) {
             return view('errors/errors', $content)->render();
         }

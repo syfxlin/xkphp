@@ -55,7 +55,7 @@ trait RequestTrait
         return $this->method;
     }
 
-    private function setMethod($method): void
+    protected function setMethod($method): void
     {
         if (
             !in_array($method, [

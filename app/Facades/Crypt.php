@@ -2,6 +2,9 @@
 
 namespace App\Facades;
 /**
+ * Class Crypt
+ * @package App\Facades
+ *
  * @method static bool supported(string $key, string $cipher)
  * @method static string encrypt($value, bool $serialize = false)
  * @method static mixed decrypt(string $payload, bool $unserialize = false)
@@ -15,13 +18,16 @@ namespace App\Facades;
  */
 class Crypt extends Facade
 {
-    protected static $class = \App\Utils\Crypt::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Utils\Crypt::class;
+    }
 
-    public static function getArgs(): array
+    protected static function getArgs(): array
     {
         return [
-            base64_decode(env('APP_KEY')),
-            env('APP_CIPHER', 'AES-256-CBC')
+            'key' => base64_decode(env('APP_KEY')),
+            'cipher' => env('APP_CIPHER', 'AES-256-CBC')
         ];
     }
 }

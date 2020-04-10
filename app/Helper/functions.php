@@ -1,6 +1,6 @@
 <?php
 
-use App\Application;
+use App\Facades\App;
 use App\Facades\Config;
 use App\Facades\Crypt;
 use App\Facades\Hash;
@@ -23,7 +23,7 @@ use App\Kernel\Http\SessionManager;
  */
 function request($name = null, $default = null)
 {
-    $request = Application::make(Request::class);
+    $request = App::make(Request::class);
     if ($name === null) {
         return $request;
     }
@@ -65,7 +65,7 @@ function redirect($url, int $code = 302, array $headers = []): Response
  */
 function session($name = null, $default = null)
 {
-    $session = Application::make(SessionManager::class);
+    $session = App::make(SessionManager::class);
     if ($name === null) {
         return $session;
     }
@@ -86,7 +86,7 @@ function session($name = null, $default = null)
  */
 function cookie($name = null, $default = null)
 {
-    $cookie = Application::make(CookieManager::class);
+    $cookie = App::make(CookieManager::class);
     if ($name === null) {
         return $cookie;
     }

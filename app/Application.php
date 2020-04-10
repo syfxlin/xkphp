@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Facades\App;
 use App\Facades\Crypt;
 use Dotenv\Dotenv;
 use App\Kernel\Container;
@@ -11,6 +12,9 @@ use App\Kernel\Http\SessionManager;
 use RuntimeException;
 
 /**
+ * Class Application
+ * @package App
+ *
  * @method static Container bind($abstract, $concrete = null, bool $shared = false, bool $alias = false)
  * @method static mixed make(string $abstract, array $args = [])
  * @method static Container singleton(string $abstract, $concrete = null, $alias = false)
@@ -62,35 +66,7 @@ class Application
         }
         self::$app = new Container();
         self::bootDotenv();
-        self::$app->singleton(Request::class, function () {
-            $request = Request::make();
-            // Decrypt Cookies
-            $request_cookies = $request->getCookieParams();
-            $request_cookies = array_map(function ($cookie) {
-                try {
-                    return Crypt::decrypt($cookie);
-                } catch (RuntimeException $e) {
-                    return $cookie;
-                }
-            }, $request_cookies);
-            $request = $request->withCookieParams($request_cookies);
-            return $request;
-        });
-        self::$app->singleton(CookieManager::class, function () {
-            return CookieManager::make();
-        });
-        self::$app->singleton(SessionManager::class, function () {
-            // Session
-            $session_config = config('session');
-            $cookies = Application::make(Request::class)->getCookieParams();
-            $session_id =
-                $cookies[$session_config['name'] ?? session_name()] ?? null;
-            if (isset($session_config['id'])) {
-                $session_id = $session_config['id'];
-                unset($session_config['id']);
-            }
-            return SessionManager::make($session_id, $session_config);
-        });
+        self::bootRequest();
         self::bootInstance();
         return self::$app;
     }
@@ -100,11 +76,11 @@ class Application
      *
      * @return  void
      */
-    public static function bootInstance(): void
+    protected static function bootInstance(): void
     {
         foreach (self::$bootInstanceClass as $class) {
-            if (!self::$app->has($class)) {
-                self::$app->singleton($class)->make($class);
+            if (!self::has($class)) {
+                self::singleton($class)->make($class);
             }
         }
     }
@@ -114,10 +90,47 @@ class Application
      *
      * @return  void
      */
-    public static function bootDotenv(): void
+    protected static function bootDotenv(): void
     {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
         $dotenv->load();
+    }
+
+    protected static function bootRequest(): void
+    {
+        self::singleton(
+            Request::class,
+            function () {
+                $request = Request::make();
+                // Decrypt Cookies
+                $request_cookies = $request->getCookieParams();
+                $request_cookies = array_map(function ($cookie) {
+                    try {
+                        return Crypt::decrypt($cookie);
+                    } catch (RuntimeException $e) {
+                        return $cookie;
+                    }
+                }, $request_cookies);
+                $request = $request->withCookieParams($request_cookies);
+                return $request;
+            },
+            'request'
+        );
+        self::singleton(CookieManager::class, function () {
+            return CookieManager::make();
+        });
+        self::singleton(SessionManager::class, function () {
+            // Session
+            $session_config = config('session');
+            $cookies = App::make(Request::class)->getCookieParams();
+            $session_id =
+                $cookies[$session_config['name'] ?? session_name()] ?? null;
+            if (isset($session_config['id'])) {
+                $session_id = $session_config['id'];
+                unset($session_config['id']);
+            }
+            return SessionManager::make($session_id, $session_config);
+        });
     }
 
     public static function __callStatic($name, $arguments)

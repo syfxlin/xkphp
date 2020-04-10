@@ -4,6 +4,10 @@ namespace App\Facades;
 
 use Inhere\Validate\FieldValidation;
 
+/**
+ * Class Validator
+ * @package App\Facades
+ */
 class Validator
 {
     public static function make(

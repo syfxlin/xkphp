@@ -2,29 +2,15 @@
 
 namespace App\Facades;
 
-class Facade
+use App\Application;
+use RuntimeException;
+
+/**
+ * Class Facade
+ * @package App\Facades
+ */
+abstract class Facade
 {
-    /**
-     * Facade 对应的类名
-     *
-     * @var string|null
-     */
-    protected static $class;
-
-    /**
-     * 是否是单例接口
-     *
-     * @var bool
-     */
-    protected static $isInstance = false;
-
-    /**
-     * 是否是静态方法
-     *
-     * @var bool
-     */
-    protected static $isStatic = false;
-
     /**
      * Facade 代理
      *
@@ -35,17 +21,26 @@ class Facade
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        $class = null;
-        if (!static::$isInstance) {
-            $class = new static::$class(...static::getArgs());
-        } else {
-            $class = static::$class::getInstance(...static::getArgs());
-        }
-        if (static::$isStatic) {
+        $class = Application::make(
+            static::getFacadeAccessor(),
+            static::getArgs()
+        );
+        if (static::isStatic()) {
             return $class::$name(...$arguments);
-        } else {
-            return $class->$name(...$arguments);
         }
+        return $class->$name(...$arguments);
+    }
+
+    /**
+     * 获取门面代理的类名
+     *
+     * @return string
+     */
+    protected static function getFacadeAccessor(): string
+    {
+        throw new RuntimeException(
+            'Facade does not implement getFacadeAccessor method'
+        );
     }
 
     /**
@@ -53,8 +48,13 @@ class Facade
      *
      * @return  array
      */
-    public static function getArgs(): array
+    protected static function getArgs(): array
     {
         return [];
+    }
+
+    protected static function isStatic(): bool
+    {
+        return false;
     }
 }

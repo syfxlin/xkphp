@@ -3,6 +3,9 @@
 namespace App\Facades;
 
 /**
+ * Class View
+ * @package App\Facades
+ *
  * @method static bool exists(string $view)
  * @method static \App\Kernel\View assign(array $data)
  * @method static \App\Kernel\View with(string $key, $value)
@@ -13,5 +16,8 @@ namespace App\Facades;
  */
 class View extends Facade
 {
-    protected static $class = \App\Kernel\View::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Kernel\View::class;
+    }
 }

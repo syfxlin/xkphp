@@ -59,14 +59,14 @@ class Container implements ContainerInterface
      * @param Closure|string|null $concrete 依赖闭包
      *
      * @param bool $shared
-     * @param bool $alias
+     * @param bool|string $alias
      * @return  Container
      */
     public function bind(
         $abstract,
         $concrete = null,
         bool $shared = false,
-        bool $alias = false
+        $alias = false
     ): Container {
         // 同时绑定多个依赖
         if (is_array($abstract)) {
@@ -184,7 +184,7 @@ class Container implements ContainerInterface
      *
      * @param string $abstract 依赖名称
      * @param mixed $concrete 依赖闭包
-     * @param bool $alias
+     * @param bool|string $alias
      *
      * @return  Container
      */
@@ -297,8 +297,13 @@ class Container implements ContainerInterface
      */
     protected function resolvePrimitive(ReflectionParameter $parameter)
     {
+        $abstract = '$' . $parameter->name;
+        // 通过变量名匹配别名
+        if ($this->isAlias($parameter->name)) {
+            $abstract = $this->getAbstract($parameter->name);
+        }
         try {
-            $concrete = $this->getBinding('$' . $parameter->name)['concrete'];
+            $concrete = $this->getBinding($abstract)['concrete'];
         } catch (RuntimeException $e) {
             $concrete = null;
         }

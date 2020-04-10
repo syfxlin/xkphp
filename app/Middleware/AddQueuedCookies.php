@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Application;
+use App\Facades\App;
 use App\Facades\Crypt;
 use App\Kernel\Http\CookieManager;
 use App\Kernel\MiddlewareRunner;
@@ -23,7 +24,7 @@ class AddQueuedCookies implements MiddlewareInterface
         RequestHandlerInterface $next
     ): ResponseInterface {
         $response = $next($request);
-        $cookies = Application::make(CookieManager::class)->getQueues();
+        $cookies = App::make(CookieManager::class)->getQueues();
         return $response->withCookies($cookies);
     }
 }

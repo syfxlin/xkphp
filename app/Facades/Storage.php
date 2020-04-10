@@ -3,6 +3,9 @@
 namespace App\Facades;
 
 /**
+ * Class Storage
+ * @package App\Facades
+ *
  * @method static bool exists(string $path)
  * @method static false|int size(string $path)
  * @method static false|string get(string $path, bool $lock = false)
@@ -41,5 +44,8 @@ namespace App\Facades;
  */
 class Storage extends Facade
 {
-    protected static $class = \App\Utils\Storage::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Utils\Storage::class;
+    }
 }

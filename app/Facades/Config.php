@@ -3,6 +3,9 @@
 namespace App\Facades;
 
 /**
+ * Class Config
+ * @package App\Facades
+ *
  * @method static string path(string $config_name)
  * @method static array all()
  * @method static mixed get(string $name, $default = null)
@@ -14,5 +17,8 @@ namespace App\Facades;
  */
 class Config extends Facade
 {
-    protected static $class = \App\Utils\Config::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Utils\Config::class;
+    }
 }

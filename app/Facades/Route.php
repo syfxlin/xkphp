@@ -5,6 +5,9 @@ namespace App\Facades;
 use App\Kernel\RouteManager;
 
 /**
+ * Class Route
+ * @package App\Facades
+ *
  * @method static Route addRoute($httpMethod, string $route, $handler)
  * @method static Route get(string $route, $handler)
  * @method static Route post(string $route, $handler)
@@ -24,14 +27,17 @@ use App\Kernel\RouteManager;
  */
 class Route extends Facade
 {
-    protected static $class = \App\Kernel\Route::class;
+    protected static function getFacadeAccessor(): string
+    {
+        return \App\Kernel\Route::class;
+    }
 
-    public static function getArgs(): array
+    protected static function getArgs(): array
     {
         return [
-            RouteManager::$route,
-            RouteManager::$routeMiddlewares,
-            RouteManager::$globalMiddlewares
+            'route' => RouteManager::$route,
+            'routeMiddlewares' => RouteManager::$routeMiddlewares,
+            'globalMiddlewares' => RouteManager::$globalMiddlewares
         ];
     }
 }

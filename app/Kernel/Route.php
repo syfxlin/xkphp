@@ -2,6 +2,7 @@
 
 namespace App\Kernel;
 
+use App\Facades\App;
 use App\Kernel\Controller;
 use Closure;
 use App\Kernel\MiddlewareRunner;
@@ -46,11 +47,11 @@ class Route
      */
     public $middlewares = [];
 
-    public function __construct($r, $rm, $gm)
+    public function __construct($route, $routeMiddlewares, $globalMiddlewares)
     {
-        self::$route = $r;
-        self::$routeMiddlewares = $rm;
-        self::$globalMiddlewares = $gm;
+        self::$route = $route;
+        self::$routeMiddlewares = $routeMiddlewares;
+        self::$globalMiddlewares = $globalMiddlewares;
     }
 
     /**
@@ -115,7 +116,9 @@ class Route
             self::$route->addRoute(
                 $httpMethod,
                 $route,
-                $this->getHandle($handler)
+                $this->getHandle(function () use ($handler) {
+                    return App::call($handler);
+                })
             );
         }
         return $this;
