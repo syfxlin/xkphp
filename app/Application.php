@@ -2,14 +2,31 @@
 
 namespace App;
 
+use App\Database\DB;
+use App\Facades\Annotation;
 use App\Facades\App;
 use App\Facades\Crypt;
+use App\Facades\File;
+use App\Facades\Route;
+use App\Kernel\RouteManager;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Dotenv\Dotenv;
 use App\Kernel\Container;
 use App\Http\CookieManager;
 use App\Http\Request;
 use App\Http\SessionManager;
+use ReflectionClass;
+use ReflectionMethod;
 use RuntimeException;
+use function app_path;
+use function array_map;
+use function class_exists;
+use function config;
+use function str_replace;
+use function strlen;
+use function strtoupper;
+use function substr;
 
 /**
  * Class Application
@@ -48,10 +65,7 @@ class Application
      *
      * @var array
      */
-    protected static $bootInstanceClass = [
-        \App\Database\DB::class,
-        \App\Kernel\RouteManager::class
-    ];
+    protected static $bootInstanceClass = [DB::class, RouteManager::class];
 
     /**
      * 启动 App，程序入口
@@ -67,6 +81,8 @@ class Application
         self::$app = new Container();
         self::bootDotenv();
         self::bootRequest();
+        self::bootAnnotation();
+        self::parseAnnotation();
         self::bootInstance();
         return self::$app;
     }
@@ -116,21 +132,120 @@ class Application
             },
             'request'
         );
-        self::singleton(CookieManager::class, function () {
-            return CookieManager::make();
-        });
-        self::singleton(SessionManager::class, function () {
-            // Session
-            $session_config = config('session');
-            $cookies = App::make(Request::class)->getCookieParams();
-            $session_id =
-                $cookies[$session_config['name'] ?? session_name()] ?? null;
-            if (isset($session_config['id'])) {
-                $session_id = $session_config['id'];
-                unset($session_config['id']);
+        self::singleton(
+            CookieManager::class,
+            function () {
+                return CookieManager::make();
+            },
+            'cookie'
+        );
+        self::singleton(
+            SessionManager::class,
+            function () {
+                // Session
+                $session_config = config('session');
+                $cookies = App::make(Request::class)->getCookieParams();
+                $session_id =
+                    $cookies[$session_config['name'] ?? session_name()] ?? null;
+                if (isset($session_config['id'])) {
+                    $session_id = $session_config['id'];
+                    unset($session_config['id']);
+                }
+                return SessionManager::make($session_id, $session_config);
+            },
+            'session'
+        );
+    }
+
+    protected static function bootAnnotation(): void
+    {
+        self::singleton(
+            AnnotationReader::class,
+            function () {
+                AnnotationRegistry::registerLoader('class_exists');
+                return new AnnotationReader();
+            },
+            'annotation'
+        );
+    }
+
+    protected static function parseAnnotation(): void
+    {
+        $config = config('annotation');
+        if (empty($config['middleware']) && empty($config['route'])) {
+            return;
+        }
+        $files = File::allFiles(app_path('Controllers'));
+        foreach ($files as $file) {
+            $class_name =
+                "App\Controllers\\" .
+                str_replace('/', '\\', substr($file, 0, -4));
+            if (class_exists($class_name)) {
+                $class = new ReflectionClass($class_name);
+                $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+                foreach ($methods as $method) {
+                    // 是否开启了中间件注解
+                    if (!empty($config['middleware'])) {
+                        self::parseMiddlewareAnnotation($method);
+                    }
+                    // 是否开启了路由注解
+                    if (!empty($config['route'])) {
+                        self::parseRouteAnnotation($method);
+                    }
+                }
             }
-            return SessionManager::make($session_id, $session_config);
-        });
+        }
+    }
+
+    protected static function parseMiddlewareAnnotation(
+        ReflectionMethod $method
+    ): void {
+        $middlewares = Annotation::getList(
+            $method,
+            'App\Annotations\Middleware'
+        );
+        if ($middlewares !== []) {
+            RouteManager::$annotationMiddlewares[
+                "$method->class@$method->name"
+            ] = array_map(function ($prop) {
+                return $prop->value;
+            }, $middlewares);
+        }
+    }
+
+    protected static function parseRouteAnnotation(
+        ReflectionMethod $method
+    ): void {
+        $anno_class = [
+            'Get',
+            'Post',
+            'Delete',
+            'Put',
+            'Patch',
+            'Head',
+            'Route'
+        ];
+        foreach ($anno_class as $anno) {
+            $route = Annotation::get($method, "App\Annotations\Route\\$anno");
+            if ($route !== null) {
+                RouteManager::$annotationRoute[] = function () use (
+                    $route,
+                    $method,
+                    $anno
+                ) {
+                    $handler = "$method->class@$method->name";
+                    if ($anno === 'Route' && $route->method === null) {
+                        Route::any($route->value, $handler);
+                    } else {
+                        Route::match(
+                            $route->method ?? [strtoupper($anno)],
+                            $route->value,
+                            $handler
+                        );
+                    }
+                };
+            }
+        }
     }
 
     public static function __callStatic($name, $arguments)

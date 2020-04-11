@@ -43,7 +43,7 @@ class File
         return $contents;
     }
 
-    public function hash(string $path)
+    public function hash(string $path): string
     {
         return md5_file($path);
     }
@@ -121,7 +121,7 @@ class File
         return pathinfo($path, PATHINFO_EXTENSION);
     }
 
-    public function type(string $path)
+    public function type(string $path): string
     {
         return filetype($path);
     }

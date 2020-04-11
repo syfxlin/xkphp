@@ -5,6 +5,7 @@ namespace App\Kernel;
 use App\Application;
 use App\Facades\App;
 use App\Http\Request;
+use Closure;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -37,6 +38,20 @@ class RouteManager
     public static $routeMiddlewares;
 
     /**
+     * 注解中间件，按需开启
+     *
+     * @var array
+     */
+    public static $annotationMiddlewares = [];
+
+    /**
+     * 注解路由，按需开启
+     *
+     * @var Closure[]
+     */
+    public static $annotationRoute = [];
+
+    /**
      * RouteManager 构造器，外部请勿调用
      *
      * @return  this
@@ -48,9 +63,15 @@ class RouteManager
         self::$routeMiddlewares = $middleware_config['route'];
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
+            // 导入路由表
             $route_config = config('route');
             foreach ($route_config as $route) {
                 require_once $route;
+            }
+            // 导入注解路由
+            foreach (self::$annotationRoute as $route) {
+                // 闭包执行的效果和路由表的 require 方式类似
+                $route();
             }
         });
 

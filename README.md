@@ -36,6 +36,8 @@ git clone https://github.com/syfxlin/xkphp.git
 composer install
 ```
 
+某些情况下 `laminas/laminas-httphandlerrunner` 可能无法正常安装，此时就需要先安装 `laminas/laminas-diactoros`
+
 3. 若您也需要使用 ReactJS，那么就需要安装 Node 依赖
 
 ```bash

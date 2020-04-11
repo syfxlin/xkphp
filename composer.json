@@ -10,12 +10,11 @@
     "inhere/php-validate": "^2.7",
     "psr/container": "^1.0",
     "psr/http-server-middleware": "^1.0",
-    "laminas/laminas-diactoros": "^2.2",
     "laminas/laminas-httphandlerrunner": "^1.1",
-    "dflydev/fig-cookies": "^2.0",
     "ext-openssl": "*",
     "ext-json": "*",
-    "ext-fileinfo": "*"
+    "ext-fileinfo": "*",
+    "doctrine/annotations": "^1.10"
   },
   "license": "Apache 2.0",
   "authors": [

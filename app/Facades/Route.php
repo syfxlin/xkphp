@@ -31,13 +31,4 @@ class Route extends Facade
     {
         return \App\Kernel\Route::class;
     }
-
-    protected static function getArgs(): array
-    {
-        return [
-            'route' => RouteManager::$route,
-            'routeMiddlewares' => RouteManager::$routeMiddlewares,
-            'globalMiddlewares' => RouteManager::$globalMiddlewares
-        ];
-    }
 }

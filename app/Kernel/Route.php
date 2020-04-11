@@ -8,24 +8,13 @@ use Closure;
 use App\Kernel\MiddlewareRunner;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
+use function defined;
+use function is_string;
+use function stripos;
+use function strpos;
 
 class Route
 {
-    /**
-     * @var RouteCollector
-     */
-    public static $route;
-
-    /**
-     * @var array
-     */
-    public static $globalMiddlewares;
-
-    /**
-     * @var array
-     */
-    public static $routeMiddlewares;
-
     /**
      * 组路由中间件
      *
@@ -46,13 +35,6 @@ class Route
      * @var array
      */
     public $middlewares = [];
-
-    public function __construct($route, $routeMiddlewares, $globalMiddlewares)
-    {
-        self::$route = $route;
-        self::$routeMiddlewares = $routeMiddlewares;
-        self::$globalMiddlewares = $globalMiddlewares;
-    }
 
     /**
      * 中间件处理器
@@ -81,12 +63,21 @@ class Route
             };
             // Make middlewares handler
             $runner = new MiddlewareRunner(
-                array_merge(self::$globalMiddlewares, $this->middlewares, [
-                    $handler
-                ])
+                array_merge(
+                    RouteManager::$globalMiddlewares,
+                    $this->middlewares,
+                    [$handler]
+                )
             );
             return $runner($request);
         };
+    }
+
+    protected function registerAnnotationMiddleware(string $handler): void
+    {
+        if (isset(RouteManager::$annotationMiddlewares[$handler])) {
+            $this->middleware(RouteManager::$annotationMiddlewares[$handler]);
+        }
     }
 
     /**
@@ -101,19 +92,19 @@ class Route
     public function addRoute($httpMethod, string $route, $handler): Route
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
-            [$c_name, $f_name] = explode('@', $handler);
-            $c_name = 'App\Controllers\\' . $c_name;
-            self::$route->addRoute(
+            if (strpos($handler, 'App\Controllers\\') === false) {
+                $handler = 'App\Controllers\\' . $handler;
+            }
+            $this->registerAnnotationMiddleware($handler);
+            RouteManager::$route->addRoute(
                 $httpMethod,
                 $route,
-                $this->getHandle(function () use ($c_name, $f_name) {
-                    return Controller::invokeController(
-                        $c_name . '@' . $f_name
-                    );
+                $this->getHandle(function () use ($handler) {
+                    return Controller::invokeController($handler);
                 })
             );
         } else {
-            self::$route->addRoute(
+            RouteManager::$route->addRoute(
                 $httpMethod,
                 $route,
                 $this->getHandle(function () use ($handler) {
@@ -264,7 +255,7 @@ class Route
     public function group(callable $callback): Route
     {
         self::$useGroupMiddlewares = $this->middlewares;
-        self::$route->addGroup($this->prefix, $callback);
+        RouteManager::$route->addGroup($this->prefix, $callback);
         self::$useGroupMiddlewares = null;
         $this->prefix = null;
         return $this;
@@ -301,10 +292,12 @@ class Route
     {
         if (is_array($name)) {
             foreach ($name as $n) {
-                $this->middlewares[] = self::$routeMiddlewares[$n];
+                $this->middlewares[] =
+                    RouteManager::$routeMiddlewares[$n] ?? $n;
             }
         } else {
-            $this->middlewares[] = self::$routeMiddlewares[$name];
+            $this->middlewares[] =
+                RouteManager::$routeMiddlewares[$name] ?? $name;
         }
         return $this;
     }
