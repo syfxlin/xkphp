@@ -2,12 +2,12 @@
 
 namespace App\Http;
 
-use App\Application;
-use App\Facades\App;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use function session;
 
 class Request implements ServerRequestInterface
 {
@@ -21,7 +21,7 @@ class Request implements ServerRequestInterface
     /**
      * @var array
      */
-    private $cookies = [];
+    private $cookies;
 
     /**
      * @var null|array|object
@@ -31,7 +31,7 @@ class Request implements ServerRequestInterface
     /**
      * @var array
      */
-    private $query = [];
+    private $query;
 
     /**
      * @var array
@@ -228,7 +228,7 @@ class Request implements ServerRequestInterface
             if (is_array($file)) {
                 $this->validateFiles($file);
             } elseif (!$file instanceof UploadedFileInterface) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'Invalid leaf in uploaded files structure'
                 );
             }
@@ -441,18 +441,7 @@ class Request implements ServerRequestInterface
      */
     public function session($name = null, $default = null)
     {
-        $session = App::make(SessionManager::class);
-        if ($name === null) {
-            return $session;
-        }
-        if (is_string($name)) {
-            return $session->get($name, $default);
-        }
-        if (is_array($name)) {
-            foreach ($name as $key => $value) {
-                $session->put($key, $value);
-            }
-        }
+        return session($name, $default);
     }
 
     /**
@@ -583,7 +572,7 @@ class Request implements ServerRequestInterface
     public function __set($name, $value)
     {
         // Unsupported set
-        throw new \RuntimeException('Unsupported set');
+        throw new RuntimeException('Unsupported set');
     }
 
     public function __isset($name)

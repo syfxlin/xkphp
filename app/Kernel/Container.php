@@ -4,7 +4,6 @@ namespace App\Kernel;
 
 use App\Facades\Annotation;
 use Closure;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -12,8 +11,6 @@ use ReflectionFunction;
 use ReflectionMethod;
 use RuntimeException;
 use ReflectionParameter;
-use function array_map;
-use function array_push;
 use function config;
 
 /**

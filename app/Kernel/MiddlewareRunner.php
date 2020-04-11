@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 class MiddlewareRunner implements RequestHandlerInterface
 {
@@ -47,7 +48,7 @@ class MiddlewareRunner implements RequestHandlerInterface
         if ($middleware instanceof RequestHandlerInterface) {
             return $middleware->handle($request);
         }
-        throw new \RuntimeException(
+        throw new RuntimeException(
             'No final request handler (Must return ResponseInterface)'
         );
     }

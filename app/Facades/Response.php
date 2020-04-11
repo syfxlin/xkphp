@@ -26,7 +26,7 @@ class Response
      * @param string $html
      * @param int $status
      * @param array $headers
-     * @return Response
+     * @return \App\Http\Response
      */
     public static function html(
         string $html,
@@ -41,7 +41,7 @@ class Response
      * @param int $status
      * @param array $headers
      * @param int $options
-     * @return Response
+     * @return \App\Http\Response
      */
     public static function json(
         $data,
@@ -49,19 +49,14 @@ class Response
         array $headers = [],
         int $options = 0
     ): \App\Http\Response {
-        return \App\Http\Response::json(
-            $data,
-            $status,
-            $headers,
-            $options
-        );
+        return \App\Http\Response::json($data, $status, $headers, $options);
     }
 
     /**
      * @param string $url
      * @param int $status
      * @param array $headers
-     * @return Response
+     * @return \App\Http\Response
      */
     public static function redirect(
         string $url,
@@ -75,7 +70,7 @@ class Response
      * @param mixed $content
      * @param int $status
      * @param array $headers
-     * @return Response
+     * @return \App\Http\Response
      */
     public static function make(
         $content = '',

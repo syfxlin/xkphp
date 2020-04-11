@@ -2,6 +2,8 @@
 
 namespace App\Facades;
 
+use App\Http\SessionManager;
+
 /**
  * Class Session
  * @package App\Facades
@@ -29,6 +31,6 @@ class Session extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \App\Http\SessionManager::class;
+        return SessionManager::class;
     }
 }

@@ -4,7 +4,6 @@ namespace App\Facades;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionMethod;
-use function array_map;
 use function array_push;
 
 class Annotation

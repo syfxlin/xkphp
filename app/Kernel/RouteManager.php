@@ -2,7 +2,6 @@
 
 namespace App\Kernel;
 
-use App\Application;
 use App\Facades\App;
 use App\Http\Request;
 use Closure;
@@ -53,8 +52,6 @@ class RouteManager
 
     /**
      * RouteManager 构造器，外部请勿调用
-     *
-     * @return  this
      */
     public function __construct()
     {

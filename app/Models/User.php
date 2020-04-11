@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use App\Kernel\Model;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Class User
+ * @package App\Models
+ */
 class User extends Model
 {
     protected $table = 'users';
@@ -14,11 +19,12 @@ class User extends Model
      *
      * @param   mixed   $user  用户数组或对象
      *
-     * @return  User|null User 对象
+     * @return User|Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public static function getUserByAccount($user): ?User
+    public static function getUserByAccount($user)
     {
-        return self::where('username', $user['account'] ?? $user['username'])
+        return self::query()
+            ->where('username', $user['account'] ?? $user['username'])
             ->orWhere('email', $user['account'] ?? $user['email'])
             ->first();
     }
@@ -40,16 +46,18 @@ class User extends Model
      *
      * @param   string  $remember_token  remember token
      *
-     * @return  User|null     User 对象
+     * @return User|Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public static function getUserByToken(string $remember_token): ?User
+    public static function getUserByToken(string $remember_token)
     {
         [$id, $token, $password_hash] = explode('|', $remember_token);
-        return self::where([
-            'id' => $id,
-            'remember_token' => $token,
-            'password' => $password_hash
-        ])->first();
+        return self::query()
+            ->where([
+                'id' => $id,
+                'remember_token' => $token,
+                'password' => $password_hash
+            ])
+            ->first();
     }
 
     /**
@@ -57,11 +65,13 @@ class User extends Model
      *
      * @param   int  $id  用户 id
      *
-     * @return  User|null     User 对象
+     * @return User|Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public static function getUserById(int $id): ?User
+    public static function getUserById(int $id)
     {
-        return self::where('id', $id)->first();
+        return self::query()
+            ->where('id', $id)
+            ->first();
     }
 
     /**
@@ -70,12 +80,14 @@ class User extends Model
      * @param   int     $id     用户 id
      * @param   string  $token  remember token
      *
-     * @return  User|null     User 对象
+     * @return int
      */
-    public static function updateToken(int $id, string $token): ?User
+    public static function updateToken(int $id, string $token): int
     {
-        return self::where('id', $id)->update([
-            'remember_token' => $token
-        ]);
+        return self::query()
+            ->where('id', $id)
+            ->update([
+                'remember_token' => $token
+            ]);
     }
 }

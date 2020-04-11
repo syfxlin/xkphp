@@ -242,7 +242,7 @@ class Stream implements StreamInterface
         }
     }
 
-    public static function make(string $content, $stream, $mode = 'rb')
+    public static function make(string $content, $stream, $mode = 'rb'): Stream
     {
         $stream = new static($stream, $mode);
         $stream->setContents($content);

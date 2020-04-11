@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use DateTimeInterface;
+
 class Cookie
 {
     /**
@@ -92,7 +94,7 @@ class Cookie
 
     public function withExpires($expires = 0): Cookie
     {
-        if ($expires instanceof \DateTimeInterface) {
+        if ($expires instanceof DateTimeInterface) {
             $expires = $expires->getTimestamp();
         } else {
             $expires = (int) strtotime($expires);

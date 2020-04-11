@@ -230,7 +230,7 @@ class Auth
     {
         cookie()->put(
             Cookie::make(
-                $this->getRememeberName(),
+                $this->getRememberName(),
                 $user['id'] .
                     '|' .
                     $user['remember_token'] .
@@ -250,8 +250,8 @@ class Auth
     protected function clearUserDataFromStorage(): void
     {
         session()->forget($this->getName());
-        if (cookie()->get($this->getRememeberName())) {
-            cookie()->forget($this->getRememeberName());
+        if (cookie()->get($this->getRememberName())) {
+            cookie()->forget($this->getRememberName());
         }
     }
 
@@ -270,7 +270,7 @@ class Auth
      *
      * @return  string
      */
-    protected function getRememeberName(): string
+    protected function getRememberName(): string
     {
         return 'remember_' . sha1(static::class);
     }
@@ -312,7 +312,7 @@ class Auth
         }
         // 检查Cookie
         if (!self::$user) {
-            $remember_token = cookie()->get($this->getRememeberName());
+            $remember_token = cookie()->get($this->getRememberName());
             if ($remember_token !== null && $remember_token !== '') {
                 self::$user = User::getUserByToken($remember_token) ?? false;
                 if (self::$user) {

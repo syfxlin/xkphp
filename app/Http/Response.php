@@ -2,12 +2,10 @@
 
 namespace App\Http;
 
-use App\Application;
 use App\Facades\App;
-use App\Http\Cookie;
+use App\Kernel\View;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 class Response implements ResponseInterface
 {
@@ -356,10 +354,7 @@ class Response implements ResponseInterface
             return $content;
         }
         // View
-        if (
-            is_object($content) &&
-            get_class($content) === \App\Kernel\View::class
-        ) {
+        if (is_object($content) && get_class($content) === View::class) {
             return $content->render();
         }
         // JSON

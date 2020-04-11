@@ -3,14 +3,9 @@
 namespace App\Kernel;
 
 use App\Facades\App;
-use App\Kernel\Controller;
 use Closure;
-use App\Kernel\MiddlewareRunner;
-use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
-use function defined;
 use function is_string;
-use function stripos;
 use function strpos;
 
 class Route

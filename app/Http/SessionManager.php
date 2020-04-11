@@ -2,8 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Cookie;
-
 class SessionManager
 {
     /**
@@ -227,7 +225,7 @@ class SessionManager
         return new static($id, $name, $_SESSION);
     }
 
-    public static function makeCookie()
+    public static function makeCookie(): ?Cookie
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             return null;

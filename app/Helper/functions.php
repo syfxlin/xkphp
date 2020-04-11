@@ -61,7 +61,7 @@ function redirect($url, int $code = 302, array $headers = []): Response
 /**
  * @param null|string|array $name
  * @param mixed $default
- * @return mixed|void
+ * @return mixed
  */
 function session($name = null, $default = null)
 {
@@ -77,12 +77,13 @@ function session($name = null, $default = null)
             $session->put($key, $value);
         }
     }
+    return $session;
 }
 
 /**
  * @param null|string|array $name
  * @param mixed $default
- * @return mixed|void
+ * @return mixed
  */
 function cookie($name = null, $default = null)
 {
@@ -98,6 +99,7 @@ function cookie($name = null, $default = null)
             $cookie->put($value);
         }
     }
+    return $cookie;
 }
 
 /**
