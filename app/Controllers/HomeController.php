@@ -8,9 +8,17 @@ use App\Annotations\DI;
 use Doctrine\Common\Annotations\AnnotationReader;
 use App\Annotations\Middleware;
 use App\Annotations\Route;
+use App\Annotations\Autowired\Autowired;
+use ReflectionClass;
 
 class HomeController
 {
+    /**
+     * @var Request
+     * @Autowired("App\Http\Request")
+     */
+    public $request;
+
     /**
      * @param Request $request
      * @param AnnotationReader $reader

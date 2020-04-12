@@ -3,5 +3,6 @@
 return [
     'di' => true,
     'middleware' => true,
-    'route' => true
+    'route' => true,
+    'autowired' => true
 ];

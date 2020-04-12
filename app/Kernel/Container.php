@@ -11,7 +11,8 @@ use ReflectionFunction;
 use ReflectionMethod;
 use RuntimeException;
 use ReflectionParameter;
-use function config;
+use function class_exists;
+use function config_path;
 
 /**
  * IoC 容器，兼容 PSR-11
@@ -249,12 +250,15 @@ class Container implements ContainerInterface
         // 检查是否有构造函数
         if ($constructor === null) {
             // 如果没有，就说明没有依赖，直接实例化
-            return new $class();
+            $instance = new $class();
+        } else {
+            // 返回已注入依赖的参数数组
+            $dependency = $this->injectingDependencies($constructor, $args);
+            // 利用注入后的参数创建实例
+            $instance = $reflector->newInstanceArgs($dependency);
         }
-        // 返回已注入依赖的参数数组
-        $dependency = $this->injectingDependencies($constructor, $args);
-        // 利用注入后的参数创建实例
-        return $reflector->newInstanceArgs($dependency);
+        $this->injectingProperties($reflector, $instance);
+        return $instance;
     }
 
     /**
@@ -345,6 +349,55 @@ class Container implements ContainerInterface
                 return $parameter->getDefaultValue();
             }
             throw $e;
+        }
+    }
+
+    protected function injectingProperties(
+        ReflectionClass $reflector,
+        $instance
+    ): void {
+        $config = require config_path('annotation.php');
+        if (empty($config['autowired'])) {
+            return;
+        }
+        $props = $reflector->getProperties();
+        foreach ($props as $prop) {
+            $anno = Annotation::getProperty(
+                $prop,
+                \App\Annotations\Autowired\Autowired::class
+            );
+            if ($anno !== null) {
+                if (class_exists($anno->value)) {
+                    $concrete = $this->make($anno->value);
+                } else {
+                    $abstract = $anno->value;
+                    // 通过 bind 获取
+                    if ($this->hasBinding('$' . $anno->value)) {
+                        $abstract = '$' . $anno->value;
+                    }
+                    // 通过注解获取
+                    if (isset($annotations[$anno->value])) {
+                        $abstract = $annotations[$anno->value];
+                    }
+                    // 匹配别名
+                    if ($this->isAlias($abstract)) {
+                        $abstract = $this->getAbstractByAlias($abstract);
+                    }
+                    try {
+                        $concrete = $this->getBinding($abstract)['concrete'];
+                    } catch (RuntimeException $e) {
+                        $concrete = null;
+                    }
+                }
+                if ($concrete !== null) {
+                    $prop->setValue(
+                        $instance,
+                        $concrete instanceof Closure
+                            ? $concrete($this)
+                            : $concrete
+                    );
+                }
+            }
         }
     }
 
@@ -474,7 +527,8 @@ class Container implements ContainerInterface
     protected function getAnnotations($method): array
     {
         // 如果不是方法或者关闭了DI就直接返回空
-        if (!$method instanceof ReflectionMethod || !config('annotation.di')) {
+        $config = require config_path('annotation.php');
+        if (!$method instanceof ReflectionMethod || empty($config['di'])) {
             return [];
         }
         $props = Annotation::getList($method, 'App\Annotations\DI');

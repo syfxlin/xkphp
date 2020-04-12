@@ -23,6 +23,7 @@ use function app_path;
 use function array_map;
 use function class_exists;
 use function config;
+use function config_path;
 use function str_replace;
 use function strlen;
 use function strtoupper;
@@ -159,19 +160,12 @@ class Application
 
     protected static function bootAnnotation(): void
     {
-        self::singleton(
-            AnnotationReader::class,
-            function () {
-                AnnotationRegistry::registerLoader('class_exists');
-                return new AnnotationReader();
-            },
-            'annotation'
-        );
+        AnnotationRegistry::registerLoader('class_exists');
     }
 
     protected static function parseAnnotation(): void
     {
-        $config = config('annotation');
+        $config = require config_path('annotation.php');
         if (empty($config['middleware']) && empty($config['route'])) {
             return;
         }
