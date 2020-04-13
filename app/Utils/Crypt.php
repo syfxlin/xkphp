@@ -2,6 +2,20 @@
 
 namespace App\Utils;
 
+use RuntimeException;
+use function base64_decode;
+use function base64_encode;
+use function hash_hmac;
+use function is_array;
+use function json_decode;
+use function json_last_error;
+use function mb_strlen;
+use function openssl_cipher_iv_length;
+use function openssl_decrypt;
+use function openssl_encrypt;
+use function openssl_random_pseudo_bytes;
+use function strlen;
+
 class Crypt
 {
     /**
@@ -30,7 +44,7 @@ class Crypt
             $this->key = $key;
             $this->cipher = $cipher;
         } else {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.'
             );
         }
@@ -65,7 +79,7 @@ class Crypt
         $iv = openssl_random_pseudo_bytes(
             openssl_cipher_iv_length($this->cipher)
         );
-        $value = \openssl_encrypt(
+        $value = openssl_encrypt(
             $serialize ? serialize($value) : $value,
             $this->cipher,
             $this->key,
@@ -74,7 +88,7 @@ class Crypt
         );
 
         if ($value === false) {
-            throw new \RuntimeException('Could not encrypt the data.');
+            throw new RuntimeException('Could not encrypt the data.');
         }
         $iv = base64_encode($iv);
         $mac = hash_hmac('sha256', $iv . $value, $this->key);
@@ -83,7 +97,7 @@ class Crypt
             JSON_UNESCAPED_SLASHES
         );
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException('Could not encrypt the data.');
+            throw new RuntimeException('Could not encrypt the data.');
         }
         return base64_encode($json);
     }
@@ -103,7 +117,7 @@ class Crypt
             return;
         }
         $iv = base64_decode($payload['iv']);
-        $decrypted = \openssl_decrypt(
+        $decrypted = openssl_decrypt(
             $payload['value'],
             $this->cipher,
             $this->key,
@@ -112,7 +126,7 @@ class Crypt
         );
 
         if ($decrypted === false) {
-            throw new \RuntimeException('Could not decrypt the data.');
+            throw new RuntimeException('Could not decrypt the data.');
         }
 
         return $unserialize ? unserialize($decrypted) : $decrypted;
@@ -133,7 +147,7 @@ class Crypt
             strlen(base64_decode($payload['iv'], true)) !==
                 openssl_cipher_iv_length($this->cipher)
         ) {
-            throw new \RuntimeException('The payload is invalid.');
+            throw new RuntimeException('The payload is invalid.');
         }
         if (
             !hash_equals(
@@ -145,7 +159,7 @@ class Crypt
                 )
             )
         ) {
-            throw new \RuntimeException('The MAC is invalid.');
+            throw new RuntimeException('The MAC is invalid.');
         }
         return true;
     }

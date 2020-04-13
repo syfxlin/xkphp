@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Facades\JWT;
 use App\Http\Request;
 use App\Kernel\View;
 use App\Annotations\DI;
@@ -42,5 +43,16 @@ class HomeController
     public function home(Request $request): View
     {
         return view('home');
+    }
+
+    /**
+     * @param Request $request
+     * @return string
+     *
+     * @Route\Get("/jwt")
+     */
+    public function jwt(Request $request)
+    {
+        return JWT::decode($request->query('jwt'));
     }
 }

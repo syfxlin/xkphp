@@ -14,7 +14,8 @@
     "ext-openssl": "*",
     "ext-json": "*",
     "ext-fileinfo": "*",
-    "doctrine/annotations": "^1.10"
+    "doctrine/annotations": "^1.10",
+    "ext-password": "*"
   },
   "license": "Apache 2.0",
   "authors": [
