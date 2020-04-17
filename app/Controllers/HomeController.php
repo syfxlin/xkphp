@@ -51,8 +51,19 @@ class HomeController
      *
      * @Route\Get("/jwt")
      */
-    public function jwt(Request $request)
+    public function jwt(Request $request): string
     {
         return JWT::decode($request->query('jwt'));
+    }
+
+    /**
+     * @param Request $request
+     * @return bool
+     *
+     * @Route\Post("/post")
+     */
+    public function post(Request $request): bool
+    {
+        return true;
     }
 }

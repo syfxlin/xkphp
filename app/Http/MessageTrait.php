@@ -4,6 +4,8 @@ namespace App\Http;
 
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;
+use function is_array;
+use function strtolower;
 
 trait MessageTrait
 {
@@ -74,7 +76,8 @@ trait MessageTrait
         if (!$this->hasHeader($name)) {
             return [];
         }
-        return $this->headers[$this->headerAlias[strtolower($name)]];
+        $result = $this->headers[$this->headerAlias[strtolower($name)]];
+        return is_array($result) ? $result : [$result];
     }
 
     protected function setHeaders(array $headers): void

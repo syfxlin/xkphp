@@ -7,7 +7,12 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
+use function array_merge;
+use function array_push;
+use function count;
+use function json_decode;
 use function session;
+use function strpos;
 
 class Request implements ServerRequestInterface
 {
@@ -88,8 +93,20 @@ class Request implements ServerRequestInterface
         $this->files = $files;
         $this->cookies = $cookies;
         $this->query = $query;
-        $this->parsed_body = $parsed_body;
         $this->protocol = $protocol;
+
+        $content_type = $this->header('Content-Type');
+        if (
+            $content_type !== null &&
+            stripos($content_type, 'application/json') !== false
+        ) {
+            $this->parsed_body = array_merge(
+                $parsed_body,
+                json_decode($this->stream->getContents(), true)
+            );
+        } else {
+            $this->parsed_body = $parsed_body;
+        }
 
         if (!$this->hasHeader('Host') && $this->uri->getHost()) {
             $host = $this->uri->getHost();
@@ -277,7 +294,6 @@ class Request implements ServerRequestInterface
             );
             $protocol = $matches['version'];
         }
-        $cookies = $cookies ?: $_COOKIE;
         return new static(
             $server,
             $files,
@@ -285,7 +301,7 @@ class Request implements ServerRequestInterface
             $server['REQUEST_METHOD'],
             'php://input',
             Functions::parseHeaders($server),
-            $cookies,
+            $cookies ?: $_COOKIE,
             $query ?: $_GET,
             $body ?: $_POST,
             $protocol
@@ -334,7 +350,13 @@ class Request implements ServerRequestInterface
     public function header(string $name, $default = null)
     {
         $header = $this->getHeader($name);
-        return $header === [] ? $default : $header;
+        if ($header === []) {
+            return $default;
+        }
+        if (count($header) === 1) {
+            return $header[0];
+        }
+        return $header;
     }
 
     /**
