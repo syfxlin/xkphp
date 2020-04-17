@@ -106,6 +106,8 @@ class RouteManager
             }
         }
 
+        $response = null;
+
         switch ($code) {
             case Dispatcher::NOT_FOUND:
                 $response = response(
