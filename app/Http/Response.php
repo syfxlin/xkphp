@@ -6,6 +6,12 @@ use App\Facades\App;
 use App\Kernel\View;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use function get_class;
+use function in_array;
+use function is_object;
+use function is_string;
+use function json_encode;
+use function view;
 
 class Response implements ResponseInterface
 {
@@ -141,6 +147,91 @@ class Response implements ResponseInterface
             $this->cookies[$session_cookie->getName()] = $session_cookie;
             $this->updateCookieHeader();
         }
+    }
+
+    /**
+     * @param string $text
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
+    public static function text(
+        string $text,
+        int $status = 200,
+        array $headers = []
+    ): Response {
+        return (new static($text, $status, $headers))->withHeader(
+            'Content-Type',
+            'text/plain; charset=utf-8'
+        );
+    }
+
+    /**
+     * @param string $html
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
+    public static function html(
+        string $html,
+        int $status = 200,
+        array $headers = []
+    ): Response {
+        return (new static($html, $status, $headers))->withHeader(
+            'Content-Type',
+            'text/html; charset=utf-8'
+        );
+    }
+
+    /**
+     * @param mixed $data
+     * @param int $status
+     * @param array $headers
+     * @param int $options
+     * @return Response
+     */
+    public static function json(
+        $data,
+        int $status = 200,
+        array $headers = [],
+        int $options = 0
+    ): Response {
+        return (new static(
+            json_encode($data, $options),
+            $status,
+            $headers
+        ))->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * @param string $url
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
+    public static function redirect(
+        string $url,
+        int $status = 302,
+        array $headers = []
+    ): Response {
+        return (new static('', $status, $headers))->withHeader(
+            'Location',
+            $url
+        );
+    }
+
+    /**
+     * @param mixed $content
+     * @param int $status
+     * @param array $headers
+     * @return Response
+     */
+    public static function make(
+        $content = '',
+        int $status = 200,
+        array $headers = []
+    ): Response {
+        return new static($content, $status, $headers);
     }
 
     /**
@@ -360,90 +451,5 @@ class Response implements ResponseInterface
         // JSON
         $this->headers['Content-type'] = ['application/json'];
         return json_encode($content);
-    }
-
-    /**
-     * @param string $text
-     * @param int $status
-     * @param array $headers
-     * @return Response
-     */
-    public static function text(
-        string $text,
-        int $status = 200,
-        array $headers = []
-    ): Response {
-        return (new static($text, $status, $headers))->withHeader(
-            'Content-Type',
-            'text/plain; charset=utf-8'
-        );
-    }
-
-    /**
-     * @param string $html
-     * @param int $status
-     * @param array $headers
-     * @return Response
-     */
-    public static function html(
-        string $html,
-        int $status = 200,
-        array $headers = []
-    ): Response {
-        return (new static($html, $status, $headers))->withHeader(
-            'Content-Type',
-            'text/html; charset=utf-8'
-        );
-    }
-
-    /**
-     * @param mixed $data
-     * @param int $status
-     * @param array $headers
-     * @param int $options
-     * @return Response
-     */
-    public static function json(
-        $data,
-        int $status = 200,
-        array $headers = [],
-        int $options = 0
-    ): Response {
-        return (new static(
-            json_encode($data, $options),
-            $status,
-            $headers
-        ))->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * @param string $url
-     * @param int $status
-     * @param array $headers
-     * @return Response
-     */
-    public static function redirect(
-        string $url,
-        int $status = 302,
-        array $headers = []
-    ): Response {
-        return (new static('', $status, $headers))->withHeader(
-            'Location',
-            $url
-        );
-    }
-
-    /**
-     * @param mixed $content
-     * @param int $status
-     * @param array $headers
-     * @return Response
-     */
-    public static function make(
-        $content = '',
-        int $status = 200,
-        array $headers = []
-    ): Response {
-        return new static($content, $status, $headers);
     }
 }

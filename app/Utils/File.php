@@ -3,6 +3,39 @@
 namespace App\Utils;
 
 use RuntimeException;
+use function array_filter;
+use function array_push;
+use function array_values;
+use function chmod;
+use function clearstatcache;
+use function copy;
+use function fclose;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function filemtime;
+use function fileperms;
+use function filesize;
+use function filetype;
+use function flock;
+use function fopen;
+use function fread;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function is_readable;
+use function is_writable;
+use function link;
+use function md5_file;
+use function mime_content_type;
+use function mkdir;
+use function pathinfo;
+use function rename;
+use function rmdir;
+use function scandir;
+use function sprintf;
+use function substr;
+use function unlink;
 
 /**
  * 文件操作类，具体使用方式参考 Laravel

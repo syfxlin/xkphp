@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
+use function in_array;
 
 trait RequestTrait
 {

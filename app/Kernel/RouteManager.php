@@ -11,7 +11,12 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use function array_pad;
+use function config;
 use function FastRoute\simpleDispatcher;
+use function rawurldecode;
+use function response;
+use function sprintf;
 
 class RouteManager
 {

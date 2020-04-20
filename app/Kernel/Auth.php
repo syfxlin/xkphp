@@ -7,6 +7,13 @@ use App\Facades\Route;
 use App\Facades\Validator;
 use App\Http\Cookie;
 use App\Models\User;
+use function config;
+use function cookie;
+use function is_array;
+use function session;
+use function sha1;
+use function sprintf;
+use function str_random;
 
 class Auth
 {

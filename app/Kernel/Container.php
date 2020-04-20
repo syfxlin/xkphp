@@ -12,7 +12,15 @@ use ReflectionMethod;
 use RuntimeException;
 use ReflectionParameter;
 use function class_exists;
+use function compact;
 use function config_path;
+use function explode;
+use function is_array;
+use function is_bool;
+use function is_int;
+use function is_string;
+use function preg_match;
+use function strpos;
 
 /**
  * IoC 容器，兼容 PSR-11

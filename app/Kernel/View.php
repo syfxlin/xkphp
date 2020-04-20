@@ -3,6 +3,18 @@
 namespace App\Kernel;
 
 use App\Facades\Auth;
+use function array_merge;
+use function asset;
+use function csrf_token;
+use function extract;
+use function file_exists;
+use function htmlspecialchars;
+use function json_encode;
+use function ob_get_clean;
+use function ob_start;
+use function request;
+use function str_replace;
+use function view_path;
 
 class View
 {

@@ -4,6 +4,15 @@ namespace App\Http;
 
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
+use function array_pad;
+use function explode;
+use function implode;
+use function is_int;
+use function is_string;
+use function parse_url;
+use function strtolower;
+use function urldecode;
+use function urlencode;
 
 class Uri implements UriInterface
 {

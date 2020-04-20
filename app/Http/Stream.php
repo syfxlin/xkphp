@@ -4,6 +4,19 @@ namespace App\Http;
 
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+use function fclose;
+use function feof;
+use function fopen;
+use function fread;
+use function fseek;
+use function fstat;
+use function ftell;
+use function fwrite;
+use function is_resource;
+use function is_string;
+use function stream_get_contents;
+use function stream_get_meta_data;
+use function strpos;
 
 class Stream implements StreamInterface
 {
@@ -39,6 +52,13 @@ class Stream implements StreamInterface
             }
         }
         $this->resource = $resource;
+    }
+
+    public static function make(string $content, $stream, $mode = 'rb'): Stream
+    {
+        $stream = new static($stream, $mode);
+        $stream->setContents($content);
+        return $stream;
     }
 
     /**
@@ -240,12 +260,5 @@ class Stream implements StreamInterface
         if ($this->resource === null) {
             throw new RuntimeException('Resource is miss');
         }
-    }
-
-    public static function make(string $content, $stream, $mode = 'rb'): Stream
-    {
-        $stream = new static($stream, $mode);
-        $stream->setContents($content);
-        return $stream;
     }
 }

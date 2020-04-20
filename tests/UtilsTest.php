@@ -2,8 +2,6 @@
 
 namespace Test;
 
-//require_once __DIR__ . '/../vendor/autoload.php';
-
 use App\Facades\Crypt;
 use App\Facades\Hash;
 

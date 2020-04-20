@@ -3,6 +3,12 @@
 namespace App\Http;
 
 use Psr\Http\Message\UploadedFileInterface;
+use function is_array;
+use function is_string;
+use function str_replace;
+use function strpos;
+use function strtolower;
+use function substr;
 
 class Functions
 {

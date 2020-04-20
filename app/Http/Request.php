@@ -10,9 +10,15 @@ use RuntimeException;
 use function array_merge;
 use function array_push;
 use function count;
+use function explode;
+use function is_array;
+use function is_string;
 use function json_decode;
+use function preg_match;
 use function session;
+use function stripos;
 use function strpos;
+use function strtoupper;
 
 class Request implements ServerRequestInterface
 {
@@ -114,6 +120,62 @@ class Request implements ServerRequestInterface
             $this->headerAlias['host'] = 'Host';
             $this->headers['Host'] = [$host];
         }
+    }
+
+    /**
+     * @param array|null $server
+     * @param array|null $query
+     * @param array|null $body
+     * @param array|null $cookies
+     * @param array|null $files
+     * @return Request
+     */
+    public static function make(
+        array $server = null,
+        array $query = null,
+        array $body = null,
+        array $cookies = null,
+        array $files = null
+    ): Request {
+        $files = Functions::convertFiles($files ?: $_FILES);
+        $server = $server ?: $_SERVER;
+        $uri =
+            isset($server['HTTPS']) && $server['HTTPS'] === 'on'
+                ? 'https://'
+                : 'http://';
+        if (isset($server['HTTP_HOST'])) {
+            $uri .= $server['HTTP_HOST'];
+        } else {
+            $uri .=
+                $server['SERVER_NAME'] .
+                (isset($server['SERVER_PORT']) &&
+                $server['SERVER_PORT'] !== '80' &&
+                $server['SERVER_PORT'] !== '443'
+                    ? ':' . $server['SERVER_PORT']
+                    : '');
+        }
+        $uri .= $server['REQUEST_URI'];
+        $protocol = '1.1';
+        if (isset($server['SERVER_PROTOCOL'])) {
+            preg_match(
+                '|^(HTTP/)?(?P<version>[1-9]\d*(?:\.\d)?)$|',
+                $server['SERVER_PROTOCOL'],
+                $matches
+            );
+            $protocol = $matches['version'];
+        }
+        return new static(
+            $server,
+            $files,
+            $uri,
+            $server['REQUEST_METHOD'],
+            'php://input',
+            Functions::parseHeaders($server),
+            $cookies ?: $_COOKIE,
+            $query ?: $_GET,
+            $body ?: $_POST,
+            $protocol
+        );
     }
 
     /**
@@ -250,62 +312,6 @@ class Request implements ServerRequestInterface
                 );
             }
         }
-    }
-
-    /**
-     * @param array|null $server
-     * @param array|null $query
-     * @param array|null $body
-     * @param array|null $cookies
-     * @param array|null $files
-     * @return Request
-     */
-    public static function make(
-        array $server = null,
-        array $query = null,
-        array $body = null,
-        array $cookies = null,
-        array $files = null
-    ): Request {
-        $files = Functions::convertFiles($files ?: $_FILES);
-        $server = $server ?: $_SERVER;
-        $uri =
-            isset($server['HTTPS']) && $server['HTTPS'] === 'on'
-                ? 'https://'
-                : 'http://';
-        if (isset($server['HTTP_HOST'])) {
-            $uri .= $server['HTTP_HOST'];
-        } else {
-            $uri .=
-                $server['SERVER_NAME'] .
-                (isset($server['SERVER_PORT']) &&
-                $server['SERVER_PORT'] !== '80' &&
-                $server['SERVER_PORT'] !== '443'
-                    ? ':' . $server['SERVER_PORT']
-                    : '');
-        }
-        $uri .= $server['REQUEST_URI'];
-        $protocol = '1.1';
-        if (isset($server['SERVER_PROTOCOL'])) {
-            preg_match(
-                '|^(HTTP/)?(?P<version>[1-9]\d*(?:\.\d)?)$|',
-                $server['SERVER_PROTOCOL'],
-                $matches
-            );
-            $protocol = $matches['version'];
-        }
-        return new static(
-            $server,
-            $files,
-            $uri,
-            $server['REQUEST_METHOD'],
-            'php://input',
-            Functions::parseHeaders($server),
-            $cookies ?: $_COOKIE,
-            $query ?: $_GET,
-            $body ?: $_POST,
-            $protocol
-        );
     }
 
     /**

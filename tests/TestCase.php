@@ -18,11 +18,20 @@ class TestCase extends BaseTestCase
         // 启动
         Application::$app = new Container();
         $ref = new ReflectionClass(Application::class);
-        $method = $ref->getMethod('bootDotenv');
+        self::invokePrivateMethod($ref, 'bootDotenv');
+        self::invokePrivateMethod($ref, 'bootRequest');
+        self::invokePrivateMethod($ref, 'bootAnnotation');
+        self::invokePrivateMethod($ref, 'parseAnnotation');
+        self::invokePrivateMethod($ref, 'bootDatabase');
+    }
+
+    private static function invokePrivateMethod(
+        ReflectionClass $class,
+        string $method_name,
+        bool $isStatic = true
+    ) {
+        $method = $class->getMethod($method_name);
         $method->setAccessible(true);
-        $method->invoke(null);
-        $method = $ref->getMethod('bootRequest');
-        $method->setAccessible(true);
-        $method->invoke(null);
+        return $method->invoke($isStatic ? null : $class);
     }
 }

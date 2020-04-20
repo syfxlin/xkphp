@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Kernel\Model;
 use Illuminate\Database\Eloquent\Builder;
+use function explode;
 
 /**
  * Class User

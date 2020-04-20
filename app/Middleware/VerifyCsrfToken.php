@@ -8,6 +8,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function config;
+use function hash_equals;
+use function in_array;
+use function is_string;
+use function response;
 
 class VerifyCsrfToken implements MiddlewareInterface
 {

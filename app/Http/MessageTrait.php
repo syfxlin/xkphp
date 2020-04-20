@@ -4,6 +4,9 @@ namespace App\Http;
 
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;
+use function array_merge;
+use function implode;
+use function in_array;
 use function is_array;
 use function strtolower;
 

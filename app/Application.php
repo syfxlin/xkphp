@@ -24,6 +24,7 @@ use function array_map;
 use function class_exists;
 use function config;
 use function config_path;
+use function session_name;
 use function str_replace;
 use function strlen;
 use function strtoupper;
@@ -62,13 +63,6 @@ class Application
     public static $app;
 
     /**
-     * 在 App 启动时预加载的类，如 Route，和 Database
-     *
-     * @var array
-     */
-    protected static $bootInstanceClass = [DB::class, RouteManager::class];
-
-    /**
      * 启动 App，程序入口
      *
      * @return  Container  $app
@@ -84,22 +78,26 @@ class Application
         self::bootRequest();
         self::bootAnnotation();
         self::parseAnnotation();
-        self::bootInstance();
+        self::bootDatabase();
+        self::bootRouteManager();
         return self::$app;
     }
 
     /**
-     * 预加载实例
+     * 加载数据库
      *
      * @return  void
      */
-    protected static function bootInstance(): void
+    protected static function bootDatabase(): void
     {
-        foreach (self::$bootInstanceClass as $class) {
-            if (!self::has($class)) {
-                self::singleton($class)->make($class);
-            }
-        }
+        self::singleton(DB::class, null, 'db')->make(DB::class);
+    }
+
+    protected static function bootRouteManager(): void
+    {
+        self::singleton(RouteManager::class, null, 'route')->make(
+            RouteManager::class
+        );
     }
 
     /**

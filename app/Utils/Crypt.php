@@ -5,16 +5,21 @@ namespace App\Utils;
 use RuntimeException;
 use function base64_decode;
 use function base64_encode;
+use function compact;
+use function hash_equals;
 use function hash_hmac;
 use function is_array;
 use function json_decode;
+use function json_encode;
 use function json_last_error;
 use function mb_strlen;
 use function openssl_cipher_iv_length;
 use function openssl_decrypt;
 use function openssl_encrypt;
 use function openssl_random_pseudo_bytes;
+use function serialize;
 use function strlen;
+use function unserialize;
 
 class Crypt
 {

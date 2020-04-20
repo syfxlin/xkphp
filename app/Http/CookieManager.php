@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Facades\App;
 use App\Http\Cookie;
 use App\Http\Request;
+use function is_string;
 
 class CookieManager
 {
@@ -12,6 +13,14 @@ class CookieManager
      * @var Cookie[]
      */
     private $response_cookies = [];
+
+    /**
+     * @return CookieManager
+     */
+    public static function make(): CookieManager
+    {
+        return new static();
+    }
 
     /**
      * 判断 Cookie 是否存在，并是否为空
@@ -118,13 +127,5 @@ class CookieManager
     public function getQueues(): array
     {
         return $this->response_cookies;
-    }
-
-    /**
-     * @return CookieManager
-     */
-    public static function make(): CookieManager
-    {
-        return new static();
     }
 }

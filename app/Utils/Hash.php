@@ -2,6 +2,10 @@
 
 namespace App\Utils;
 
+use function password_hash;
+use function password_needs_rehash;
+use function password_verify;
+
 class Hash
 {
     /**

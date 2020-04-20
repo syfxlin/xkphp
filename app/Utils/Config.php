@@ -2,6 +2,11 @@
 
 namespace App\Utils;
 
+use function array_shift;
+use function dirname;
+use function explode;
+use function is_array;
+
 class Config
 {
     /**

@@ -7,6 +7,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
+use function array_map;
+use function array_shift;
+use function is_callable;
+use function is_string;
 
 class MiddlewareRunner implements RequestHandlerInterface
 {

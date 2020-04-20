@@ -2,6 +2,12 @@
 
 namespace App\Utils;
 
+use function in_array;
+use function is_array;
+use function realpath;
+use function storage_path;
+use function stripos;
+
 /**
  * @method bool exists(string $path)
  * @method false|int size(string $path)

@@ -5,6 +5,11 @@ namespace App\Http;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
+use function is_resource;
+use function is_string;
+use function move_uploaded_file;
+use function pathinfo;
+use function str_random;
 
 class UploadFile implements UploadedFileInterface
 {

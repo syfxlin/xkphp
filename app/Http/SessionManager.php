@@ -2,6 +2,18 @@
 
 namespace App\Http;
 
+use function array_merge;
+use function is_array;
+use function is_string;
+use function session_get_cookie_params;
+use function session_id;
+use function session_name;
+use function session_regenerate_id;
+use function session_start;
+use function session_status;
+use function session_unset;
+use function str_random;
+
 class SessionManager
 {
     /**
@@ -25,6 +37,45 @@ class SessionManager
         if (!$this->has('_token')) {
             $this->regenerateToken();
         }
+    }
+
+    /**
+     * @param string|null $id
+     * @param array $options
+     * @return SessionManager
+     */
+    public static function make(
+        string $id = null,
+        array $options = []
+    ): SessionManager {
+        if ($id !== null) {
+            session_id($id);
+        }
+        session_start(
+            array_merge($options, [
+                'use_cookies' => false,
+                'use_only_cookies' => true
+            ])
+        );
+        $id = session_id();
+        $name = session_name();
+        return new static($id, $name, $_SESSION);
+    }
+
+    public static function makeCookie(): ?Cookie
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return null;
+        }
+        $id = session_id();
+        $name = session_name();
+        $cookie_options = session_get_cookie_params();
+        return Cookie::make($name, $id)
+            ->withMaxAge(60 * $cookie_options['lifetime'])
+            ->withPath($cookie_options['path'])
+            ->withDomain($cookie_options['domain'])
+            ->withSecure($cookie_options['secure'])
+            ->withHttpOnly($cookie_options['httponly']);
     }
 
     /**
@@ -200,44 +251,5 @@ class SessionManager
     public function regenerateToken(): void
     {
         $this->put('_token', str_random(40));
-    }
-
-    /**
-     * @param string|null $id
-     * @param array $options
-     * @return SessionManager
-     */
-    public static function make(
-        string $id = null,
-        array $options = []
-    ): SessionManager {
-        if ($id !== null) {
-            session_id($id);
-        }
-        session_start(
-            array_merge($options, [
-                'use_cookies' => false,
-                'use_only_cookies' => true
-            ])
-        );
-        $id = session_id();
-        $name = session_name();
-        return new static($id, $name, $_SESSION);
-    }
-
-    public static function makeCookie(): ?Cookie
-    {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            return null;
-        }
-        $id = session_id();
-        $name = session_name();
-        $cookie_options = session_get_cookie_params();
-        return Cookie::make($name, $id)
-            ->withMaxAge(60 * $cookie_options['lifetime'])
-            ->withPath($cookie_options['path'])
-            ->withDomain($cookie_options['domain'])
-            ->withSecure($cookie_options['secure'])
-            ->withHttpOnly($cookie_options['httponly']);
     }
 }
