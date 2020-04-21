@@ -2,22 +2,20 @@
 
 namespace App\Middleware;
 
+use App\Http\Request;
 use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
-class Cors implements MiddlewareInterface
+class Cors extends Middleware
 {
     /**
-     * @param ServerRequestInterface $request
+     * @param Request $request
      * @param MiddlewareRunner $next
      * @return ResponseInterface
      */
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $next
+    public function handle(
+        Request $request,
+        MiddlewareRunner $next
     ): ResponseInterface {
         $response = $next($request);
         return $response->withHeaders([

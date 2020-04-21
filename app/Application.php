@@ -8,6 +8,7 @@ use App\Facades\App;
 use App\Facades\Crypt;
 use App\Facades\File;
 use App\Facades\Route;
+use App\Kernel\ProviderManager;
 use App\Kernel\RouteManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -26,7 +27,6 @@ use function config;
 use function config_path;
 use function session_name;
 use function str_replace;
-use function strlen;
 use function strtoupper;
 use function substr;
 
@@ -44,7 +44,7 @@ use function substr;
  * @method static mixed get($id)
  * @method static bool hasMethod(string $method)
  * @method static void bindMethod(string $method, $callback)
- * @method static mixed call($method, array $args = [])
+ * @method static mixed call($method, array $args = [], $object = null, $isStatic = false)
  * @method static bool isAlias($name)
  * @method static void alias($abstract, $alias)
  * @method static string getAlias($abstract)
@@ -74,170 +74,15 @@ class Application
             return self::$app;
         }
         self::$app = new Container();
-        self::bootDotenv();
-        self::bootRequest();
-        self::bootAnnotation();
-        self::parseAnnotation();
-        self::bootDatabase();
-        self::bootRouteManager();
+        self::bootProvider();
         return self::$app;
     }
 
-    /**
-     * 加载数据库
-     *
-     * @return  void
-     */
-    protected static function bootDatabase(): void
+    protected static function bootProvider(): void
     {
-        self::singleton(DB::class, null, 'db')->make(DB::class);
-    }
-
-    protected static function bootRouteManager(): void
-    {
-        self::singleton(RouteManager::class, null, 'route')->make(
-            RouteManager::class
-        );
-    }
-
-    /**
-     * 加载 env 配置文件
-     *
-     * @return  void
-     */
-    protected static function bootDotenv(): void
-    {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-        $dotenv->load();
-    }
-
-    protected static function bootRequest(): void
-    {
-        self::singleton(
-            Request::class,
-            function () {
-                $request = Request::make();
-                // Decrypt Cookies
-                $request_cookies = $request->getCookieParams();
-                $request_cookies = array_map(function ($cookie) {
-                    try {
-                        return Crypt::decrypt($cookie);
-                    } catch (RuntimeException $e) {
-                        return $cookie;
-                    }
-                }, $request_cookies);
-                $request = $request->withCookieParams($request_cookies);
-                return $request;
-            },
-            'request'
-        );
-        self::singleton(
-            CookieManager::class,
-            function () {
-                return CookieManager::make();
-            },
-            'cookie'
-        );
-        self::singleton(
-            SessionManager::class,
-            function () {
-                // Session
-                $session_config = config('session');
-                $cookies = App::make(Request::class)->getCookieParams();
-                $session_id =
-                    $cookies[$session_config['name'] ?? session_name()] ?? null;
-                if (isset($session_config['id'])) {
-                    $session_id = $session_config['id'];
-                    unset($session_config['id']);
-                }
-                return SessionManager::make($session_id, $session_config);
-            },
-            'session'
-        );
-    }
-
-    protected static function bootAnnotation(): void
-    {
-        AnnotationRegistry::registerLoader('class_exists');
-    }
-
-    protected static function parseAnnotation(): void
-    {
-        $config = require config_path('annotation.php');
-        if (empty($config['middleware']) && empty($config['route'])) {
-            return;
-        }
-        $files = File::allFiles(app_path('Controllers'));
-        foreach ($files as $file) {
-            $class_name =
-                "App\Controllers\\" .
-                str_replace('/', '\\', substr($file, 0, -4));
-            if (class_exists($class_name)) {
-                $class = new ReflectionClass($class_name);
-                $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
-                foreach ($methods as $method) {
-                    // 是否开启了中间件注解
-                    if (!empty($config['middleware'])) {
-                        self::parseMiddlewareAnnotation($method);
-                    }
-                    // 是否开启了路由注解
-                    if (!empty($config['route'])) {
-                        self::parseRouteAnnotation($method);
-                    }
-                }
-            }
-        }
-    }
-
-    protected static function parseMiddlewareAnnotation(
-        ReflectionMethod $method
-    ): void {
-        $middlewares = Annotation::getList(
-            $method,
-            'App\Annotations\Middleware'
-        );
-        if ($middlewares !== []) {
-            RouteManager::$annotationMiddlewares[
-                "$method->class@$method->name"
-            ] = array_map(function ($prop) {
-                return $prop->value;
-            }, $middlewares);
-        }
-    }
-
-    protected static function parseRouteAnnotation(
-        ReflectionMethod $method
-    ): void {
-        $anno_class = [
-            'Get',
-            'Post',
-            'Delete',
-            'Put',
-            'Patch',
-            'Head',
-            'Route'
-        ];
-        foreach ($anno_class as $anno) {
-            $route = Annotation::get($method, "App\Annotations\Route\\$anno");
-            if ($route !== null) {
-                RouteManager::$annotationRoute[] = function () use (
-                    $route,
-                    $method,
-                    $anno
-                ) {
-                    $handler = "$method->class@$method->name";
-                    if ($anno === 'Route' && $route->method === null) {
-                        Route::any($route->value, $handler);
-                    } else {
-                        Route::match(
-                            $route->method ?? [strtoupper($anno)],
-                            $route->value,
-                            $handler
-                        );
-                    }
-                };
-            }
-        }
+        $provider = new ProviderManager(self::$app);
+        $provider->register();
+        $provider->boot();
     }
 
     public static function __callStatic($name, $arguments)

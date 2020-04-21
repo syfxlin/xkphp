@@ -7,7 +7,7 @@ use App\Kernel\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use ReflectionClass;
 
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
     public static function setUpBeforeClass(): void
     {

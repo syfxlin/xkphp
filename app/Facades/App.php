@@ -19,7 +19,7 @@ use App\Kernel\Container;
  * @method static mixed get($id)
  * @method static bool hasMethod(string $method)
  * @method static void bindMethod(string $method, $callback)
- * @method static mixed call($method, array $args = [])
+ * @method static mixed call($method, array $args = [], $object = null, $isStatic = false)
  * @method static bool isAlias($name)
  * @method static void alias($abstract, $alias)
  * @method static string getAlias($abstract)

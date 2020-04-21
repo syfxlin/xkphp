@@ -462,8 +462,15 @@ class Container implements ContainerInterface
         throw new RuntimeException("Target [$method] is not binding");
     }
 
-    public function call($method, array $args = [])
-    {
+    public function call(
+        $method,
+        array $args = [],
+        $object = null,
+        $isStatic = false
+    ) {
+        if ($object !== null) {
+            return $this->callMethod($object, $method, $isStatic, $args);
+        }
         if (is_string($method) && preg_match('/@|::/', $method) > 0) {
             return $this->callClass($method, $args);
         }
@@ -485,18 +492,27 @@ class Container implements ContainerInterface
         $class = null;
         $method = null;
         $object = null;
-        $invokeObject = null;
+        $isStatic = false;
         if (strpos($target, '@') !== false) {
             [$class, $method] = explode('@', $target);
             $object = $this->build($class);
-            $invokeObject = $object;
         } else {
             [$class, $method] = explode('::', $target);
             $object = $class;
+            $isStatic = true;
         }
+        return $this->callMethod($object, $method, $isStatic, $args);
+    }
+
+    protected function callMethod(
+        $object,
+        $method,
+        $isStatic = false,
+        array $args = []
+    ) {
         $reflector = new ReflectionMethod($object, $method);
         $dependency = $this->injectingDependencies($reflector, $args);
-        return $reflector->invokeArgs($invokeObject, $dependency);
+        return $reflector->invokeArgs($isStatic ? null : $object, $dependency);
     }
 
     public function isAlias($name): bool

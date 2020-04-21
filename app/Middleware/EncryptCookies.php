@@ -4,23 +4,21 @@ namespace App\Middleware;
 
 use App\Facades\Crypt;
 use App\Http\Cookie;
+use App\Http\Request;
 use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use function array_map;
 
-class EncryptCookies implements MiddlewareInterface
+class EncryptCookies extends Middleware
 {
     /**
-     * @param ServerRequestInterface $request
+     * @param Request $request
      * @param MiddlewareRunner $next
      * @return ResponseInterface
      */
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $next
+    public function handle(
+        Request $request,
+        MiddlewareRunner $next
     ): ResponseInterface {
         $response = $next($request);
         $response_cookies = $response->getCookies();

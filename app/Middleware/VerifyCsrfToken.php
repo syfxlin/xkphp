@@ -3,18 +3,17 @@
 namespace App\Middleware;
 
 use App\Facades\Crypt;
+use App\Http\Request;
 use App\Kernel\MiddlewareRunner;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use function config;
 use function hash_equals;
 use function in_array;
 use function is_string;
 use function response;
 
-class VerifyCsrfToken implements MiddlewareInterface
+class VerifyCsrfToken extends Middleware
 {
     /**
      * 排除使用 CSRF 的 URL（正则）
@@ -31,9 +30,9 @@ class VerifyCsrfToken implements MiddlewareInterface
      *
      * @return  ResponseInterface
      */
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $next
+    public function handle(
+        Request $request,
+        MiddlewareRunner $next
     ): ResponseInterface {
         if (
             $this->isReading($request) ||
