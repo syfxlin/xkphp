@@ -264,3 +264,22 @@ function asset(string $asset): string
 {
     return env('ASSET_URL', '') . "/$asset";
 }
+
+// Array
+/**
+ * @param string $key
+ * @param array $source
+ * @return array|mixed|null
+ */
+function getDotData(string $key, array $source)
+{
+    $keys = explode('.', $key);
+    $data = $source;
+    foreach ($keys as $k) {
+        if (!isset($data[$k])) {
+            return null;
+        }
+        $data = $data[$k];
+    }
+    return $data;
+}

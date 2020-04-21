@@ -1,7 +1,11 @@
-<?php $extends('part'); ?>
+<?php use App\Facades\V; ?>
 
-<?php $section('title', 'Title'); ?>
+<?php V::extends('part'); ?>
 
-<?php $section('part'); ?>
+<?php V::section('title', 'Title'); ?>
+
+<?php V::section('part'); ?>
 <div>Section</div>
-<?php $endsection(); ?>
+<?php $request = V::inject('request'); ?>
+<div><?php echo $request->path(); ?></div>
+<?php V::endsection(); ?>

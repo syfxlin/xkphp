@@ -1,10 +1,12 @@
+<?php use App\Facades\V; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php $echo($message); ?></title>
+  <title><?php V::echo(V::data('message')); ?></title>
   <link rel="dns-prefetch" href="//fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
   <style>
@@ -48,8 +50,12 @@
 
 <body>
   <div class="flex-center position-ref full-height">
-    <div class="code"><?php $echo($status); ?></div>
-    <div class="message" style="padding: 10px;"><?php $echo($message); ?></div>
+    <div class="code">
+        <?php V::echo(V::data('status')); ?>
+    </div>
+    <div class="message" style="padding: 10px;">
+        <?php V::echo(V::data('message')); ?>
+    </div>
   </div>
 </body>
 

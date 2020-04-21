@@ -16,5 +16,5 @@ Route::get('/users', function (Request $request) {
 });
 
 Route::get('/', function (Request $request) {
-    return Response::text('123');
+    return view('extends');
 });

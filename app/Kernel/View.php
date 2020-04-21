@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\Auth;
+use UnexpectedValueException;
 use function array_merge;
 use function asset;
 use function csrf_token;
@@ -31,21 +32,6 @@ class View
      * @var array
      */
     protected $data = [];
-
-    /**
-     * 继承至其他视图
-     *
-     * @var string|null
-     */
-    protected $extends = null;
-
-    /**
-     * 继承父级视图的填充数据
-     *
-     * @var array
-     */
-    protected $section = [];
-    protected $section_name = null;
 
     /**
      * 判断视图是否存在
@@ -114,16 +100,16 @@ class View
     public function render(): string
     {
         ob_start();
-        extract($this->pushCommon());
-        extract($this->data);
+        ViewHtml::$data = $this->data;
         include $this->getView($this->view);
         $content = ob_get_clean();
-        if ($this->extends) {
+        if (ViewHtml::$extends) {
             ob_start();
-            include $this->getView($this->extends);
+            include $this->getView(ViewHtml::$extends);
             $content = ob_get_clean();
-            $this->extends = null;
+            ViewHtml::$extends = null;
         }
+        ViewHtml::$data = [];
         return $content;
     }
 
@@ -138,66 +124,10 @@ class View
     {
         $view_file = view_path($view);
         if (!file_exists($view_file)) {
-            throw new \UnexpectedValueException(
+            throw new UnexpectedValueException(
                 "The view $view_file does not exist"
             );
         }
         return $view_file;
-    }
-
-    /**
-     * 返回通用的视图数据或方法
-     *
-     * @return  array  通用的视图数据或方法
-     */
-    private function pushCommon(): array
-    {
-        return [
-            'csrf' =>
-                '<input type="hidden" name="_token" value="' .
-                csrf_token() .
-                '">',
-            'csrf_token' => csrf_token(),
-            'request' => request(),
-            'auth' => Auth::check(),
-            'guest' => Auth::guest(),
-            'include' => function ($view) {
-                include view_path($view);
-            },
-            'echo' => function ($content) {
-                echo htmlspecialchars($content);
-            },
-            'json' => function ($data, $options = 0) {
-                echo json_encode($data, $options);
-            },
-            'asset' => function ($asset) {
-                echo asset($asset);
-            },
-            'extends' => function ($view) {
-                $this->extends = $view;
-            },
-            'section' => function ($name, $data = null) {
-                if ($data !== null) {
-                    $this->section[$name] = $data;
-                } else {
-                    ob_start();
-                    $this->section_name = $name;
-                }
-            },
-            'endsection' => function () {
-                if ($this->section_name === null) {
-                    throw new \RuntimeException(
-                        'Endsection does not have a corresponding start section.'
-                    );
-                }
-                $this->section[$this->section_name] = ob_get_clean();
-            },
-            'yield' => function ($name) {
-                echo $this->section[$name];
-            },
-            'error' => function ($name) {
-                return $this->data['errors'][$name] ?? false;
-            }
-        ];
     }
 }

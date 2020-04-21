@@ -1,3 +1,5 @@
+<?php use App\Facades\V; ?>
+
 <!DOCTYPE html>
 <html lang="zh">
 
@@ -10,27 +12,27 @@
 <body>
   <form action="/register" method="post">
     <input type="text" name="username">
-    <?php if ($error('username')): ?>
-      <p><?php $echo($error('username')); ?></p>
+    <?php if (V::error('username')): ?>
+      <p><?php V::echo(V::error('username')); ?></p>
     <?php endif; ?>
     <input type="text" name="nickname">
-    <?php if ($error('nickname')): ?>
-      <p><?php $echo($error('nickname')); ?></p>
+    <?php if (V::error('nickname')): ?>
+      <p><?php V::echo(V::error('nickname')); ?></p>
     <?php endif; ?>
     <input type="email" name="email">
-    <?php if ($error('email')): ?>
-      <p><?php $echo($error('email')); ?></p>
+    <?php if (V::error('email')): ?>
+      <p><?php V::echo(V::error('email')); ?></p>
     <?php endif; ?>
     <input type="password" name="password">
-    <?php if ($error('password')): ?>
-      <p><?php $echo($error('password')); ?></p>
+    <?php if (V::error('password')): ?>
+      <p><?php V::echo(V::error('password')); ?></p>
     <?php endif; ?>
     <input type="password" name="password_confirmed">
-    <?php if ($error('password_confirmed')): ?>
-      <p><?php $echo($error('password_confirmed')); ?></p>
+    <?php if (V::error('password_confirmed')): ?>
+      <p><?php V::echo(V::error('password_confirmed')); ?></p>
     <?php endif; ?>
     <input type="submit" value="Register">
-    <?php echo $csrf; ?>
+    <?php V::csrf(); ?>
   </form>
 </body>
 

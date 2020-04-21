@@ -8,9 +8,8 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use function array_merge;
-use function array_push;
 use function count;
-use function explode;
+use function getDotData;
 use function is_array;
 use function is_string;
 use function json_decode;
@@ -315,24 +314,6 @@ class Request implements ServerRequestInterface
     }
 
     /**
-     * @param string $key
-     * @param array $source
-     * @return array|mixed|null
-     */
-    protected function getDotData(string $key, array $source)
-    {
-        $keys = explode('.', $key);
-        $data = $source;
-        foreach ($keys as $k) {
-            if (!isset($data[$k])) {
-                return null;
-            }
-            $data = $data[$k];
-        }
-        return $data;
-    }
-
-    /**
      * 获取 SERVER 参数
      *
      * @param   string       $name     要获取的 SERVER 参数的名称
@@ -389,7 +370,7 @@ class Request implements ServerRequestInterface
             return $this->parsed_body;
         }
         if (isset($key) && strpos($key, '.') !== false) {
-            return $this->getDotData($key, $this->parsed_body);
+            return getDotData($key, $this->parsed_body);
         }
         if (!isset($this->parsed_body[$key])) {
             return $default;
