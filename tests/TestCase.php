@@ -47,9 +47,8 @@ abstract class TestCase extends BaseTestCase
                 true
             );
         });
-        $provider = new ProviderManager(Application::$app, $providers);
-        $provider->register();
-        $provider->boot();
+        $provider = new ProviderManager(Application::$app);
+        $provider->registers($providers);
         self::registerRequest();
         self::registerRoute();
     }

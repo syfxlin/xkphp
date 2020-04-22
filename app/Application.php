@@ -64,9 +64,8 @@ class Application extends Container
 
     protected function bootProvider(): void
     {
-        $provider = new ProviderManager(self::$app, config('app.providers'));
-        $provider->register();
-        $provider->boot();
+        $provider = new ProviderManager(self::$app);
+        $provider->registers(config('app.providers'));
     }
 
     /**
