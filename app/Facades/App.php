@@ -35,9 +35,4 @@ class App extends Facade
     {
         return Application::class;
     }
-
-    protected static function isStatic(): bool
-    {
-        return true;
-    }
 }

@@ -21,7 +21,7 @@ abstract class Facade
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        $class = Application::make(
+        $class = Application::$app->make(
             static::getFacadeAccessor(),
             static::getArgs()
         );

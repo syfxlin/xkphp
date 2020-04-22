@@ -213,20 +213,25 @@ class Container implements ContainerInterface
      *
      * @param   string     $abstract  依赖名称
      * @param   mixed      $instance  已实例化的单例
+     * @param   string|false $alias
      *
      * @return  Container
      */
-    public function instance(string $abstract, $instance): Container
-    {
+    public function instance(
+        string $abstract,
+        $instance,
+        $alias = false
+    ): Container {
         $abstract = $this->getAbstractByAlias($abstract);
         $this->instances[$abstract] = $instance;
-        $this->bindings[$abstract] = [
-            // 直接返回单例
-            'concrete' => function () use ($instance) {
+        $this->bind(
+            $abstract,
+            function () use ($instance) {
                 return $instance;
             },
-            'shared' => true
-        ];
+            true,
+            $alias
+        );
         return $this;
     }
 

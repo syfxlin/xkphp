@@ -3,11 +3,11 @@
 namespace Test;
 
 use App\Application;
+use App\Facades\App;
 use App\Facades\Crypt;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Stream;
-use App\Kernel\Container;
 use App\Kernel\ProviderManager;
 use App\Kernel\RouteManager;
 use App\Providers\RequestProvider;
@@ -39,7 +39,7 @@ abstract class TestCase extends BaseTestCase
         define('BASE_PATH', dirname(__DIR__) . '/');
 
         // 启动
-        Application::$app = new Container();
+        Application::$app = new Application();
         $providers = array_filter(config('app.providers'), function ($item) {
             return !in_array(
                 $item,
@@ -56,12 +56,12 @@ abstract class TestCase extends BaseTestCase
 
     private static function registerRoute(): void
     {
-        Application::$app->singleton(RouteManager::class, null, 'route');
+        App::singleton(RouteManager::class, null, 'route');
     }
 
     private static function registerRequest(): void
     {
-        Application::$app->bind(
+        App::bind(
             Request::class,
             function () {
                 $request = self::$request;
@@ -157,10 +157,10 @@ abstract class TestCase extends BaseTestCase
     protected function handleRequest(Request $request = null): Response
     {
         self::$request = $request ?? $this->buildMockRequest('GET', '/');
-        $route = Application::make(RouteManager::class);
+        $route = Application::$app->make(RouteManager::class);
         return $route->handleRequest(
             $route->dispatcher,
-            Application::make(Request::class)
+            Application::$app->make(Request::class)
         );
     }
 

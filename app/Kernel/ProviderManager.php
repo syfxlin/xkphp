@@ -2,6 +2,7 @@
 
 namespace App\Kernel;
 
+use App\Application;
 use App\Providers\Provider;
 use function array_map;
 use function array_walk;
@@ -11,7 +12,7 @@ use function method_exists;
 class ProviderManager
 {
     /**
-     * @var Container
+     * @var Application
      */
     protected $app;
 
@@ -20,7 +21,7 @@ class ProviderManager
      */
     protected $providers;
 
-    public function __construct(Container $app, array $providers)
+    public function __construct(Application $app, array $providers)
     {
         $this->app = $app;
         $this->providers = array_map(function (string $item) {

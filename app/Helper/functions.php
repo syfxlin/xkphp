@@ -4,6 +4,7 @@ use App\Facades\App;
 use App\Facades\Config;
 use App\Facades\Crypt;
 use App\Facades\Hash;
+use App\Facades\JWT;
 use App\Http\CookieManager;
 use App\Http\Request;
 use App\Http\Response;
@@ -245,6 +246,25 @@ function decrypt(string $value)
 function encrypt($value)
 {
     return Crypt::encrypt($value);
+}
+
+/**
+ * @param array $payload
+ * @param int $exp
+ * @return string
+ */
+function jwt_encode(array $payload, int $exp = 86400)
+{
+    return JWT::encode($payload, $exp);
+}
+
+/**
+ * @param string $token
+ * @return mixed
+ */
+function jwt_decode(string $token)
+{
+    return JWT::decode($token);
 }
 
 /**
