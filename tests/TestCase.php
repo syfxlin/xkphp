@@ -30,12 +30,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * @var Request
      */
-    public static $request;
-
-    /**
-     * @var Response
-     */
-    public static $response;
+    private static $request;
 
     public static function setUpBeforeClass(): void
     {
@@ -54,26 +49,19 @@ abstract class TestCase extends BaseTestCase
         });
         $provider = new ProviderManager(Application::$app, $providers);
         $provider->register();
-        self::registerRequest();
         $provider->boot();
-        self::handleRoute();
+        self::registerRequest();
+        self::registerRoute();
     }
 
-    private static function handleRoute(): void
+    private static function registerRoute(): void
     {
-        $route = Application::$app
-            ->singleton(RouteManager::class, null, 'route')
-            ->make(RouteManager::class);
-        self::$response = $route->handleRequest(
-            $route->dispatcher,
-            Application::make(Request::class)
-        );
+        Application::$app->singleton(RouteManager::class, null, 'route');
     }
 
     private static function registerRequest(): void
     {
-        self::$request = static::request();
-        Application::$app->singleton(
+        Application::$app->bind(
             Request::class,
             function () {
                 $request = self::$request;
@@ -93,12 +81,7 @@ abstract class TestCase extends BaseTestCase
         );
     }
 
-    protected static function request(): Request
-    {
-        return self::buildMockRequest('GET', '/');
-    }
-
-    protected static function buildMockRequest(
+    protected function buildMockRequest(
         string $method,
         string $uri,
         array $parameters = [],
@@ -169,5 +152,40 @@ abstract class TestCase extends BaseTestCase
             $post,
             $protocol
         );
+    }
+
+    protected function handleRequest(Request $request = null): Response
+    {
+        self::$request = $request ?? $this->buildMockRequest('GET', '/');
+        $route = Application::make(RouteManager::class);
+        return $route->handleRequest(
+            $route->dispatcher,
+            Application::make(Request::class)
+        );
+    }
+
+    protected function request(
+        string $method,
+        string $uri,
+        array $parameters = [],
+        string $accept = self::ACCEPT_JSON,
+        array $headers = [],
+        array $cookies = [],
+        array $files = [],
+        string $raw_body = '',
+        string $protocol = '1.1'
+    ): Response {
+        $request = $this->buildMockRequest(
+            $method,
+            $uri,
+            $parameters,
+            $accept,
+            $headers,
+            $cookies,
+            $files,
+            $raw_body,
+            $protocol
+        );
+        return $this->handleRequest($request);
     }
 }
