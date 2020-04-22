@@ -12,6 +12,7 @@ use ReflectionMethod;
 use function app_path;
 use function array_map;
 use function class_exists;
+use function config;
 use function config_path;
 use function str_replace;
 use function strtoupper;
@@ -36,7 +37,7 @@ class AnnotationProvider extends Provider
 
     protected function parseAnnotation(): void
     {
-        $config = require config_path('annotation.php');
+        $config = config('annotation');
         if (empty($config['middleware']) && empty($config['route'])) {
             return;
         }

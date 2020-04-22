@@ -13,6 +13,7 @@ use RuntimeException;
 use ReflectionParameter;
 use function class_exists;
 use function compact;
+use function config;
 use function config_path;
 use function explode;
 use function is_array;
@@ -370,7 +371,7 @@ class Container implements ContainerInterface
         ReflectionClass $reflector,
         $instance
     ): void {
-        $config = require config_path('annotation.php');
+        $config = config('annotation');
         if (empty($config['autowired'])) {
             return;
         }
@@ -557,7 +558,7 @@ class Container implements ContainerInterface
     protected function getAnnotations($method): array
     {
         // 如果不是方法或者关闭了DI就直接返回空
-        $config = require config_path('annotation.php');
+        $config = config('annotation');
         if (!$method instanceof ReflectionMethod || empty($config['di'])) {
             return [];
         }

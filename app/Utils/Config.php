@@ -2,10 +2,16 @@
 
 namespace App\Utils;
 
+use function array_map;
 use function array_shift;
+use function basename;
+use function config_path;
 use function dirname;
 use function explode;
+use function glob;
 use function is_array;
+use function pathinfo;
+use function scandir;
 
 class Config
 {
@@ -15,6 +21,13 @@ class Config
      * @var array
      */
     private static $config;
+
+    public function __construct()
+    {
+        foreach (glob(config_path() . '/*.php') as $path) {
+            self::$config[pathinfo($path, PATHINFO_FILENAME)] = require $path;
+        }
+    }
 
     /**
      * 获取配置文件地址
@@ -50,8 +63,7 @@ class Config
     {
         $names = explode('.', $name);
         $config_name = array_shift($names);
-        $config =
-            self::$config[$config_name] ?? (require $this->path($config_name));
+        $config = self::$config[$config_name];
         foreach ($names as $item) {
             if (!isset($config[$item])) {
                 return $default;
@@ -65,9 +77,6 @@ class Config
     {
         $names = explode('.', $name);
         $config_name = array_shift($names);
-        if (!isset(self::$config[$config_name])) {
-            self::$config[$config_name] = require $this->path($config_name);
-        }
         $config = &self::$config[$config_name];
         foreach ($names as $item) {
             if (!isset($config[$item])) {

@@ -13,6 +13,7 @@ use App\Kernel\RouteManager;
 use App\Providers\RequestProvider;
 use App\Providers\RouteProvider;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use ReflectionClass;
 use RuntimeException;
 use function array_filter;
 use function array_map;
@@ -40,6 +41,14 @@ abstract class TestCase extends BaseTestCase
 
         // 启动
         Application::$app = new Application();
+
+        // 初始化
+        $ref = new ReflectionClass(Application::class);
+        $method = $ref->getMethod('bootstrap');
+        $method->setAccessible(true);
+        $method->invoke(Application::$app);
+
+        // 移除需要另外配置的服务提供者
         $providers = array_filter(config('app.providers'), function ($item) {
             return !in_array(
                 $item,
@@ -47,9 +56,14 @@ abstract class TestCase extends BaseTestCase
                 true
             );
         });
-        $provider = new ProviderManager(Application::$app);
-        $provider->registers($providers);
+
+        // 注册启动服务提供者
+        (new ProviderManager(Application::$app))->registers($providers);
+
+        // 注册请求
         self::registerRequest();
+
+        // 注册路由
         self::registerRoute();
     }
 

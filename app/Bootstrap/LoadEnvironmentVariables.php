@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Providers;
+namespace App\Bootstrap;
 
 use Dotenv\Dotenv;
 
-class DotEnvProvider extends Provider
+class LoadEnvironmentVariables extends Bootstrap
 {
-    public function register(): void
+    public function boot(): void
     {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
         $dotenv->load();

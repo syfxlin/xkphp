@@ -2,35 +2,18 @@
 
 namespace App;
 
-use App\Database\DB;
-use App\Facades\Annotation;
-use App\Facades\App;
-use App\Facades\Crypt;
-use App\Facades\File;
-use App\Facades\Route;
+use App\Bootstrap\LoadConfiguration;
+use App\Bootstrap\LoadEnvironmentVariables;
 use App\Kernel\ProviderManager;
-use App\Kernel\RouteManager;
-use App\Providers\Provider;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Dotenv\Dotenv;
 use App\Kernel\Container;
-use App\Http\CookieManager;
-use App\Http\Request;
-use App\Http\SessionManager;
-use ReflectionClass;
-use ReflectionMethod;
-use RuntimeException;
 use function app_path;
-use function array_map;
-use function class_exists;
+use function array_walk;
+use function base_path;
 use function config;
 use function config_path;
-use function is_string;
-use function session_name;
-use function str_replace;
-use function strtoupper;
-use function substr;
+use function public_path;
+use function realpath;
+use function storage_path;
 
 /**
  * Class Application
@@ -46,20 +29,44 @@ class Application extends Container
     public static $app;
 
     /**
-     * @var Provider[]
+     * @var string[]
      */
-    public $providers = [];
+    protected $bootstraps = [
+        LoadEnvironmentVariables::class,
+        LoadConfiguration::class
+    ];
 
     public function __construct()
     {
+        // 基础绑定
         $this->registerBaseBindings();
+
+        // 绑定路径
+        $this->registerPath();
     }
 
-    public function registerBaseBindings(): void
+    protected function registerBaseBindings(): void
     {
         self::setInstance($this);
         $this->instance(self::class, $this, 'app');
         $this->instance(Container::class, $this);
+    }
+
+    protected function registerPath(): void
+    {
+        $this->instance('path', base_path());
+        $this->instance('path.app', app_path());
+        $this->instance('path.config', config_path());
+        $this->instance('path.public', public_path());
+        $this->instance('path.storage', storage_path());
+        $this->instance('path.view', realpath(BASE_PATH . '/app/Views'));
+    }
+
+    protected function bootstrap(): void
+    {
+        array_walk($this->bootstraps, function ($b) {
+            (new $b(self::$app))->boot();
+        });
     }
 
     protected function bootProvider(): void
@@ -79,7 +86,14 @@ class Application extends Container
         if (isset(self::$app)) {
             return self::$app;
         }
+
+        // 创建应用
         self::$app = new self();
+
+        // 初始化
+        self::$app->bootstrap();
+
+        // 注册服务提供者
         self::$app->bootProvider();
         return self::$app;
     }
