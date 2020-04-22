@@ -173,6 +173,7 @@ class Container implements ContainerInterface
      */
     public function make(string $abstract, array $args = [])
     {
+        $abstract = $this->getAbstractByAlias($abstract);
         $binding = $this->getBinding($abstract);
         $concrete = $binding['concrete'];
         $shared = $binding['shared'];

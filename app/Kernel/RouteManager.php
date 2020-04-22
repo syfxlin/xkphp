@@ -56,6 +56,11 @@ class RouteManager
     public static $annotationRoute = [];
 
     /**
+     * @var Dispatcher
+     */
+    public $dispatcher;
+
+    /**
      * RouteManager 构造器，外部请勿调用
      */
     public function __construct()
@@ -63,7 +68,7 @@ class RouteManager
         $middleware_config = config('middleware');
         self::$globalMiddlewares = $middleware_config['global'];
         self::$routeMiddlewares = $middleware_config['route'];
-        $dispatcher = simpleDispatcher(function (RouteCollector $r) {
+        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
             // 导入路由表
             $route_config = config('route');
@@ -76,10 +81,13 @@ class RouteManager
                 $route();
             }
         });
+    }
 
+    public function process(): void
+    {
         $request = App::make(Request::class);
 
-        $response = $this->handleRequest($dispatcher, $request);
+        $response = $this->handleRequest($this->dispatcher, $request);
 
         (new SapiEmitter())->emit($response);
     }
@@ -91,7 +99,7 @@ class RouteManager
      * @param ServerRequestInterface $request
      * @return  ResponseInterface                     响应
      */
-    private function handleRequest(
+    public function handleRequest(
         Dispatcher $dispatcher,
         ServerRequestInterface $request
     ): ResponseInterface {

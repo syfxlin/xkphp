@@ -80,7 +80,7 @@ class Application
 
     protected static function bootProvider(): void
     {
-        $provider = new ProviderManager(self::$app);
+        $provider = new ProviderManager(self::$app, config('app.providers'));
         $provider->register();
         $provider->boot();
     }

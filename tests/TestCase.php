@@ -3,12 +3,40 @@
 namespace Test;
 
 use App\Application;
+use App\Facades\Crypt;
+use App\Http\Request;
+use App\Http\Response;
+use App\Http\Stream;
 use App\Kernel\Container;
+use App\Kernel\ProviderManager;
+use App\Kernel\RouteManager;
+use App\Providers\RequestProvider;
+use App\Providers\RouteProvider;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use ReflectionClass;
+use RuntimeException;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function config;
+use function in_array;
+use function strtoupper;
 
 abstract class TestCase extends BaseTestCase
 {
+    public const ACCEPT_VIEW = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+    public const ACCEPT_JSON = 'application/json';
+    public const ACCEPT_RAW = 'text/plain';
+
+    /**
+     * @var Request
+     */
+    public static $request;
+
+    /**
+     * @var Response
+     */
+    public static $response;
+
     public static function setUpBeforeClass(): void
     {
         // 导入依赖
@@ -17,21 +45,129 @@ abstract class TestCase extends BaseTestCase
 
         // 启动
         Application::$app = new Container();
-        $ref = new ReflectionClass(Application::class);
-        self::invokePrivateMethod($ref, 'bootDotenv');
-        self::invokePrivateMethod($ref, 'bootRequest');
-        self::invokePrivateMethod($ref, 'bootAnnotation');
-        self::invokePrivateMethod($ref, 'parseAnnotation');
-        self::invokePrivateMethod($ref, 'bootDatabase');
+        $providers = array_filter(config('app.providers'), function ($item) {
+            return !in_array(
+                $item,
+                [RequestProvider::class, RouteProvider::class],
+                true
+            );
+        });
+        $provider = new ProviderManager(Application::$app, $providers);
+        $provider->register();
+        self::registerRequest();
+        $provider->boot();
+        self::handleRoute();
     }
 
-    private static function invokePrivateMethod(
-        ReflectionClass $class,
-        string $method_name,
-        bool $isStatic = true
-    ) {
-        $method = $class->getMethod($method_name);
-        $method->setAccessible(true);
-        return $method->invoke($isStatic ? null : $class);
+    private static function handleRoute(): void
+    {
+        $route = Application::$app
+            ->singleton(RouteManager::class, null, 'route')
+            ->make(RouteManager::class);
+        self::$response = $route->handleRequest(
+            $route->dispatcher,
+            Application::make(Request::class)
+        );
+    }
+
+    private static function registerRequest(): void
+    {
+        self::$request = static::request();
+        Application::$app->singleton(
+            Request::class,
+            function () {
+                $request = self::$request;
+                // Decrypt Cookies
+                $request_cookies = $request->getCookieParams();
+                $request_cookies = array_map(function ($cookie) {
+                    try {
+                        return Crypt::decrypt($cookie);
+                    } catch (RuntimeException $e) {
+                        return $cookie;
+                    }
+                }, $request_cookies);
+                $request = $request->withCookieParams($request_cookies);
+                return $request;
+            },
+            'request'
+        );
+    }
+
+    protected static function request(): Request
+    {
+        return self::buildMockRequest('GET', '/');
+    }
+
+    protected static function buildMockRequest(
+        string $method,
+        string $uri,
+        array $parameters = [],
+        string $accept = self::ACCEPT_JSON,
+        array $headers = [],
+        array $cookies = [],
+        array $files = [],
+        string $raw_body = '',
+        string $protocol = '1.1'
+    ): Request {
+        $method = strtoupper($method);
+
+        $url_arr = parse_url($uri);
+        $url_params = [];
+        if (isset($url_arr['query'])) {
+            parse_str($url_arr['query'], $url_params);
+        }
+
+        $defaultHeaders = [
+            'host' => '127.0.0.1',
+            'connection' => 'keep-alive',
+            'cache-control' => 'max-age=0',
+            'user-agent' => 'PHPUnit',
+            'upgrade-insecure-requests' => '1',
+            'accept' => $accept,
+            'dnt' => '1',
+            'accept-encoding' => 'gzip, deflate, br',
+            'accept-language' => 'zh-CN,zh;q=0.8,en;q=0.6,it-IT;q=0.4,it;q=0.2'
+        ];
+
+        $headers = array_merge($headers, $defaultHeaders);
+
+        $server = [
+            'request_method' => $method,
+            'request_uri' => $uri,
+            'path_info' => '/',
+            'request_time' => microtime(),
+            'request_time_float' => microtime(true),
+            'server_port' => 80,
+            'remote_port' => 49999,
+            'remote_addr' => '127.0.0.1',
+            'master_time' => microtime(),
+            'server_protocol' => 'HTTP/1.1'
+        ];
+
+        $get = [];
+        $post = [];
+
+        if ($method === 'GET') {
+            $get = $parameters;
+        } elseif ($method === 'POST') {
+            $post = $parameters;
+        }
+
+        if (!empty($url_params)) {
+            $get = array_merge($url_params, $get);
+        }
+
+        return new Request(
+            $server,
+            $files,
+            $uri,
+            $method,
+            Stream::make($raw_body, 'php://temp', 'wb+'),
+            $headers,
+            $cookies,
+            $get,
+            $post,
+            $protocol
+        );
     }
 }

@@ -15,4 +15,6 @@ abstract class Provider
     {
         $this->app = $app;
     }
+
+    abstract public function register(): void;
 }

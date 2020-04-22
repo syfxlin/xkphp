@@ -51,7 +51,7 @@ class SessionManager
         if ($id !== null) {
             session_id($id);
         }
-        session_start(
+        @session_start(
             array_merge($options, [
                 'use_cookies' => false,
                 'use_only_cookies' => true
@@ -59,7 +59,13 @@ class SessionManager
         );
         $id = session_id();
         $name = session_name();
-        return new static($id, $name, $_SESSION);
+        $session = null;
+        if (isset($_SESSION)) {
+            $session = &$_SESSION;
+        } else {
+            $session = [];
+        }
+        return new static($id, $name, $session);
     }
 
     public static function makeCookie(): ?Cookie

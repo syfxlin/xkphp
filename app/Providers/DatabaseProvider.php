@@ -12,7 +12,7 @@ class DatabaseProvider extends Provider
         $this->app->singleton(DB::class, null, 'db');
     }
 
-    public function boot(Request $request): void
+    public function boot(): void
     {
         $this->app->make(DB::class);
     }

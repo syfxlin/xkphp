@@ -20,12 +20,12 @@ class ProviderManager
      */
     protected $providers;
 
-    public function __construct(Container $app)
+    public function __construct(Container $app, array $providers)
     {
         $this->app = $app;
         $this->providers = array_map(function (string $item) {
             return new $item($this->app);
-        }, config('app.providers'));
+        }, $providers);
     }
 
     public function register(): void

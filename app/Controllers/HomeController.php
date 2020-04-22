@@ -60,9 +60,9 @@ class HomeController
      * @param Request $request
      * @return bool
      *
-     * @Route\Post("/post")
+     * @Route\Get("/get")
      */
-    public function post(Request $request): bool
+    public function get(Request $request): bool
     {
         return true;
     }

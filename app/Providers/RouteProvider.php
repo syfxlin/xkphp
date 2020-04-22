@@ -13,6 +13,6 @@ class RouteProvider extends Provider
 
     public function boot(): void
     {
-        $this->app->make(RouteManager::class);
+        $this->app->make(RouteManager::class)->process();
     }
 }

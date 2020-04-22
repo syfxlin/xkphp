@@ -4,6 +4,7 @@ namespace Test;
 
 use App\Facades\Crypt;
 use App\Facades\Hash;
+use App\Http\Request;
 
 class UtilsTest extends TestCase
 {
