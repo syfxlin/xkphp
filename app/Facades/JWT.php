@@ -23,12 +23,4 @@ class JWT extends Facade
     {
         return \App\Utils\JWT::class;
     }
-
-    public static function getArgs(): array
-    {
-        return [
-            'key' => base64_decode(env('APP_KEY')),
-            'cipher' => env('APP_JWT', 'HS256')
-        ];
-    }
 }

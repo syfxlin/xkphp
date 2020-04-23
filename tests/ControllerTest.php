@@ -11,4 +11,10 @@ class ControllerTest extends TestCase
         $response = $this->request('GET', '/get');
         $this->assertEquals('true', $response->getContent());
     }
+
+    public function testGet2(): void
+    {
+        $response = $this->request('GET', '/get');
+        $this->assertEquals('true', $response->getContent());
+    }
 }

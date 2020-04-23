@@ -74,11 +74,7 @@ abstract class TestCase extends BaseTestCase
 
         // 移除需要另外配置的服务提供者
         $providers = array_filter(config('app.providers'), function ($item) {
-            return !in_array(
-                $item,
-                [RequestProvider::class, RouteProvider::class],
-                true
-            );
+            return $item !== RequestProvider::class;
         });
         config(['app.providers' => $providers]);
 
@@ -88,14 +84,6 @@ abstract class TestCase extends BaseTestCase
 
         // 注册请求
         self::registerRequest();
-
-        // 注册路由
-        self::registerRoute();
-    }
-
-    private static function registerRoute(): void
-    {
-        App::singleton(RouteManager::class, null, 'route');
     }
 
     private static function registerRequest(): void
@@ -196,11 +184,7 @@ abstract class TestCase extends BaseTestCase
     protected function handleRequest(Request $request = null): Response
     {
         self::$request = $request ?? $this->buildMockRequest('GET', '/');
-        $route = self::$app->make(RouteManager::class);
-        return $route->handleRequest(
-            $route->dispatcher,
-            self::$app->make(Request::class)
-        );
+        return self::$app->make(RouteManager::class)->dispatch(self::$request);
     }
 
     protected function request(

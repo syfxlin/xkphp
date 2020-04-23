@@ -7,8 +7,12 @@ use App\Bootstrap\LoadConfiguration;
 use App\Bootstrap\LoadEnvironmentVariables;
 use App\Bootstrap\RegisterFacades;
 use App\Bootstrap\RegisterProviders;
+use App\Http\Request;
 use App\Kernel\ProviderManager;
 use App\Kernel\Container;
+use App\Kernel\RouteManager;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ResponseInterface;
 use function app_path;
 use function array_walk;
 use function base_path;
@@ -85,6 +89,18 @@ class Application extends Container
         });
     }
 
+    protected function dispatchToEmit(): void
+    {
+        // 获取请求
+        $request = $this->make(Request::class);
+
+        // 处理
+        $response = $this->make(RouteManager::class)->dispatch($request);
+
+        // 发送响应
+        (new SapiEmitter())->emit($response);
+    }
+
     /**
      * 启动 App，程序入口
      *
@@ -102,6 +118,9 @@ class Application extends Container
 
         // 初始化
         self::$app->bootstrap();
+
+        // 路由
+        self::$app->dispatchToEmit();
         return self::$app;
     }
 

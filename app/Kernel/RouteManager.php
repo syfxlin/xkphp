@@ -83,13 +83,9 @@ class RouteManager
         });
     }
 
-    public function process(): void
+    public function dispatch(Request $request): ResponseInterface
     {
-        $request = App::make(Request::class);
-
-        $response = $this->handleRequest($this->dispatcher, $request);
-
-        (new SapiEmitter())->emit($response);
+        return $this->handleRequest($this->dispatcher, $request);
     }
 
     /**

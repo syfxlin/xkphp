@@ -22,12 +22,4 @@ class Crypt extends Facade
     {
         return \App\Utils\Crypt::class;
     }
-
-    protected static function getArgs(): array
-    {
-        return [
-            'key' => base64_decode(env('APP_KEY')),
-            'cipher' => env('APP_CIPHER', 'AES-256-CBC')
-        ];
-    }
 }
