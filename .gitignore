@@ -32,3 +32,5 @@ public/
 
 .idea
 .phpunit.result.cache
+sonar-project.properties
+.scannerwork

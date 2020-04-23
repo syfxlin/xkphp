@@ -390,10 +390,6 @@ class Container implements ContainerInterface
                     if ($this->hasBinding('$' . $anno->value)) {
                         $abstract = '$' . $anno->value;
                     }
-                    // 通过注解获取
-                    if (isset($annotations[$anno->value])) {
-                        $abstract = $annotations[$anno->value];
-                    }
                     // 匹配别名
                     if ($this->isAlias($abstract)) {
                         $abstract = $this->getAbstractByAlias($abstract);
