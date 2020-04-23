@@ -57,9 +57,6 @@ class ProviderManager
         if (method_exists($provider, 'register')) {
             $provider->register();
         }
-        if (method_exists($provider, 'boot')) {
-            $this->app->call('boot', [], $provider);
-        }
         return $provider;
     }
 
@@ -68,5 +65,15 @@ class ProviderManager
         return array_map(function ($provider) {
             return $this->register($provider);
         }, $providers);
+    }
+
+    public function boot(): void
+    {
+        array_walk($this->providers, function (Provider $provider) {
+            if (!$provider->booted && method_exists($provider, 'boot')) {
+                $this->app->call('boot', [], $provider);
+                $provider->booted = true;
+            }
+        });
     }
 }

@@ -2,16 +2,21 @@
 
 namespace App\Providers;
 
-use App\Kernel\Container;
+use App\Application;
 
 abstract class Provider
 {
     /**
-     * @var Container
+     * @var Application
      */
     protected $app;
 
-    public function __construct(Container $app)
+    /**
+     * @var bool
+     */
+    public $booted = false;
+
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }

@@ -2,8 +2,11 @@
 
 namespace App;
 
+use App\Bootstrap\BootProviders;
 use App\Bootstrap\LoadConfiguration;
 use App\Bootstrap\LoadEnvironmentVariables;
+use App\Bootstrap\RegisterFacades;
+use App\Bootstrap\RegisterProviders;
 use App\Kernel\ProviderManager;
 use App\Kernel\Container;
 use function app_path;
@@ -32,9 +35,22 @@ class Application extends Container
      * @var string[]
      */
     protected $bootstraps = [
+        // 加载 env 文件
         LoadEnvironmentVariables::class,
-        LoadConfiguration::class
+        // 加载配置
+        LoadConfiguration::class,
+        // 注册门面
+        RegisterFacades::class,
+        // 注册服务提供者管理器
+        RegisterProviders::class,
+        // 启动服务
+        BootProviders::class
     ];
+
+    /**
+     * @var ProviderManager
+     */
+    public $provider_manager;
 
     public function __construct()
     {
@@ -69,12 +85,6 @@ class Application extends Container
         });
     }
 
-    protected function bootProvider(): void
-    {
-        $provider = new ProviderManager(self::$app);
-        $provider->registers(config('app.providers'));
-    }
-
     /**
      * 启动 App，程序入口
      *
@@ -92,9 +102,6 @@ class Application extends Container
 
         // 初始化
         self::$app->bootstrap();
-
-        // 注册服务提供者
-        self::$app->bootProvider();
         return self::$app;
     }
 

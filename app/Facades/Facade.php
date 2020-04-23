@@ -12,6 +12,16 @@ use RuntimeException;
 abstract class Facade
 {
     /**
+     * @var Application
+     */
+    protected static $app;
+
+    public static function setApplication(Application $app): void
+    {
+        self::$app = $app;
+    }
+
+    /**
      * Facade 代理
      *
      * @param   string  $name       方法名
@@ -21,7 +31,7 @@ abstract class Facade
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        $class = Application::$app->make(
+        $class = self::$app->make(
             static::getFacadeAccessor(),
             static::getArgs()
         );

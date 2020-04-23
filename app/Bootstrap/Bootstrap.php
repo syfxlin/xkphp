@@ -16,5 +16,5 @@ abstract class Bootstrap
         $this->app = $app;
     }
 
-    abstract public function boot();
+    abstract public function boot(): void;
 }

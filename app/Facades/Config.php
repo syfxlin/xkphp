@@ -21,9 +21,4 @@ class Config extends Facade
     {
         return \App\Utils\Config::class;
     }
-
-    protected static function isStatic(): bool
-    {
-        return true;
-    }
 }

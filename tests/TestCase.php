@@ -3,12 +3,13 @@
 namespace Test;
 
 use App\Application;
+use App\Bootstrap\BootProviders;
+use App\Bootstrap\RegisterProviders;
 use App\Facades\App;
 use App\Facades\Crypt;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Stream;
-use App\Kernel\ProviderManager;
 use App\Kernel\RouteManager;
 use App\Providers\RequestProvider;
 use App\Providers\RouteProvider;
@@ -18,6 +19,7 @@ use RuntimeException;
 use function array_filter;
 use function array_map;
 use function array_merge;
+use function array_walk;
 use function config;
 use function in_array;
 use function strtoupper;
@@ -27,6 +29,11 @@ abstract class TestCase extends BaseTestCase
     public const ACCEPT_VIEW = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
     public const ACCEPT_JSON = 'application/json';
     public const ACCEPT_RAW = 'text/plain';
+
+    /**
+     * @var Application
+     */
+    protected static $app;
 
     /**
      * @var Request
@@ -39,14 +46,31 @@ abstract class TestCase extends BaseTestCase
         require_once __DIR__ . '/../vendor/autoload.php';
         define('BASE_PATH', dirname(__DIR__) . '/');
 
+        self::boot();
+    }
+
+    private static function boot(): void
+    {
         // 启动
-        Application::$app = new Application();
+        self::$app = new Application();
 
         // 初始化
         $ref = new ReflectionClass(Application::class);
-        $method = $ref->getMethod('bootstrap');
-        $method->setAccessible(true);
-        $method->invoke(Application::$app);
+        $prop = $ref->getProperty('bootstraps');
+        $prop->setAccessible(true);
+        $bootstraps = $prop->getValue(self::$app);
+        array_walk($bootstraps, function ($b) {
+            if (
+                in_array(
+                    $b,
+                    [RegisterProviders::class, BootProviders::class],
+                    true
+                )
+            ) {
+                return;
+            }
+            (new $b(self::$app))->boot();
+        });
 
         // 移除需要另外配置的服务提供者
         $providers = array_filter(config('app.providers'), function ($item) {
@@ -56,9 +80,11 @@ abstract class TestCase extends BaseTestCase
                 true
             );
         });
+        config(['app.providers' => $providers]);
 
         // 注册启动服务提供者
-        (new ProviderManager(Application::$app))->registers($providers);
+        (new RegisterProviders(self::$app))->boot();
+        (new BootProviders(self::$app))->boot();
 
         // 注册请求
         self::registerRequest();
@@ -170,10 +196,10 @@ abstract class TestCase extends BaseTestCase
     protected function handleRequest(Request $request = null): Response
     {
         self::$request = $request ?? $this->buildMockRequest('GET', '/');
-        $route = Application::$app->make(RouteManager::class);
+        $route = self::$app->make(RouteManager::class);
         return $route->handleRequest(
             $route->dispatcher,
-            Application::$app->make(Request::class)
+            self::$app->make(Request::class)
         );
     }
 
