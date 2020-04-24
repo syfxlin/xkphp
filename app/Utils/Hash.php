@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use RuntimeException;
 use function password_hash;
 use function password_needs_rehash;
 use function password_verify;
@@ -43,7 +44,9 @@ class Hash
         );
 
         if ($hash === false) {
-            throw new \RuntimeException('Algo hashing not supported.');
+            // @codeCoverageIgnoreStart
+            throw new RuntimeException('Algo hashing not supported.');
+            // @codeCoverageIgnoreEnd
         }
 
         return $hash;

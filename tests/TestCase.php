@@ -31,6 +31,11 @@ abstract class TestCase extends BaseTestCase
     public const ACCEPT_RAW = 'text/plain';
 
     /**
+     * @var bool
+     */
+    protected static $booted = false;
+
+    /**
      * @var Application
      */
     protected static $app;
@@ -38,18 +43,22 @@ abstract class TestCase extends BaseTestCase
     /**
      * @var Request
      */
-    private static $request;
+    protected static $request;
 
     public static function setUpBeforeClass(): void
     {
+        if (self::$booted) {
+            return;
+        }
         // 导入依赖
         require_once __DIR__ . '/../vendor/autoload.php';
         define('BASE_PATH', dirname(__DIR__) . '/');
 
         self::boot();
+        self::$booted = true;
     }
 
-    private static function boot(): void
+    protected static function boot(): void
     {
         // 启动
         self::$app = new Application();
@@ -86,7 +95,7 @@ abstract class TestCase extends BaseTestCase
         self::registerRequest();
     }
 
-    private static function registerRequest(): void
+    protected static function registerRequest(): void
     {
         App::bind(
             Request::class,
@@ -104,6 +113,7 @@ abstract class TestCase extends BaseTestCase
                 $request = $request->withCookieParams($request_cookies);
                 return $request;
             },
+            false,
             'request'
         );
     }

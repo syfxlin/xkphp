@@ -82,6 +82,9 @@ class Application extends Container
         $this->instance('path.view', realpath(BASE_PATH . '/app/Views'));
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function bootstrap(): void
     {
         array_walk($this->bootstraps, function ($b) {
@@ -89,6 +92,9 @@ class Application extends Container
         });
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function dispatchToEmit(): void
     {
         // 获取请求
@@ -104,7 +110,9 @@ class Application extends Container
     /**
      * 启动 App，程序入口
      *
-     * @return  Container  $app
+     * @return Application $app
+     *
+     * @codeCoverageIgnore
      */
     public static function boot(): Application
     {

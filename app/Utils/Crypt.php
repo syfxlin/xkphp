@@ -93,7 +93,9 @@ class Crypt
         );
 
         if ($value === false) {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException('Could not encrypt the data.');
+            // @codeCoverageIgnoreEnd
         }
         $iv = base64_encode($iv);
         $mac = hash_hmac('sha256', $iv . $value, $this->key);
@@ -102,7 +104,9 @@ class Crypt
             JSON_UNESCAPED_SLASHES
         );
         if (json_last_error() !== JSON_ERROR_NONE) {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException('Could not encrypt the data.');
+            // @codeCoverageIgnoreEnd
         }
         return base64_encode($json);
     }
@@ -117,9 +121,11 @@ class Crypt
      */
     public function decrypt(string $payload, bool $unserialize = false)
     {
-        $payload = $payload = json_decode(base64_decode($payload), true);
+        $payload = json_decode(base64_decode($payload), true);
         if (!$this->vaild($payload)) {
+            // @codeCoverageIgnoreStart
             return;
+            // @codeCoverageIgnoreEnd
         }
         $iv = base64_decode($payload['iv']);
         $decrypted = openssl_decrypt(
@@ -131,7 +137,9 @@ class Crypt
         );
 
         if ($decrypted === false) {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException('Could not decrypt the data.');
+            // @codeCoverageIgnoreEnd
         }
 
         return $unserialize ? unserialize($decrypted) : $decrypted;

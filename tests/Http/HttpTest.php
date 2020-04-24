@@ -1,6 +1,8 @@
 <?php
 
-namespace Test;
+namespace Test\Http;
+
+use Test\HttpTestCase;
 
 class HttpTest extends HttpTestCase
 {

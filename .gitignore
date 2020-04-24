@@ -34,3 +34,5 @@ public/
 .phpunit.result.cache
 sonar-project.properties
 .scannerwork
+phpunit.report.xml
+phpunit.coverage.xml
