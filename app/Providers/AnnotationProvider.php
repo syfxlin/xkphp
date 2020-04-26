@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Facades\Annotation;
 use App\Facades\File;
 use App\Facades\Route;
+use App\Kernel\Controller;
 use App\Kernel\RouteManager;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ReflectionClass;
@@ -43,9 +44,9 @@ class AnnotationProvider extends Provider
         }
         $files = File::allFiles(app_path('Controllers'));
         foreach ($files as $file) {
-            $class_name =
-                "App\Controllers\\" .
-                str_replace('/', '\\', substr($file, 0, -4));
+            $class_name = Controller::getFull(
+                str_replace('/', '\\', substr($file, 0, -4))
+            );
             if (class_exists($class_name)) {
                 $class = new ReflectionClass($class_name);
                 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);

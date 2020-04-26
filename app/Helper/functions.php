@@ -282,7 +282,7 @@ function csrf_token()
  */
 function asset(string $asset): string
 {
-    return env('ASSET_URL', '') . "/$asset";
+    return \config('app.asset_url') . "/$asset";
 }
 
 // Array

@@ -3,6 +3,8 @@
 namespace App\Utils;
 
 use RuntimeException;
+use function in_array;
+use function is_int;
 use function password_hash;
 use function password_needs_rehash;
 use function password_verify;
@@ -22,6 +24,33 @@ class Hash
      * @var int|string
      */
     protected $algo = PASSWORD_BCRYPT;
+
+    public function __construct($algo, array $options)
+    {
+        if (!$this->supported($algo)) {
+            if ($algo === 'bcrypt') {
+                $this->algo = PASSWORD_BCRYPT;
+            } elseif ($algo === 'argon' || $algo === 'argon2id') {
+                $this->algo = PASSWORD_ARGON2I;
+            } else {
+                $this->algo = $algo;
+            }
+        }
+        $this->options = $options;
+    }
+
+    public function supported($algo): bool
+    {
+        $support = in_array(
+            $algo,
+            ['bcrypt', 'argon', 'argon2id', PASSWORD_BCRYPT, PASSWORD_ARGON2I],
+            true
+        );
+        if (!$support) {
+            throw new RuntimeException('Algo hashing not supported.');
+        }
+        return true;
+    }
 
     /**
      * 制作 Hash

@@ -61,10 +61,7 @@ class Route
                 App::instance(Request::class, $request, 'request', true);
                 $result = $handler($request);
                 // 构建响应
-                return is_object($result) &&
-                    $result instanceof ResponseInterface
-                    ? $result
-                    : response($result);
+                return $this->toResponse($result);
             };
             // Make middlewares handler
             $runner = new MiddlewareRunner(
@@ -75,6 +72,14 @@ class Route
             );
             return $runner->then($request, $handler);
         };
+    }
+
+    protected function toResponse($result): ResponseInterface
+    {
+        if (is_object($result) && $result instanceof ResponseInterface) {
+            return $result;
+        }
+        return response($result);
     }
 
     protected function registerAnnotationMiddleware(string $handler): void
@@ -96,9 +101,9 @@ class Route
     public function addRoute($httpMethod, string $route, $handler): Route
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
-            if (strpos($handler, 'App\Controllers\\') === false) {
-                $handler = 'App\Controllers\\' . $handler;
-            }
+            // 获取完整的类方法名
+            $handler = Controller::getFull($handler);
+            // 注册注解中间件
             $this->registerAnnotationMiddleware($handler);
             RouteManager::$route->addRoute(
                 $httpMethod,

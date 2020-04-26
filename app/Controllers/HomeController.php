@@ -12,6 +12,7 @@ use App\Annotations\Route;
 use App\Annotations\Autowired\Autowired;
 use ReflectionClass;
 use RuntimeException;
+use function asset_path;
 
 class HomeController
 {
@@ -38,12 +39,12 @@ class HomeController
     /**
      * @param Request $request
      * @return View
-     * @Middleware\Item("guest")
      * @Route\Get("/home/home")
      */
-    public function home(Request $request): View
+    public function home(Request $request): string
     {
-        return view('home');
+        // return view('home');
+        return asset_path();
     }
 
     /**
@@ -77,5 +78,17 @@ class HomeController
     public function exception(Request $request): bool
     {
         throw new RuntimeException('Error');
+    }
+
+    /**
+     * @param int $path
+     * @param int $query
+     * @return string
+     *
+     * @Route\Get("/inject/{path}")
+     */
+    public function inject(int $path, int $query): string
+    {
+        return $path . ',' . $query;
     }
 }

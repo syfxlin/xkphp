@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Utils\Crypt;
 use function base64_decode;
+use function config;
 use function env;
 
 class EncryptionProvider extends Provider
@@ -14,8 +15,8 @@ class EncryptionProvider extends Provider
             Crypt::class,
             function () {
                 return new Crypt(
-                    base64_decode(env('APP_KEY')),
-                    env('APP_CIPHER', 'AES-256-CBC')
+                    base64_decode(config('app.key')),
+                    config('app.cipher')
                 );
             },
             'crypt'

@@ -4,7 +4,7 @@ return [
     'save_path' => '',
     'name' => env(
         'SESSION_COOKIE',
-        str_replace(' ', '_', env('APP_NAME', 'xk')) . '_session'
+        str_replace(' ', '_', strtolower(env('APP_NAME', 'xk'))) . '_session'
     ),
     'cookie_lifetime' => env('SESSION_LIFETIME', 1440),
     'cookie_path' => '/',

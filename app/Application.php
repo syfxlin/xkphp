@@ -14,7 +14,9 @@ use App\Kernel\Container;
 use App\Kernel\RouteManager;
 use function app_path;
 use function array_walk;
+use function asset_path;
 use function base_path;
+use function config;
 use function config_path;
 use function env;
 use function public_path;
@@ -42,10 +44,10 @@ class Application extends Container
         LoadEnvironmentVariables::class,
         // 加载配置
         LoadConfiguration::class,
-        // 注册异常处理
-        HandleExceptions::class,
         // 注册门面
         RegisterFacades::class,
+        // 注册异常处理
+        HandleExceptions::class,
         // 注册服务提供者管理器
         RegisterProviders::class,
         // 启动服务
@@ -145,7 +147,7 @@ class Application extends Container
 
     public function environment(string $env = null)
     {
-        $app_env = env('APP_ENV', 'production');
+        $app_env = config('app.env');
         if ($env === null) {
             return $app_env;
         }

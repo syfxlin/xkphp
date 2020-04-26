@@ -4,6 +4,7 @@ namespace App\Kernel;
 
 use App\Facades\App;
 use App\Http\Request;
+use function strpos;
 
 class Controller
 {
@@ -18,5 +19,19 @@ class Controller
     {
         // TODO: 命名空间设置
         return App::callWithRequest($request, $method);
+    }
+
+    /**
+     * 获取完整的类名方法
+     *
+     * @param string $part
+     * @return string
+     */
+    public static function getFull(string $part): string
+    {
+        if (strpos($part, 'App\Controllers\\') === false) {
+            $part = 'App\Controllers\\' . $part;
+        }
+        return $part;
     }
 }

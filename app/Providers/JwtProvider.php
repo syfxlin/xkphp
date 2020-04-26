@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Utils\JWT;
 use function base64_decode;
+use function config;
 use function env;
 
 class JwtProvider extends Provider
@@ -14,8 +15,9 @@ class JwtProvider extends Provider
             JWT::class,
             function () {
                 return new JWT(
-                    base64_decode(env('APP_KEY')),
-                    env('APP_JWT', 'HS256')
+                    base64_decode(config('app.key')),
+                    config('app.jwt_algo'),
+                    config('app.jwt_payload')
                 );
             },
             'jwt'
