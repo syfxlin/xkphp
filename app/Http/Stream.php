@@ -236,6 +236,7 @@ class Stream implements StreamInterface
         if (!$this->isReadable()) {
             throw new ResourceReadFailException('Resource is not readable');
         }
+        $this->rewind();
         $result = stream_get_contents($this->resource);
         if ($result === false) {
             throw new ResourceReadFailException('Resource read failed');

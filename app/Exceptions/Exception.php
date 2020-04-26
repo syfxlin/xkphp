@@ -16,18 +16,40 @@ class Exception extends RuntimeException
      */
     public function render($request): Response
     {
+        return $this->toResponse(
+            500,
+            $this->getMessage(),
+            $this->getMessage(),
+            [],
+            $request
+        );
+    }
+
+    /**
+     * @param int $status
+     * @param string $message
+     * @param string $errors
+     * @param array $headers
+     * @param Request $request
+     * @return Response
+     */
+    protected function toResponse(
+        int $status = 500,
+        string $message = '',
+        $errors = '',
+        array $headers = [],
+        $request = null
+    ): Response {
         $message =
-            $this->getMessage() === ''
-                ? Response::$phrases[500]
-                : $this->getMessage();
+            $message === '' ? Response::$phrases[$status] : $this->getMessage();
         $content = [
-            'status' => 500,
+            'status' => $status,
             'message' => $message,
-            'errors' => $message
+            'errors' => $errors
         ];
         if ($request === null || !$request->ajax()) {
             $content = view('errors/errors', $content);
         }
-        return response($content, 500);
+        return response($content, 500, $headers);
     }
 }

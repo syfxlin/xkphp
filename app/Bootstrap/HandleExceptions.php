@@ -13,9 +13,15 @@ use function view;
 
 class HandleExceptions extends Bootstrap
 {
+    /**
+     * @var string
+     */
+    protected $env;
+
     public function boot(): void
     {
-        if (!$this->app->environment('testing')) {
+        $this->env = $this->app->environment();
+        if ($this->env !== 'development') {
             error_reporting(-1);
             set_error_handler([$this, 'handleError']);
             set_exception_handler([$this, 'handleException']);
@@ -50,7 +56,7 @@ class HandleExceptions extends Bootstrap
         }
         if (!$e instanceof Exception) {
             $e = new Exception(
-                $e->getMessage(),
+                Response::$phrases[500],
                 $e->getCode(),
                 $e->getPrevious()
             );

@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\HttpStatusException;
 use App\Facades\App;
 use App\Facades\Config;
 use App\Facades\Crypt;
@@ -208,7 +209,7 @@ function view_path(string $view)
  */
 function abort(int $code = 403, $content = '', array $headers = []): Response
 {
-    return Response::make($content, $code, $headers);
+    throw new HttpStatusException($code, $content, $headers);
 }
 
 /**

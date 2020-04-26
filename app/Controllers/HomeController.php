@@ -2,8 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\HttpStatusException;
 use App\Facades\JWT;
 use App\Http\Request;
+use App\Http\Stream;
 use App\Kernel\View;
 use App\Annotations\DI;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -12,6 +14,7 @@ use App\Annotations\Route;
 use App\Annotations\Autowired\Autowired;
 use ReflectionClass;
 use RuntimeException;
+use function abort;
 use function asset_path;
 
 class HomeController
@@ -43,8 +46,7 @@ class HomeController
      */
     public function home(Request $request): string
     {
-        // return view('home');
-        return asset_path();
+        return view('home');
     }
 
     /**
@@ -77,7 +79,8 @@ class HomeController
      */
     public function exception(Request $request): bool
     {
-        throw new RuntimeException('Error');
+        abort(403);
+        return true;
     }
 
     /**
