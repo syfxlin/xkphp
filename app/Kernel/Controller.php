@@ -17,7 +17,6 @@ class Controller
      */
     public static function invokeController(Request $request, string $method)
     {
-        // TODO: 命名空间设置
         return App::callWithRequest($request, $method);
     }
 
