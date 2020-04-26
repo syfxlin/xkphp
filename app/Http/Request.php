@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use App\Exceptions\Http\InvalidUploadFileException;
+use App\Exceptions\Http\UnsupportedSetRequestException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -306,7 +308,7 @@ class Request implements ServerRequestInterface
             if (is_array($file)) {
                 $this->validateFiles($file);
             } elseif (!$file instanceof UploadedFileInterface) {
-                throw new RuntimeException(
+                throw new InvalidUploadFileException(
                     'Invalid leaf in uploaded files structure'
                 );
             }
@@ -581,7 +583,7 @@ class Request implements ServerRequestInterface
     public function __set($name, $value)
     {
         // Unsupported set
-        throw new RuntimeException('Unsupported set');
+        throw new UnsupportedSetRequestException('Unsupported set');
     }
 
     public function __isset($name)

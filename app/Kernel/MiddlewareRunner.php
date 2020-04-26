@@ -2,6 +2,7 @@
 
 namespace App\Kernel;
 
+use App\Exceptions\Kernel\NoFinalRequestHandlerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -56,7 +57,7 @@ class MiddlewareRunner implements RequestHandlerInterface
         if ($middleware instanceof RequestHandlerInterface) {
             return $middleware->handle($request);
         }
-        throw new RuntimeException(
+        throw new NoFinalRequestHandlerException(
             'No final request handler (Must return ResponseInterface)'
         );
     }

@@ -43,31 +43,19 @@ class HandleExceptions extends Bootstrap
 
     protected function renderResponse(Throwable $e): Response
     {
-        $request = $this->app->make(Request::class);
-        if ($e instanceof Exception) {
-            return $e->render();
+        try {
+            $request = $this->app->make(Request::class);
+        } catch (\Exception $ex) {
+            $request = null;
         }
-        return $this->renderExceptionResponse($request, $e);
-    }
-
-    protected function renderExceptionResponse(
-        Request $request,
-        Throwable $e
-    ): Response {
-        $code = $e->getCode() === 0 ? 500 : $e->getCode();
-        $message =
-            $e->getMessage() === ''
-                ? Response::$phrases[$code]
-                : $e->getMessage();
-        $content = [
-            'status' => $code,
-            'message' => $message,
-            'errors' => $message
-        ];
-        if (!$request->ajax()) {
-            $content = view('errors/errors', $content);
+        if (!$e instanceof Exception) {
+            $e = new Exception(
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getPrevious()
+            );
         }
-        return response($content, $code);
+        return $e->render($request);
     }
 
     public function handleDown(): void

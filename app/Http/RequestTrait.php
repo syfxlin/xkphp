@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Exceptions\Http\MethodNotAllowedException;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use function in_array;
@@ -71,7 +72,7 @@ trait RequestTrait
                 'PATCH'
             ])
         ) {
-            throw new RuntimeException(
+            throw new MethodNotAllowedException(
                 "Unsupported HTTP method \"$method\" provided"
             );
         }

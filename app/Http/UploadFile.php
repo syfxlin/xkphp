@@ -2,6 +2,9 @@
 
 namespace App\Http;
 
+use App\Exceptions\Http\AlreadyMovedException;
+use App\Exceptions\Http\FailMoveFileException;
+use App\Exceptions\Http\UploadFailException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -83,14 +86,14 @@ class UploadFile implements UploadedFileInterface
     private function checkError(): void
     {
         if ($this->error !== UPLOAD_ERR_OK) {
-            throw new RuntimeException(self::$error_msg[$this->error]);
+            throw new UploadFailException(self::$error_msg[$this->error]);
         }
     }
 
     private function checkMoved(): void
     {
         if ($this->moved) {
-            throw new RuntimeException('File already moved');
+            throw new AlreadyMovedException('File already moved');
         }
     }
 
@@ -117,7 +120,7 @@ class UploadFile implements UploadedFileInterface
         $this->checkMoved();
         $result = move_uploaded_file($this->temp_file, $targetPath);
         if ($result === false) {
-            throw new RuntimeException('Failed to move file');
+            throw new FailMoveFileException('Failed to move file');
         }
     }
 

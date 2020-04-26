@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Exceptions\Utils\AlgoNotSupportException;
 use RuntimeException;
 use function in_array;
 use function is_int;
@@ -47,7 +48,7 @@ class Hash
             true
         );
         if (!$support) {
-            throw new RuntimeException('Algo hashing not supported.');
+            throw new AlgoNotSupportException('Algo hashing not supported.');
         }
         return true;
     }
@@ -74,7 +75,7 @@ class Hash
 
         if ($hash === false) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException('Algo hashing not supported.');
+            throw new AlgoNotSupportException('Algo hashing not supported.');
             // @codeCoverageIgnoreEnd
         }
 

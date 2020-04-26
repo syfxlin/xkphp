@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Exceptions\Http\UnsupportedHttpProtocolException;
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;
 use function array_merge;
@@ -46,7 +47,7 @@ trait MessageTrait
     public function withProtocolVersion($version)
     {
         if (!in_array($version, ['1.0', '1.1', '2', '3'], true)) {
-            throw new RuntimeException(
+            throw new UnsupportedHttpProtocolException(
                 "Unsupported HTTP protocol version \"$version\" provided"
             );
         }

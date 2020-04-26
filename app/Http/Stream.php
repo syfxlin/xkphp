@@ -2,6 +2,12 @@
 
 namespace App\Http;
 
+use App\Exceptions\Http\GetTellFailException;
+use App\Exceptions\Http\InvalidStreamReferenceException;
+use App\Exceptions\Http\ResourceMissException;
+use App\Exceptions\Http\ResourceReadFailException;
+use App\Exceptions\Http\ResourceWriteFailException;
+use App\Exceptions\Http\SeekFailException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use function fclose;
@@ -48,7 +54,9 @@ class Stream implements StreamInterface
         if (is_string($stream)) {
             $resource = fopen($stream, $mode);
             if (!is_resource($resource)) {
-                throw new RuntimeException('Invalid stream reference provided');
+                throw new InvalidStreamReferenceException(
+                    'Invalid stream reference provided'
+                );
             }
         }
         $this->resource = $resource;
@@ -112,7 +120,7 @@ class Stream implements StreamInterface
         $this->checkResource();
         $result = ftell($this->resource);
         if ($result === false) {
-            throw new RuntimeException('Get tell is fail');
+            throw new GetTellFailException('Get tell is fail');
         }
         return $result;
     }
@@ -147,7 +155,7 @@ class Stream implements StreamInterface
         $this->checkResource();
         $result = fseek($this->resource, $offset, $whence);
         if ($result === -1) {
-            throw new RuntimeException('Seek fail');
+            throw new SeekFailException('Seek fail');
         }
     }
 
@@ -182,11 +190,11 @@ class Stream implements StreamInterface
     {
         $this->checkResource();
         if (!$this->isWritable()) {
-            throw new RuntimeException('Resources is not writable');
+            throw new ResourceWriteFailException('Resources is not writable');
         }
         $result = fwrite($this->resource, $string);
         if ($result === false) {
-            throw new RuntimeException('Resource write failed');
+            throw new ResourceWriteFailException('Resource write failed');
         }
         return $result;
     }
@@ -210,11 +218,11 @@ class Stream implements StreamInterface
     {
         $this->checkResource();
         if (!$this->isReadable()) {
-            throw new RuntimeException('Resource is not readable');
+            throw new ResourceReadFailException('Resource is not readable');
         }
         $result = fread($this->resource, $length);
         if ($result === false) {
-            throw new RuntimeException('Resource read failed');
+            throw new ResourceReadFailException('Resource read failed');
         }
         return $result;
     }
@@ -226,11 +234,11 @@ class Stream implements StreamInterface
     {
         $this->checkResource();
         if (!$this->isReadable()) {
-            throw new RuntimeException('Resource is not readable');
+            throw new ResourceReadFailException('Resource is not readable');
         }
         $result = stream_get_contents($this->resource);
         if ($result === false) {
-            throw new RuntimeException('Resource read failed');
+            throw new ResourceReadFailException('Resource read failed');
         }
         return $result;
     }
@@ -258,7 +266,7 @@ class Stream implements StreamInterface
     private function checkResource(): void
     {
         if ($this->resource === null) {
-            throw new RuntimeException('Resource is miss');
+            throw new ResourceMissException('Resource is miss');
         }
     }
 }

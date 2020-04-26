@@ -2,12 +2,12 @@
 
 namespace App\Kernel;
 
+use App\Exceptions\View\NotFoundStartPushException;
+use App\Exceptions\View\NotFoundStartSectionException;
 use App\Facades\App;
 use App\Facades\Auth;
 use App\Http\Request;
-use RuntimeException;
 use function array_pop;
-use function array_reduce;
 use function array_unshift;
 use function asset;
 use function csrf_token;
@@ -139,7 +139,7 @@ class ViewHtml
     public function endsection(): void
     {
         if (self::$section_name === null) {
-            throw new RuntimeException(
+            throw new NotFoundStartSectionException(
                 'Endsection does not have a corresponding start section.'
             );
         }
@@ -176,7 +176,7 @@ class ViewHtml
     public function endpush(): void
     {
         if (self::$stack_name === null) {
-            throw new RuntimeException(
+            throw new NotFoundStartPushException(
                 'Endpush does not have a corresponding start section.'
             );
         }

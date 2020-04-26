@@ -2,6 +2,8 @@
 
 namespace App\Kernel;
 
+use App\Exceptions\Kernel\BindFailException;
+use App\Exceptions\Kernel\NotInstantiableException;
 use App\Facades\Annotation;
 use App\Http\Request;
 use Closure;
@@ -147,7 +149,7 @@ class Container implements ContainerInterface
         }
         // 判断是否是单例，是否被设置过
         if (!$overwrite && $shared && isset($this->bindings[$abstract])) {
-            throw new RuntimeException(
+            throw new BindFailException(
                 "Target [$abstract] is a singleton and has been bind"
             );
         }
@@ -168,7 +170,7 @@ class Container implements ContainerInterface
             ) {
                 $this->setBinding($abstract, $abstract);
             } else {
-                throw new RuntimeException(
+                throw new BindFailException(
                     "Target [$abstract] is not binding or fail autobind"
                 );
             }
@@ -285,7 +287,9 @@ class Container implements ContainerInterface
         // 检查类是否可实例化
         if (!$reflector->isInstantiable()) {
             // 如果不能，意味着接口不能正常工作，报错
-            throw new RuntimeException("Target [$class] is not instantiable");
+            throw new NotInstantiableException(
+                "Target [$class] is not instantiable"
+            );
         }
         // 取得构造函数
         $constructor = $reflector->getConstructor();
@@ -372,7 +376,9 @@ class Container implements ContainerInterface
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
-        throw new RuntimeException("Target [$$parameter->name] is not binding");
+        throw new BindFailException(
+            "Target [$$parameter->name] is not binding"
+        );
     }
 
     /**
@@ -489,7 +495,7 @@ class Container implements ContainerInterface
         if (isset($this->methodBindings[$method])) {
             return $this->methodBindings[$method];
         }
-        throw new RuntimeException("Target [$method] is not binding");
+        throw new BindFailException("Target [$method] is not binding");
     }
 
     public function call(

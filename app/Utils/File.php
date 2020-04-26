@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Exceptions\Utils\FileNotExistException;
 use RuntimeException;
 use function array_filter;
 use function array_push;
@@ -55,7 +56,9 @@ class File
     public function get(string $path, bool $lock = false)
     {
         if (!$this->exists($path)) {
-            throw new RuntimeException("File does not exist at path $path");
+            throw new FileNotExistException(
+                "File does not exist at path $path"
+            );
         }
         if (!$lock) {
             return file_get_contents($path);

@@ -2,6 +2,10 @@
 
 namespace App\Utils;
 
+use App\Exceptions\Utils\AlgoNotSupportException;
+use App\Exceptions\Utils\InvalidPayloadException;
+use App\Exceptions\Utils\InvalidSignException;
+use App\Exceptions\Utils\InvalidTokenException;
 use RuntimeException;
 use function array_key_exists;
 use function array_merge;
@@ -64,7 +68,7 @@ class JWT
             $this->algo = self::$supported[$algo];
             $this->default_payload = $default_payload;
         } else {
-            throw new RuntimeException(
+            throw new AlgoNotSupportException(
                 'The only supported algos are HS265,HS384,HS512 with the correct key lengths (key length >= 16).'
             );
         }
@@ -144,23 +148,25 @@ class JWT
         [$header, $payload, $sign] = array_pad(explode('.', $token), 3, null);
         $signed = "$header.$payload";
         if ($header === null || $payload === null || $sign === null) {
-            throw new RuntimeException('Error segments count');
+            throw new InvalidPayloadException('Error segments count');
         }
         if (($header = json_decode(base64_decode($header), true)) === null) {
-            throw new RuntimeException('Invalid header encoding');
+            throw new InvalidPayloadException('Invalid header encoding');
         }
         if (($payload = json_decode(base64_decode($payload), true)) === null) {
-            throw new RuntimeException('Invalid payload encoding');
+            throw new InvalidPayloadException('Invalid payload encoding');
         }
         if (($sign = base64_decode($sign)) === false) {
-            throw new RuntimeException('Invalid sign encoding');
+            throw new InvalidPayloadException('Invalid sign encoding');
         }
         if (
             !isset($header['alg']) ||
             array_key_exists($header['alg'], self::$supported)
         ) {
             if ($algo === null) {
-                throw new RuntimeException('Algorithm not supported or empty');
+                throw new AlgoNotSupportException(
+                    'Algorithm not supported or empty'
+                );
             }
         }
         if (
@@ -172,24 +178,24 @@ class JWT
                 $algo ?? $header['alg']
             )
         ) {
-            throw new RuntimeException('Signature verification failed');
+            throw new InvalidSignException('Signature verification failed');
         }
         if (isset($header['nbf']) && $header['nbf'] < $timestamp) {
-            throw new RuntimeException(
+            throw new InvalidTokenException(
                 'The token is not yet valid [' .
                     gmdate('D, d M Y H:i:s T', $header['nbf']) .
                     ']'
             );
         }
         if (isset($header['iat']) && $header['iat'] < $timestamp) {
-            throw new RuntimeException(
+            throw new InvalidTokenException(
                 'The token is not yet valid [' .
                     gmdate('D, d M Y H:i:s T', $header['iat']) .
                     ']'
             );
         }
         if (isset($header['exp']) && $header['exp'] < $timestamp) {
-            throw new RuntimeException(
+            throw new InvalidTokenException(
                 'The token has expired [' .
                     gmdate('D, d M Y H:i:s T', $header['exp']) .
                     ']'

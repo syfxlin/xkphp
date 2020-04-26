@@ -2,6 +2,10 @@
 
 namespace App\Utils;
 
+use App\Exceptions\Utils\AlgoNotSupportException;
+use App\Exceptions\Utils\DecryptException;
+use App\Exceptions\Utils\EncryptException;
+use App\Exceptions\Utils\InvalidPayloadException;
 use RuntimeException;
 use function base64_decode;
 use function base64_encode;
@@ -49,7 +53,7 @@ class Crypt
             $this->key = $key;
             $this->cipher = $cipher;
         } else {
-            throw new RuntimeException(
+            throw new AlgoNotSupportException(
                 'The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.'
             );
         }
@@ -94,7 +98,7 @@ class Crypt
 
         if ($value === false) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException('Could not encrypt the data.');
+            throw new EncryptException('Could not encrypt the data.');
             // @codeCoverageIgnoreEnd
         }
         $iv = base64_encode($iv);
@@ -105,7 +109,7 @@ class Crypt
         );
         if (json_last_error() !== JSON_ERROR_NONE) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException('Could not encrypt the data.');
+            throw new EncryptException('Could not encrypt the data.');
             // @codeCoverageIgnoreEnd
         }
         return base64_encode($json);
@@ -138,7 +142,7 @@ class Crypt
 
         if ($decrypted === false) {
             // @codeCoverageIgnoreStart
-            throw new RuntimeException('Could not decrypt the data.');
+            throw new DecryptException('Could not decrypt the data.');
             // @codeCoverageIgnoreEnd
         }
 
@@ -160,7 +164,7 @@ class Crypt
             strlen(base64_decode($payload['iv'], true)) !==
                 openssl_cipher_iv_length($this->cipher)
         ) {
-            throw new RuntimeException('The payload is invalid.');
+            throw new InvalidPayloadException('The payload is invalid.');
         }
         if (
             !hash_equals(
@@ -172,7 +176,7 @@ class Crypt
                 )
             )
         ) {
-            throw new RuntimeException('The MAC is invalid.');
+            throw new InvalidPayloadException('The MAC is invalid.');
         }
         return true;
     }
