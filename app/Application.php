@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Bootstrap\BootProviders;
+use App\Bootstrap\HandleExceptions;
 use App\Bootstrap\LoadConfiguration;
 use App\Bootstrap\LoadEnvironmentVariables;
 use App\Bootstrap\RegisterFacades;
@@ -11,13 +12,11 @@ use App\Http\Request;
 use App\Kernel\ProviderManager;
 use App\Kernel\Container;
 use App\Kernel\RouteManager;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Psr\Http\Message\ResponseInterface;
 use function app_path;
 use function array_walk;
 use function base_path;
-use function config;
 use function config_path;
+use function env;
 use function public_path;
 use function realpath;
 use function storage_path;
@@ -43,6 +42,8 @@ class Application extends Container
         LoadEnvironmentVariables::class,
         // 加载配置
         LoadConfiguration::class,
+        // 注册异常处理
+        HandleExceptions::class,
         // 注册门面
         RegisterFacades::class,
         // 注册服务提供者管理器
@@ -104,7 +105,7 @@ class Application extends Container
         $response = $this->make(RouteManager::class)->dispatch($request);
 
         // 发送响应
-        (new SapiEmitter())->emit($response);
+        $response->send();
     }
 
     /**
@@ -140,5 +141,14 @@ class Application extends Container
     public static function setInstance(Application $application): void
     {
         self::$app = $application;
+    }
+
+    public function environment(string $env = null)
+    {
+        $app_env = env('APP_ENV', 'production');
+        if ($env === null) {
+            return $app_env;
+        }
+        return $app_env === $env;
     }
 }

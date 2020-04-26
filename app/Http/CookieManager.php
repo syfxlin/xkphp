@@ -15,14 +15,6 @@ class CookieManager
     private $response_cookies = [];
 
     /**
-     * @return CookieManager
-     */
-    public static function make(): CookieManager
-    {
-        return new static();
-    }
-
-    /**
      * 判断 Cookie 是否存在，并是否为空
      *
      * @param   string  $name  Cookie 的名称

@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Facades\App;
 use App\Kernel\View;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use function get_class;
@@ -110,11 +111,6 @@ class Response implements ResponseInterface
     private $cookies;
 
     /**
-     * @var int[]
-     */
-    private $accept_code = [];
-
-    /**
      * Response constructor.
      * @param string|StreamInterface $content
      * @param int $status
@@ -141,12 +137,6 @@ class Response implements ResponseInterface
             $this->stream = $content;
         }
         $this->cookies = Cookie::makeFromArray($this->getHeader('Set-Cookie'));
-        // Has session
-        $session_cookie = SessionManager::makeCookie();
-        if ($session_cookie !== null) {
-            $this->cookies[$session_cookie->getName()] = $session_cookie;
-            $this->updateCookieHeader();
-        }
     }
 
     /**
@@ -232,6 +222,11 @@ class Response implements ResponseInterface
         array $headers = []
     ): Response {
         return new static($content, $status, $headers);
+    }
+
+    public function send(): void
+    {
+        (new SapiEmitter())->emit($this);
     }
 
     /**
@@ -357,10 +352,10 @@ class Response implements ResponseInterface
      * @param Cookie $cookie
      * @return Response
      */
-    public function withCookie(string $name, Cookie $cookie): Response
+    public function withCookie(Cookie $cookie): Response
     {
         $new = clone $this;
-        $new->cookies[$name] = $cookie;
+        $new->cookies[$cookie->getName()] = $cookie;
         $new->updateCookieHeader();
         return $new;
     }
@@ -398,7 +393,6 @@ class Response implements ResponseInterface
         bool $http_only = false
     ): Response {
         return $this->withCookie(
-            $name,
             Cookie::make($name, $value)
                 ->withMaxAge($expire)
                 ->withPath($path)
@@ -416,7 +410,7 @@ class Response implements ResponseInterface
     {
         $result = clone $this;
         foreach ($cookies as $cookie) {
-            $result = $result->withCookie($cookie->getName(), $cookie);
+            $result = $result->withCookie($cookie);
         }
         return $result;
     }
@@ -430,13 +424,6 @@ class Response implements ResponseInterface
      */
     private function convert($content): string
     {
-        if (
-            !in_array($this->status, $this->accept_code) &&
-            $this->status >= 400 &&
-            !App::make(Request::class)->ajax()
-        ) {
-            return view('errors/errors', $content)->render();
-        }
         if ($content === null) {
             return '';
         }

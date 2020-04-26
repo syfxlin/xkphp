@@ -11,6 +11,7 @@ use App\Annotations\Middleware;
 use App\Annotations\Route;
 use App\Annotations\Autowired\Autowired;
 use ReflectionClass;
+use RuntimeException;
 
 class HomeController
 {
@@ -65,5 +66,16 @@ class HomeController
     public function get(Request $request): bool
     {
         return true;
+    }
+
+    /**
+     * @param Request $request
+     * @return bool
+     *
+     * @Route\Get("/exce")
+     */
+    public function exception(Request $request): bool
+    {
+        throw new RuntimeException('Error');
     }
 }

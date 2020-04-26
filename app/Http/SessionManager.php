@@ -27,54 +27,54 @@ class SessionManager
     /**
      * @var array
      */
+    private $options;
+    /**
+     * @var array
+     */
     private $sessions;
-
-    public function __construct(string $id, string $name, array &$data)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->sessions = &$data;
-        if (!$this->has('_token')) {
-            $this->regenerateToken();
-        }
-    }
+    /**
+     * @var bool
+     */
+    private static $started = false;
 
     /**
      * @param string|null $id
      * @param array $options
-     * @return SessionManager
      */
-    public static function make(
-        string $id = null,
-        array $options = []
-    ): SessionManager {
+    public function start(string $id = null, array $options = []): void
+    {
         if ($id !== null) {
             session_id($id);
         }
-        @session_start(
-            array_merge($options, [
-                'use_cookies' => false,
-                'use_only_cookies' => true
-            ])
-        );
-        $id = session_id();
-        $name = session_name();
-        $session = null;
+        $this->options = array_merge($options, [
+            'use_cookies' => false,
+            'use_only_cookies' => true
+        ]);
+        @session_start($this->options);
+        $this->id = session_id();
+        $this->name = session_name();
+        $this->options['name'] = $this->name;
+
         if (isset($_SESSION)) {
-            $session = &$_SESSION;
+            $this->sessions = &$_SESSION;
         } else {
-            $session = [];
+            $this->sessions = [];
         }
-        return new static($id, $name, $session);
+
+        if (!$this->has('_token')) {
+            $this->regenerateToken();
+        }
+
+        self::$started = session_status() !== PHP_SESSION_ACTIVE;
     }
 
-    public static function makeCookie(): ?Cookie
+    public function makeCookie(): ?Cookie
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             return null;
         }
-        $id = session_id();
-        $name = session_name();
+        $id = $this->id;
+        $name = $this->name;
         $cookie_options = session_get_cookie_params();
         return Cookie::make($name, $id)
             ->withMaxAge(60 * $cookie_options['lifetime'])
@@ -114,6 +114,16 @@ class SessionManager
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setOptions(array $options): void
+    {
+        $this->options = $options;
+    }
+
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     /**
