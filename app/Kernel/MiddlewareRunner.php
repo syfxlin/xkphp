@@ -8,12 +8,16 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use function array_map;
+use function array_push;
 use function array_shift;
 use function is_callable;
 use function is_string;
 
 class MiddlewareRunner implements RequestHandlerInterface
 {
+    /**
+     * @var array
+     */
     public $middlewares;
 
     public function __construct($middlewares)
@@ -55,6 +59,12 @@ class MiddlewareRunner implements RequestHandlerInterface
         throw new RuntimeException(
             'No final request handler (Must return ResponseInterface)'
         );
+    }
+
+    public function then($request, $handler): ResponseInterface
+    {
+        $this->middlewares[] = $handler;
+        return $this->handle($request);
     }
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface

@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\App;
+use App\Http\Request;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use function array_merge;
@@ -57,7 +58,7 @@ class Route
             // Make response handler
             $handler = function ($request) use ($handler) {
                 // 覆盖已经注入 Path Parameters 的请求
-                App::instance('request', $request, 'request', true);
+                App::instance(Request::class, $request, 'request', true);
                 $result = $handler($request);
                 // 构建响应
                 return is_object($result) &&
@@ -69,11 +70,10 @@ class Route
             $runner = new MiddlewareRunner(
                 array_merge(
                     RouteManager::$globalMiddlewares,
-                    $this->middlewares,
-                    [$handler]
+                    $this->middlewares
                 )
             );
-            return $runner($request);
+            return $runner->then($request, $handler);
         };
     }
 
