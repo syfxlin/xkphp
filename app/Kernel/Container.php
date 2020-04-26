@@ -11,6 +11,7 @@ use ReflectionFunction;
 use ReflectionMethod;
 use RuntimeException;
 use ReflectionParameter;
+use function array_pad;
 use function class_exists;
 use function compact;
 use function config;
@@ -72,13 +73,15 @@ class Container implements ContainerInterface
      *
      * @param bool $shared
      * @param bool|string $alias
+     * @param bool $overwrite
      * @return  Container
      */
     public function bind(
         $abstract,
         $concrete = null,
         bool $shared = false,
-        $alias = false
+        $alias = false,
+        bool $overwrite = false
     ): Container {
         // 同时绑定多个依赖
         if (is_array($abstract)) {
@@ -86,24 +89,38 @@ class Container implements ContainerInterface
                 if (is_int($_abstract)) {
                     $_abstract = $value;
                 }
-                $_abstract = $this->getAbstractByAlias($_abstract);
-                $_concrete = $_abstract;
+                $_concrete = null;
                 $_shared = false;
+                $_alias = false;
+                $_overwrite = false;
                 if (is_bool($value)) {
                     $_shared = $value;
                 } elseif (is_array($value)) {
-                    [$_concrete, $_shared] = $value;
+                    [$_concrete, $_shared, $_alias, $_overwrite] = array_pad(
+                        $value,
+                        3,
+                        false
+                    );
                 }
-                $this->setBinding($_abstract, $_concrete, $_shared);
+                $this->bind(
+                    $_abstract,
+                    $_concrete === false ? null : $_concrete,
+                    $_shared,
+                    $_alias,
+                    $_overwrite
+                );
             }
             return $this;
         }
-        $abstract = $this->getAbstractByAlias($abstract);
+        [$abstract, $alias] = $this->getAbstractAndAliasByAlias(
+            $abstract,
+            $alias
+        );
         // 为了方便绑定依赖，可以节省一个参数
         if ($concrete === null) {
             $concrete = $abstract;
         }
-        $this->setBinding($abstract, $concrete, $shared);
+        $this->setBinding($abstract, $concrete, $shared, $overwrite);
         if ($alias) {
             $this->alias($abstract, $alias);
         }
@@ -115,7 +132,8 @@ class Container implements ContainerInterface
     protected function setBinding(
         string $abstract,
         $concrete,
-        bool $shared = false
+        bool $shared = false,
+        bool $overwrite = false
     ): void {
         $abstract = $this->getAbstractByAlias($abstract);
         // 传入的默认是闭包，如果没有传入闭包则默认创建
@@ -127,7 +145,7 @@ class Container implements ContainerInterface
             };
         }
         // 判断是否是单例，是否被设置过
-        if ($shared && isset($this->bindings[$abstract])) {
+        if (!$overwrite && $shared && isset($this->bindings[$abstract])) {
             throw new RuntimeException(
                 "Target [$abstract] is a singleton and has been bind"
             );
@@ -198,32 +216,39 @@ class Container implements ContainerInterface
      * @param mixed $concrete 依赖闭包
      * @param bool|string $alias
      *
+     * @param bool $overwrite
      * @return  Container
      */
     public function singleton(
         string $abstract,
         $concrete = null,
-        $alias = false
+        $alias = false,
+        bool $overwrite = false
     ): Container {
-        $this->bind($abstract, $concrete, true, $alias);
+        $this->bind($abstract, $concrete, true, $alias, $overwrite);
         return $this;
     }
 
     /**
      * 绑定已实例化的单例
      *
-     * @param   string     $abstract  依赖名称
-     * @param   mixed      $instance  已实例化的单例
-     * @param   string|false $alias
+     * @param string $abstract 依赖名称
+     * @param mixed $instance 已实例化的单例
+     * @param string|false $alias
      *
+     * @param bool $overwrite
      * @return  Container
      */
     public function instance(
         string $abstract,
         $instance,
-        $alias = false
+        $alias = false,
+        bool $overwrite = false
     ): Container {
-        $abstract = $this->getAbstractByAlias($abstract);
+        [$abstract, $alias] = $this->getAbstractAndAliasByAlias(
+            $abstract,
+            $alias
+        );
         $this->instances[$abstract] = $instance;
         $this->bind(
             $abstract,
@@ -231,7 +256,8 @@ class Container implements ContainerInterface
                 return $instance;
             },
             true,
-            $alias
+            $alias,
+            $overwrite
         );
         return $this;
     }
@@ -518,12 +544,12 @@ class Container implements ContainerInterface
         return $reflector->invokeArgs($isStatic ? null : $object, $dependency);
     }
 
-    public function isAlias($name): bool
+    public function isAlias(string $name): bool
     {
         return isset($this->aliases[$name]);
     }
 
-    public function alias($abstract, $alias): void
+    public function alias(string $abstract, string $alias): void
     {
         if ($abstract === $alias) {
             return;
@@ -549,6 +575,20 @@ class Container implements ContainerInterface
     protected function getAbstractByAlias($alias)
     {
         return $this->aliases[$alias] ?? $alias;
+    }
+
+    protected function getAbstractAndAliasByAlias(
+        $alias,
+        $inAlias = false
+    ): array {
+        $abstract = $this->getAbstractByAlias($alias);
+        if ($alias === $abstract) {
+            return [$abstract, $inAlias];
+        }
+        if (!$inAlias) {
+            return [$abstract, $alias];
+        }
+        return [$abstract, $inAlias];
     }
 
     protected function getAnnotations($method): array

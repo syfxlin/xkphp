@@ -9,10 +9,10 @@ use App\Kernel\Container;
  * Class Application
  * @package App\Facades
  *
- * @method static Container bind($abstract, $concrete = null, bool $shared = false, bool $alias = false)
+ * @method static Container bind($abstract, $concrete = null, bool $shared = false, $alias = false, bool $overwrite = false)
  * @method static mixed make(string $abstract, array $args = [])
- * @method static Container singleton(string $abstract, $concrete = null, $alias = false)
- * @method static Container instance(string $abstract, $instance)
+ * @method static Container singleton(string $abstract, $concrete = null, $alias = false, $overwrite = false)
+ * @method static Container instance(string $abstract, $instance, $alias = false, $overwrite = false)
  * @method static mixed build($class, array $args = [])
  * @method static void useAutoBind(bool $use)
  * @method static bool has($id)
@@ -27,7 +27,7 @@ use App\Kernel\Container;
  * @method static void removeAlias($alias)
  * @method static Container boot()
  *
- * @see \App\Kernel\Container
+ * @see \App\Application
  */
 class App extends Facade
 {

@@ -56,7 +56,10 @@ class Route
         return function ($request) use ($handler) {
             // Make response handler
             $handler = function ($request) use ($handler) {
+                // 覆盖已经注入 Path Parameters 的请求
+                App::instance('request', $request, 'request', true);
                 $result = $handler($request);
+                // 构建响应
                 return is_object($result) &&
                     $result instanceof ResponseInterface
                     ? $result
