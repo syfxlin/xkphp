@@ -152,9 +152,9 @@ class ViewHtml
         echo self::$section[$name];
     }
 
-    public function error(string $name): bool
+    public function error(string $name)
     {
-        return $this->data['errors'][$name] ?? false;
+        return self::$data['errors'][$name] ?? false;
     }
 
     public function stack(string $name): void

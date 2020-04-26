@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\Annotation;
+use App\Http\Request;
 use Closure;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -11,11 +12,11 @@ use ReflectionFunction;
 use ReflectionMethod;
 use RuntimeException;
 use ReflectionParameter;
+use function array_merge;
 use function array_pad;
 use function class_exists;
 use function compact;
 use function config;
-use function config_path;
 use function explode;
 use function is_array;
 use function is_bool;
@@ -542,6 +543,24 @@ class Container implements ContainerInterface
         $reflector = new ReflectionMethod($object, $method);
         $dependency = $this->injectingDependencies($reflector, $args);
         return $reflector->invokeArgs($isStatic ? null : $object, $dependency);
+    }
+
+    public function callWithRequest(
+        Request $request,
+        $method,
+        array $args = [],
+        $object = null,
+        $isStatic = false
+    ) {
+        $args = array_merge(
+            $request->getUploadedFiles(),
+            $request->getCookieParams(),
+            $request->getAttributes(),
+            $request->getQueryParams(),
+            $request->getParsedBody(),
+            $args
+        );
+        return $this->call($method, $args, $object, $isStatic);
     }
 
     public function isAlias(string $name): bool

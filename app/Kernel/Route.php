@@ -103,16 +103,16 @@ class Route
             RouteManager::$route->addRoute(
                 $httpMethod,
                 $route,
-                $this->getHandle(function () use ($handler) {
-                    return Controller::invokeController($handler);
+                $this->getHandle(function ($request) use ($handler) {
+                    return Controller::invokeController($request, $handler);
                 })
             );
         } else {
             RouteManager::$route->addRoute(
                 $httpMethod,
                 $route,
-                $this->getHandle(function () use ($handler) {
-                    return App::call($handler);
+                $this->getHandle(function ($request) use ($handler) {
+                    return App::callWithRequest($request, $handler);
                 })
             );
         }
