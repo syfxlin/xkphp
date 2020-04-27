@@ -13,13 +13,14 @@ class HttpException extends Exception
      */
     protected $response;
 
-    public function __construct(
-        Response $response,
-        $code = 0,
-        Throwable $previous = null
-    ) {
+    public function __construct(Response $response, Throwable $previous = null)
+    {
         $this->response = $response;
-        parent::__construct($response->getContent(), $code, $previous);
+        parent::__construct(
+            $response->getContent(),
+            $response->getStatus(),
+            $previous
+        );
     }
 
     public function getResponse(): Response

@@ -55,11 +55,7 @@ class HandleExceptions extends Bootstrap
             $request = null;
         }
         if (!$e instanceof Exception) {
-            $e = new Exception(
-                Response::$phrases[500],
-                $e->getCode(),
-                $e->getPrevious()
-            );
+            $e = new Exception(Response::$phrases[500], 500, $e->getPrevious());
         }
         return $e->render($request);
     }

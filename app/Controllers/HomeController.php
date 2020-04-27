@@ -63,8 +63,6 @@ class HomeController
     /**
      * @param Request $request
      * @return bool
-     *
-     * @Route\Get("/get")
      */
     public function get(Request $request): bool
     {

@@ -29,6 +29,7 @@ yarn-error.log*
 #mix
 public/
 !public/index.php
+!public/.htaccess
 
 .idea
 .phpunit.result.cache

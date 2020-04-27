@@ -18,3 +18,5 @@ Route::get('/users', function (Request $request) {
 Route::get('/', function (Request $request) {
     return view('extends');
 });
+
+Route::get('/get', 'HomeController@get');

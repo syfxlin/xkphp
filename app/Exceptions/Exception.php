@@ -17,7 +17,7 @@ class Exception extends RuntimeException
     public function render($request): Response
     {
         return $this->toResponse(
-            500,
+            $this->getCode() === 0 ? 500 : $this->getCode(),
             $this->getMessage(),
             $this->getMessage(),
             [],
@@ -50,6 +50,6 @@ class Exception extends RuntimeException
         if ($request === null || !$request->ajax()) {
             $content = view('errors/errors', $content);
         }
-        return response($content, 500, $headers);
+        return response($content, $status, $headers);
     }
 }
