@@ -4,6 +4,7 @@ namespace App\Kernel;
 
 use App\Facades\App;
 use App\Http\Request;
+use App\Http\Responseable;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use function array_merge;
@@ -76,8 +77,11 @@ class Route
 
     protected function toResponse($result): ResponseInterface
     {
-        if (is_object($result) && $result instanceof ResponseInterface) {
+        if ($result instanceof ResponseInterface) {
             return $result;
+        }
+        if ($result instanceof Responseable) {
+            return $result->toResponse();
         }
         return response($result);
     }

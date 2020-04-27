@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\Auth;
+use App\Http\Renderable;
 use UnexpectedValueException;
 use function array_merge;
 use function asset;
@@ -17,7 +18,7 @@ use function request;
 use function str_replace;
 use function view_path;
 
-class View
+class View implements Renderable
 {
     /**
      * 视图的名称

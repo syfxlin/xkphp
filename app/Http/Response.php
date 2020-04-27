@@ -12,6 +12,7 @@ use function in_array;
 use function is_object;
 use function is_string;
 use function json_encode;
+use function method_exists;
 use function view;
 
 class Response implements ResponseInterface
@@ -431,9 +432,13 @@ class Response implements ResponseInterface
         if (is_string($content)) {
             return $content;
         }
-        // View
-        if (is_object($content) && get_class($content) === View::class) {
+        // Renderable
+        if ($content instanceof Renderable) {
             return $content->render();
+        }
+        // Has __toString
+        if (method_exists($content, '__toString')) {
+            return $content->__toString();
         }
         // JSON
         $this->headers['Content-type'] = ['application/json'];
