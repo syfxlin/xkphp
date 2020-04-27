@@ -18,7 +18,7 @@ class Cors extends Middleware
         MiddlewareRunner $next
     ): ResponseInterface {
         $response = $next($request);
-        return $response->withHeaders([
+        return $response->setHeaders([
             'Access-Control-Allow-Origin' => $request->server(
                 'HTTP_ORIGIN',
                 '*'

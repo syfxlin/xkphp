@@ -77,11 +77,11 @@ class SessionManager
         $name = $this->name;
         $cookie_options = session_get_cookie_params();
         return Cookie::make($name, $id)
-            ->withMaxAge(60 * $cookie_options['lifetime'])
-            ->withPath($cookie_options['path'])
-            ->withDomain($cookie_options['domain'])
-            ->withSecure($cookie_options['secure'])
-            ->withHttpOnly($cookie_options['httponly']);
+            ->setMaxAge(60 * $cookie_options['lifetime'])
+            ->setPath($cookie_options['path'])
+            ->setDomain($cookie_options['domain'])
+            ->setSecure($cookie_options['secure'])
+            ->setHttpOnly($cookie_options['httponly']);
     }
 
     /**

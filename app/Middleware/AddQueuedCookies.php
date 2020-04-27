@@ -21,6 +21,6 @@ class AddQueuedCookies extends Middleware
     ): ResponseInterface {
         $response = $next($request);
         $cookies = App::make(CookieManager::class)->getQueues();
-        return $response->withCookies($cookies);
+        return $response->setCookies($cookies);
     }
 }

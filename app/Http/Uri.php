@@ -182,27 +182,17 @@ class Uri implements UriInterface
         return $this->fragment;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function withScheme($scheme): UriInterface
+    public function setScheme($scheme): UriInterface
     {
         if (!is_string($scheme)) {
             throw new UriTypeException('scheme expects a string argument');
         }
         $scheme = strtolower($scheme);
-        if ($scheme === $this->scheme) {
-            return $this;
-        }
-        $new = clone $this;
-        $new->scheme = $scheme;
-        return $new;
+        $this->scheme = $scheme;
+        return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function withUserInfo($user, $password = null): UriInterface
+    public function setUserInfo($user, $password = null): UriInterface
     {
         if (
             !is_string($user) ||
@@ -213,12 +203,78 @@ class Uri implements UriInterface
             );
         }
         $user = $this->encodingUrl($user);
-        $new = clone $this;
-        $new->user_info = $user;
+        $this->user_info = $user;
         if ($password !== null) {
-            $new->user_info .= ':' . $password;
+            $this->user_info .= ':' . $password;
         }
-        return $new;
+        return $this;
+    }
+
+    public function setHost($host): UriInterface
+    {
+        if (!is_string($host)) {
+            throw new UriTypeException('host expects a string argument');
+        }
+        $host = strtolower($host);
+        $this->host = $host;
+        return $this;
+    }
+
+    public function setPort($port): UriInterface
+    {
+        if (!is_int($port) && $port !== null) {
+            throw new UriTypeException('port expects a string argument');
+        }
+        $this->port = $port;
+        return $this;
+    }
+
+    public function setPath($path): UriInterface
+    {
+        if (!is_string($path)) {
+            throw new UriTypeException('path expects a string argument');
+        }
+        $path = $this->parsePath($path);
+        $this->path = $path;
+        return $this;
+    }
+
+    public function setQuery($query): UriInterface
+    {
+        if (!is_string($query)) {
+            throw new UriTypeException('query expects a string argument');
+        }
+        $query = $this->parseQuery($query);
+        $this->query = $query;
+        return $this;
+    }
+
+    public function setFragment($fragment): UriInterface
+    {
+        if (!is_string($fragment)) {
+            throw new UriTypeException('fragment expects a string argument');
+        }
+        $fragment = $this->encodingUrl($fragment);
+        $this->fragment = $fragment;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withScheme($scheme): UriInterface
+    {
+        $new = clone $this;
+        return $new->setScheme($scheme);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withUserInfo($user, $password = null): UriInterface
+    {
+        $new = clone $this;
+        return $new->setUserInfo($user, $password);
     }
 
     /**
@@ -226,16 +282,8 @@ class Uri implements UriInterface
      */
     public function withHost($host): UriInterface
     {
-        if (!is_string($host)) {
-            throw new UriTypeException('host expects a string argument');
-        }
-        $host = strtolower($host);
-        if ($host === $this->host) {
-            return $this;
-        }
         $new = clone $this;
-        $new->host = $host;
-        return $new;
+        return $new->setHost($host);
     }
 
     /**
@@ -243,15 +291,8 @@ class Uri implements UriInterface
      */
     public function withPort($port): UriInterface
     {
-        if (!is_int($port) && $port !== null) {
-            throw new UriTypeException('port expects a string argument');
-        }
-        if ($port === $this->port) {
-            return $this;
-        }
         $new = clone $this;
-        $new->port = $port;
-        return $new;
+        return $new->setPort($port);
     }
 
     /**
@@ -259,16 +300,8 @@ class Uri implements UriInterface
      */
     public function withPath($path): UriInterface
     {
-        if (!is_string($path)) {
-            throw new UriTypeException('path expects a string argument');
-        }
-        $path = $this->parsePath($path);
-        if ($path === $this->path) {
-            return $this;
-        }
         $new = clone $this;
-        $new->path = $path;
-        return $new;
+        return $new->setPath($path);
     }
 
     /**
@@ -276,16 +309,8 @@ class Uri implements UriInterface
      */
     public function withQuery($query): UriInterface
     {
-        if (!is_string($query)) {
-            throw new UriTypeException('query expects a string argument');
-        }
-        $query = $this->parseQuery($query);
-        if ($query === $this->query) {
-            return $this;
-        }
         $new = clone $this;
-        $new->query = $query;
-        return $new;
+        return $new->setQuery($query);
     }
 
     /**
@@ -293,16 +318,8 @@ class Uri implements UriInterface
      */
     public function withFragment($fragment): UriInterface
     {
-        if (!is_string($fragment)) {
-            throw new UriTypeException('fragment expects a string argument');
-        }
-        $fragment = $this->encodingUrl($fragment);
-        if ($fragment === $this->fragment) {
-            return $this;
-        }
         $new = clone $this;
-        $new->fragment = $fragment;
-        return $new;
+        return $new->setFragment($fragment);
     }
 
     /**

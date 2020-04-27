@@ -4,7 +4,6 @@ namespace App\Http;
 
 use App\Exceptions\Http\MethodNotAllowedException;
 use Psr\Http\Message\UriInterface;
-use RuntimeException;
 use function in_array;
 
 trait RequestTrait
@@ -39,14 +38,19 @@ trait RequestTrait
         return empty($target) ? '/' : $target;
     }
 
+    public function setRequestTarget($request_target): self
+    {
+        $this->request_target = $request_target;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
-    public function withRequestTarget($request_target)
+    public function withRequestTarget($request_target): self
     {
         $new = clone $this;
-        $new->request_target = $request_target;
-        return $new;
+        return $new->setRequestTarget($request_target);
     }
 
     /**
@@ -57,7 +61,7 @@ trait RequestTrait
         return $this->method;
     }
 
-    protected function setMethod($method): void
+    public function setMethod($method): self
     {
         if (
             !in_array($method, [
@@ -77,16 +81,16 @@ trait RequestTrait
             );
         }
         $this->method = $method;
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function withMethod($method)
+    public function withMethod($method): self
     {
         $new = clone $this;
-        $new->setMethod($method);
-        return $new;
+        return $new->setMethod($method);
     }
 
     /**
@@ -97,20 +101,25 @@ trait RequestTrait
         return $this->uri;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function setUri(UriInterface $uri, $preserveHost = false): self
     {
-        $new = clone $this;
-        $new->uri = $uri;
+        $this->uri = $uri;
         if (($preserveHost && $this->hasHeader('Host')) || !$uri->getHost()) {
-            return $new;
+            return $this;
         }
         $host =
             $uri->getHost() . ($uri->getPort() ? ':' . $uri->getPath() : '');
-        $new->headerAlias['host'] = 'Host';
-        $new->headers['Host'] = [$host];
-        return $new;
+        $this->headerAlias['host'] = 'Host';
+        $this->headers['Host'] = [$host];
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withUri(UriInterface $uri, $preserveHost = false): self
+    {
+        $new = clone $this;
+        return $new->setUri($uri, $preserveHost);
     }
 }

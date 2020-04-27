@@ -9,7 +9,6 @@ use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 use function array_pad;
 use function config;
@@ -92,12 +91,12 @@ class RouteManager
      * 请求处理
      *
      * @param Dispatcher $dispatcher Route Dispatcher
-     * @param ServerRequestInterface $request
+     * @param Request $request
      * @return  ResponseInterface                     响应
      */
     public function handleRequest(
         Dispatcher $dispatcher,
-        ServerRequestInterface $request
+        Request $request
     ): ResponseInterface {
         [$code, $handler, $path_param] = array_pad(
             $dispatcher->dispatch(
@@ -111,7 +110,7 @@ class RouteManager
         // 修改 Request 中的 Path 参数
         if ($path_param !== null) {
             foreach ($path_param as $key => $value) {
-                $request = $request->withAttribute($key, $value);
+                $request = $request->setAttribute($key, $value);
             }
         }
 

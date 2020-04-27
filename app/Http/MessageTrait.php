@@ -41,19 +41,24 @@ trait MessageTrait
         return $this->protocol;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function withProtocolVersion($version)
+    public function setProtocolVersion($version): self
     {
         if (!in_array($version, ['1.0', '1.1', '2', '3'], true)) {
             throw new UnsupportedHttpProtocolException(
                 "Unsupported HTTP protocol version \"$version\" provided"
             );
         }
+        $this->protocol = $version;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withProtocolVersion($version): self
+    {
         $new = clone $this;
-        $new->protocol = $version;
-        return $new;
+        return $new->setProtocolVersion($version);
     }
 
     /**
@@ -84,12 +89,13 @@ trait MessageTrait
         return is_array($result) ? $result : [$result];
     }
 
-    protected function setHeaders(array $headers): void
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
         foreach ($headers as $key => $value) {
             $this->headerAlias[strtolower($key)] = $key;
         }
+        return $this;
     }
 
     /**
@@ -100,24 +106,29 @@ trait MessageTrait
         return implode(',', $this->getHeader($name));
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function withHeader($name, $value)
+    public function setHeader($name, $value): self
     {
-        $new = clone $this;
-        $new->headerAlias[strtolower($name)] = $name;
-        $new->headers[$name] = is_array($value) ? $value : [$value];
+        $this->headerAlias[strtolower($name)] = $name;
+        $this->headers[$name] = is_array($value) ? $value : [$value];
         if (strtolower($name) === 'set-cookie') {
-            $new->cookies = Cookie::makeFromArray($new->headers[$name]);
+            $this->cookies = Cookie::makeFromArray($this->headers[$name]);
         }
-        return $new;
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function withAddedHeader($name, $value)
+    public function withHeader($name, $value): self
+    {
+        $new = clone $this;
+        return $new->setHeader($name, $value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withAddedHeader($name, $value): self
     {
         return $this->withHeader(
             $name,
@@ -128,7 +139,7 @@ trait MessageTrait
     /**
      * @inheritDoc
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): self
     {
         if (!$this->hasHeader($name)) {
             return $this;
@@ -142,13 +153,10 @@ trait MessageTrait
         }
     }
 
-    public function withHeaders(array $headers)
+    public function withHeaders(array $headers): self
     {
-        $result = clone $this;
-        foreach ($headers as $name => $value) {
-            $result = $result->withHeader($name, $value);
-        }
-        return $result;
+        $new = clone $this;
+        return $new->setHeaders($headers);
     }
 
     /**
@@ -159,13 +167,18 @@ trait MessageTrait
         return $this->stream;
     }
 
+    public function setBody(StreamInterface $body): self
+    {
+        $this->stream = $body;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): self
     {
         $new = clone $this;
-        $new->stream = $body;
-        return $new;
+        return $new->setBody($body);
     }
 }

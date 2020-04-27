@@ -58,7 +58,7 @@ class CookieManager
      */
     public function forever(Cookie $cookie): void
     {
-        $this->put($cookie->withMaxAge(2628000));
+        $this->put($cookie->setMaxAge(2628000));
     }
 
     /**
@@ -74,7 +74,7 @@ class CookieManager
             $name = [$name];
         }
         foreach ($name as $key) {
-            $this->put(Cookie::make($key, false)->withMaxAge(1));
+            $this->put(Cookie::make($key, false)->setMaxAge(1));
         }
     }
 

@@ -73,22 +73,22 @@ class Cookie
             [$com_key, $com_value] = array_pad(explode('=', $command), 2, null);
             switch (strtolower($com_key)) {
                 case 'expires':
-                    $cookie = $cookie->withExpires($com_value);
+                    $cookie = $cookie->setExpires($com_value);
                     break;
                 case 'max-age':
-                    $cookie = $cookie->withMaxAge((int) $com_value);
+                    $cookie = $cookie->setMaxAge((int) $com_value);
                     break;
                 case 'domain':
-                    $cookie = $cookie->withDomain($com_value);
+                    $cookie = $cookie->setDomain($com_value);
                     break;
                 case 'path':
-                    $cookie = $cookie->withPath($com_value);
+                    $cookie = $cookie->setPath($com_value);
                     break;
                 case 'secure':
-                    $cookie = $cookie->withSecure(true);
+                    $cookie = $cookie->setSecure(true);
                     break;
                 case 'httponly':
-                    $cookie = $cookie->withHttpOnly(true);
+                    $cookie = $cookie->setHttpOnly(true);
                     break;
             }
         }
@@ -156,11 +156,57 @@ class Cookie
         return $this->http_only;
     }
 
+    public function setValue(string $value = null): Cookie
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+    public function setExpires($expires = 0): Cookie
+    {
+        if ($expires instanceof DateTimeInterface) {
+            $expires = $expires->getTimestamp();
+        } else {
+            $expires = (int) strtotime($expires);
+        }
+        $this->expires = $expires;
+        return $this;
+    }
+
+    public function setMaxAge(?int $max_age = null): Cookie
+    {
+        $this->max_age = (int) $max_age;
+        return $this;
+    }
+
+    public function setPath(?string $path = null): Cookie
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    public function setDomain(?string $domain = null): Cookie
+    {
+        $this->domain = $domain;
+        return $this;
+    }
+
+    public function setSecure(bool $secure = true): Cookie
+    {
+        $this->secure = $secure;
+        return $this;
+    }
+
+    public function setHttpOnly(bool $http_only = true): Cookie
+    {
+        $this->http_only = $http_only;
+        return $this;
+    }
+
     public function withValue(string $value = null): Cookie
     {
         $new = clone $this;
-        $new->value = $value;
-        return $new;
+        return $new->setValue($value);
     }
 
     public function withExpires($expires = 0): Cookie
@@ -171,43 +217,37 @@ class Cookie
             $expires = (int) strtotime($expires);
         }
         $new = clone $this;
-        $new->expires = $expires;
-        return $new;
+        return $new->setExpires($expires);
     }
 
     public function withMaxAge(?int $max_age = null): Cookie
     {
         $new = clone $this;
-        $new->max_age = (int) $max_age;
-        return $new;
+        return $new->setMaxAge($max_age);
     }
 
     public function withPath(?string $path = null): Cookie
     {
         $new = clone $this;
-        $new->path = $path;
-        return $new;
+        return $new->setPath($path);
     }
 
     public function withDomain(?string $domain = null): Cookie
     {
         $new = clone $this;
-        $new->domain = $domain;
-        return $new;
+        return $new->setDomain($domain);
     }
 
     public function withSecure(bool $secure = true): Cookie
     {
         $new = clone $this;
-        $new->secure = $secure;
-        return $new;
+        return $new->setSecure($secure);
     }
 
     public function withHttpOnly(bool $http_only = true): Cookie
     {
         $new = clone $this;
-        $new->http_only = $http_only;
-        return $new;
+        return $new->setHttpOnly($http_only);
     }
 
     public function __toString()

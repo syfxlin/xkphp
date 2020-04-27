@@ -151,7 +151,7 @@ class Response implements ResponseInterface
         int $status = 200,
         array $headers = []
     ): Response {
-        return (new static($text, $status, $headers))->withHeader(
+        return (new static($text, $status, $headers))->setHeader(
             'Content-Type',
             'text/plain; charset=utf-8'
         );
@@ -168,7 +168,7 @@ class Response implements ResponseInterface
         int $status = 200,
         array $headers = []
     ): Response {
-        return (new static($html, $status, $headers))->withHeader(
+        return (new static($html, $status, $headers))->setHeader(
             'Content-Type',
             'text/html; charset=utf-8'
         );
@@ -191,7 +191,7 @@ class Response implements ResponseInterface
             json_encode($data, $options),
             $status,
             $headers
-        ))->withHeader('Content-Type', 'application/json');
+        ))->setHeader('Content-Type', 'application/json');
     }
 
     /**
@@ -205,10 +205,7 @@ class Response implements ResponseInterface
         int $status = 302,
         array $headers = []
     ): Response {
-        return (new static('', $status, $headers))->withHeader(
-            'Location',
-            $url
-        );
+        return (new static('', $status, $headers))->setHeader('Location', $url);
     }
 
     /**
@@ -238,15 +235,21 @@ class Response implements ResponseInterface
         return $this->status;
     }
 
+    public function setStatus($code, $reasonPhrase = ''): self
+    {
+        $this->status = $code;
+        $this->reason_phrase =
+            $reasonPhrase !== '' ? $reasonPhrase : self::$phrases[$code] ?? '';
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withStatus($code, $reasonPhrase = '')
     {
         $new = clone $this;
-        $new->status = $code;
-        $new->reason_phrase =
-            $reasonPhrase !== '' ? $reasonPhrase : self::$phrases[$code] ?? '';
+        return $new->setStatus($code, $reasonPhrase);
     }
 
     /**
@@ -300,7 +303,7 @@ class Response implements ResponseInterface
      */
     public function status(int $code = 200): ResponseInterface
     {
-        return $this->withStatus($code);
+        return $this->setStatus($code);
     }
 
     /**
@@ -313,7 +316,7 @@ class Response implements ResponseInterface
      */
     public function header(string $key, $value): Response
     {
-        return $this->withHeader($key, $value);
+        return $this->setStatus($key, $value);
     }
 
     /**
@@ -348,24 +351,29 @@ class Response implements ResponseInterface
         return isset($this->cookies[$name]);
     }
 
+    public function setCookie(Cookie $cookie): self
+    {
+        $this->cookies[$cookie->getName()] = $cookie;
+        $this->updateCookieHeader();
+        return $this;
+    }
+
     /**
      * @param string $name
      * @param Cookie $cookie
      * @return Response
      */
-    public function withCookie(Cookie $cookie): Response
+    public function withCookie(Cookie $cookie): self
     {
         $new = clone $this;
-        $new->cookies[$cookie->getName()] = $cookie;
-        $new->updateCookieHeader();
-        return $new;
+        return $new->setCookie($cookie);
     }
 
     /**
      * @param string $name
      * @return Response
      */
-    public function withoutCookie(string $name): Response
+    public function withoutCookie(string $name): self
     {
         $new = clone $this;
         unset($new->cookies[$name]);
@@ -393,14 +401,21 @@ class Response implements ResponseInterface
         bool $secure = false,
         bool $http_only = false
     ): Response {
-        return $this->withCookie(
+        return $this->setCookie(
             Cookie::make($name, $value)
-                ->withMaxAge($expire)
-                ->withPath($path)
-                ->withDomain($domain)
-                ->withSecure($secure)
-                ->withHttpOnly($http_only)
+                ->setMaxAge($expire)
+                ->setPath($path)
+                ->setDomain($domain)
+                ->setSecure($secure)
+                ->setHttpOnly($http_only)
         );
+    }
+
+    public function setCookies(array $cookies): self
+    {
+        $this->cookies = $cookies;
+        $this->updateCookieHeader();
+        return $this;
     }
 
     /**
@@ -410,10 +425,7 @@ class Response implements ResponseInterface
     public function withCookies(array $cookies): Response
     {
         $result = clone $this;
-        foreach ($cookies as $cookie) {
-            $result = $result->withCookie($cookie);
-        }
-        return $result;
+        return $result->setCookies($cookies);
     }
 
     /**

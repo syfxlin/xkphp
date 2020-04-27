@@ -35,17 +35,15 @@ class EncryptCookies extends Middleware
                 return $cookie;
             }
         }, $request_cookies);
-        $request = $request->withCookieParams($request_cookies);
-        App::instance(Request::class, $request, 'request', true);
-        return $request;
+        return $request->setCookieParams($request_cookies);
     }
 
     protected function encrypt(ResponseInterface $response): ResponseInterface
     {
         $response_cookies = $response->getCookies();
         $response_cookies = array_map(function (Cookie $cookie) {
-            return $cookie->withValue(Crypt::encrypt($cookie->getValue()));
+            return $cookie->setValue(Crypt::encrypt($cookie->getValue()));
         }, $response_cookies);
-        return $response->withCookies($response_cookies);
+        return $response->setCookies($response_cookies);
     }
 }

@@ -244,8 +244,8 @@ class Auth
                     '|' .
                     $user['password']
             )
-                ->withMaxAge(60 * config('session.cookie_lifetime'))
-                ->withHttpOnly(true)
+                ->setMaxAge(60 * config('session.cookie_lifetime'))
+                ->setHttpOnly(true)
         );
     }
 

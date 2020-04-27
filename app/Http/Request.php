@@ -187,6 +187,12 @@ class Request implements ServerRequestInterface
         return $this->server;
     }
 
+    public function setServerParams(array $server): self
+    {
+        $this->server = $server;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
@@ -195,14 +201,19 @@ class Request implements ServerRequestInterface
         return $this->cookies;
     }
 
+    public function setCookieParams(array $cookies): self
+    {
+        $this->cookies = $cookies;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withCookieParams(array $cookies)
     {
         $new = clone $this;
-        $new->cookies = $cookies;
-        return $new;
+        return $new->setCookieParams($cookies);
     }
 
     /**
@@ -213,14 +224,19 @@ class Request implements ServerRequestInterface
         return $this->query;
     }
 
+    public function setQueryParams(array $query): self
+    {
+        $this->query = $query;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withQueryParams(array $query)
     {
         $new = clone $this;
-        $new->query = $query;
-        return $new;
+        return $new->setQueryParams($query);
     }
 
     /**
@@ -231,15 +247,20 @@ class Request implements ServerRequestInterface
         return $this->files;
     }
 
+    public function setUploadedFiles(array $uploaded_files): self
+    {
+        $this->validateFiles($uploaded_files);
+        $this->files = $uploaded_files;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withUploadedFiles(array $uploaded_files)
     {
-        $this->validateFiles($uploaded_files);
         $new = clone $this;
-        $new->files = $uploaded_files;
-        return $new;
+        return $new->setUploadedFiles($uploaded_files);
     }
 
     /**
@@ -250,14 +271,19 @@ class Request implements ServerRequestInterface
         return $this->parsed_body;
     }
 
+    public function setParsedBody($data): self
+    {
+        $this->parsed_body = $data;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withParsedBody($data)
     {
         $new = clone $this;
-        $new->parsed_body = $data;
-        return $new;
+        return $new->setParsedBody($data);
     }
 
     /**
@@ -266,6 +292,12 @@ class Request implements ServerRequestInterface
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+
+    public function setAttributes(array $attrs): self
+    {
+        $this->attributes = $attrs;
+        return $this;
     }
 
     /**
@@ -279,14 +311,19 @@ class Request implements ServerRequestInterface
         return $this->attributes[$name];
     }
 
+    public function setAttribute($name, $value): self
+    {
+        $this->attributes[$name] = $value;
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function withAttribute($name, $value)
     {
         $new = clone $this;
-        $new->attributes[$name] = $value;
-        return $new;
+        return $new->setAttribute($name, $value);
     }
 
     /**
@@ -349,13 +386,19 @@ class Request implements ServerRequestInterface
     }
 
     /**
-     * 获取 GET 和 POST 的参数
+     * 获取所有的参数
      *
      * @return  array
      */
     public function all(): array
     {
-        return array_merge($this->getQueryParams(), $this->getParsedBody());
+        return array_merge(
+            $this->getQueryParams(),
+            $this->getParsedBody(),
+            $this->getAttributes(),
+            $this->getCookieParams(),
+            $this->getUploadedFiles()
+        );
     }
 
     /**
@@ -409,14 +452,11 @@ class Request implements ServerRequestInterface
     public function has($key): bool
     {
         if (is_string($key)) {
-            return isset($this->query[$key]) || isset($this->parsed_body[$key]);
+            return $this->__isset($key);
         }
 
         foreach ($key as $value) {
-            if (
-                !isset($this->query[$value]) &&
-                !isset($this->parsed_body[$value])
-            ) {
+            if (!$this->__isset($value)) {
                 return false;
             }
         }
@@ -582,8 +622,7 @@ class Request implements ServerRequestInterface
 
     public function __set($name, $value)
     {
-        // Unsupported set
-        throw new UnsupportedSetRequestException('Unsupported set');
+        $this->$name = $value;
     }
 
     public function __isset($name)

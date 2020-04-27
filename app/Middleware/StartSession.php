@@ -39,6 +39,6 @@ class StartSession extends Middleware
         if ($cookie === null) {
             return $response;
         }
-        return $response->withCookie($cookie);
+        return $response->setCookie($cookie);
     }
 }
