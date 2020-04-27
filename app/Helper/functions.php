@@ -3,6 +3,7 @@
 use App\Exceptions\HttpStatusException;
 use App\Facades\App;
 use App\Facades\Config;
+use App\Facades\Console;
 use App\Facades\Crypt;
 use App\Facades\Hash;
 use App\Facades\JWT;
@@ -303,4 +304,10 @@ function getDotData(string $key, array $source)
         $data = $data[$k];
     }
     return $data;
+}
+
+// Log
+function report($level, ...$data)
+{
+    Console::{$level}(...$data);
 }

@@ -46,12 +46,7 @@ abstract class Facade
      *
      * @return string
      */
-    protected static function getFacadeAccessor(): string
-    {
-        throw new RuntimeException(
-            'Facade does not implement getFacadeAccessor method'
-        );
-    }
+    abstract protected static function getFacadeAccessor(): string;
 
     /**
      * 动态获取构造器或者 getInstance 参数

@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\Http\MethodNotAllowedException;
 use App\Exceptions\HttpStatusException;
+use App\Facades\Console;
 use App\Facades\JWT;
 use App\Http\Request;
 use App\Http\Stream;
@@ -16,6 +18,7 @@ use ReflectionClass;
 use RuntimeException;
 use function abort;
 use function asset_path;
+use function report;
 
 class HomeController
 {
@@ -77,6 +80,12 @@ class HomeController
      */
     public function exception(Request $request): bool
     {
+        Console::info('Info', 'Info', ['Info']);
+        Console::debug('Debug', 'Debug', ['Debug']);
+        Console::warn('Warn', 'Warn', ['Warn']);
+        Console::error(new MethodNotAllowedException('Error'));
+        Console::fatal(new MethodNotAllowedException('Fatal'));
+        report('info', 'Info Function');
         abort(403);
         return true;
     }

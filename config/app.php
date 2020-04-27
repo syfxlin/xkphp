@@ -3,6 +3,7 @@
 use App\Providers\AnnotationProvider;
 use App\Providers\AppProvider;
 use App\Providers\AuthProvider;
+use App\Providers\ConsoleProvider;
 use App\Providers\CookieProvider;
 use App\Providers\DatabaseProvider;
 use App\Providers\EncryptionProvider;
@@ -25,6 +26,10 @@ return [
     'hash_options' => [],
     'jwt_algo' => 'HS256',
     'jwt_payload' => '',
+    'log_to' =>
+        env('APP_ENV', 'production') !== 'production'
+            ? 'console'
+            : BASE_PATH . 'storage/app.log',
     'providers' => [
         RequestProvider::class,
         CookieProvider::class,
@@ -37,6 +42,7 @@ return [
         HashProvider::class,
         JwtProvider::class,
         StorageProvider::class,
+        ConsoleProvider::class,
 
         // App
         AppProvider::class,
