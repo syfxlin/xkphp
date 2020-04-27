@@ -5,8 +5,10 @@ namespace App\Controllers;
 use App\Exceptions\Http\MethodNotAllowedException;
 use App\Exceptions\HttpStatusException;
 use App\Facades\Console;
+use App\Facades\Cookie;
 use App\Facades\JWT;
 use App\Http\Request;
+use App\Http\Response;
 use App\Http\Stream;
 use App\Kernel\View;
 use App\Annotations\DI;
@@ -100,5 +102,17 @@ class HomeController
     public function inject(int $path, int $query): string
     {
         return $path . ',' . $query;
+    }
+
+    /**
+     * @return Response
+     *
+     * @Route\Get("/cookie")
+     */
+    public function cookie(): Response
+    {
+        $response = \response('Cookie')->cookie('cookie1', 'value');
+        Cookie::queue(\App\Http\Cookie::make('cookie2', 'value'));
+        return $response;
     }
 }

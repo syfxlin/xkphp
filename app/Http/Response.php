@@ -7,6 +7,7 @@ use App\Kernel\View;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use function array_merge;
 use function get_class;
 use function in_array;
 use function is_object;
@@ -316,7 +317,7 @@ class Response implements ResponseInterface
      */
     public function header(string $key, $value): Response
     {
-        return $this->setStatus($key, $value);
+        return $this->setHeader($key, $value);
     }
 
     /**
@@ -359,7 +360,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @param string $name
      * @param Cookie $cookie
      * @return Response
      */
@@ -411,10 +411,15 @@ class Response implements ResponseInterface
         );
     }
 
+    /**
+     * @param Cookie[] $cookies
+     * @return $this
+     */
     public function setCookies(array $cookies): self
     {
-        $this->cookies = $cookies;
-        $this->updateCookieHeader();
+        foreach ($cookies as $cookie) {
+            $this->setCookie($cookie);
+        }
         return $this;
     }
 
@@ -426,6 +431,19 @@ class Response implements ResponseInterface
     {
         $result = clone $this;
         return $result->setCookies($cookies);
+    }
+
+    /**
+     * @param string[] $cookies
+     * @return $this
+     */
+    public function removeCookies(array $cookies): self
+    {
+        foreach ($cookies as $cookie) {
+            unset($this->cookies[$cookie]);
+        }
+        $this->updateCookieHeader();
+        return $this;
     }
 
     /**
