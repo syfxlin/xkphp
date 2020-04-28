@@ -5,28 +5,43 @@ namespace App\Kernel;
 use App\Facades\App;
 use function get_class;
 
-trait AspectProxy
+class AspectProxy
 {
+    /**
+     * @var object
+     */
+    protected $target;
+
+    /**
+     * @var string
+     */
+    protected $class;
+
+    public function __construct($target, string $class = null)
+    {
+        $this->target = $target;
+        $this->class = $class ?? get_class($target);
+    }
+
     public function __call($name, $arguments)
     {
-        $class = get_class($this);
         $handler = new AspectHandler(
             $this,
-            $class,
+            $this->class,
             $name,
-            App::make(AspectManager::class)->getPoint($class, $name),
+            App::make(AspectManager::class)->getPoint($this->class, $name),
             $arguments
         );
         return $handler->invokeAspect();
     }
 
-    public function _handle(string $method, $arguments)
+    public function handle(string $method, $arguments)
     {
-        return $this->$method(...$arguments);
+        return $this->target->$method(...$arguments);
     }
 
-    public function _getTarget(): AspectProxy
+    public function getTarget()
     {
-        return $this;
+        return $this->target;
     }
 }

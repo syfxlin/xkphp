@@ -4,6 +4,7 @@ namespace App\Kernel;
 
 use App\Facades\App;
 use App\Http\Request;
+use function explode;
 use function strpos;
 
 class Controller
@@ -12,12 +13,19 @@ class Controller
      * 反射注入 Request
      *
      * @param Request $request
-     * @param string $method 方法名称
+     * @param string $handler
      * @return  mixed
      */
-    public static function invokeController(Request $request, string $method)
+    public static function invokeController(Request $request, string $handler)
     {
-        return App::callWithRequest($request, $method);
+        [$class, $method] = explode('@', $handler);
+        return AspectManager::weavingAspectWithClosure(
+            function () use ($request, $handler) {
+                return App::callWithRequest($request, $handler);
+            },
+            $class,
+            $method
+        );
     }
 
     /**

@@ -3,6 +3,9 @@
 namespace App\Facades;
 
 use App\Application;
+use App\Aspect\Aspect;
+use App\Kernel\AspectManager;
+use App\Kernel\AspectProxy;
 use RuntimeException;
 
 /**
@@ -24,21 +27,33 @@ abstract class Facade
     /**
      * Facade 代理
      *
-     * @param   string  $name       方法名
-     * @param   array   $arguments  方法参数
+     * @param string $method
+     * @param array $arguments 方法参数
      *
      * @return  mixed
      */
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $method, array $arguments)
     {
-        $class = self::$app->make(
-            static::getFacadeAccessor(),
-            static::getArgs()
-        );
+        $class = static::getFacadeAccessor();
+        $instance = self::$app->make($class, static::getArgs());
         if (static::isStatic()) {
-            return $class::$name(...$arguments);
+            return $instance::$method(...$arguments);
         }
-        return $class->$name(...$arguments);
+        if (
+            $class === \App\Utils\Config::class ||
+            $class === AspectManager::class ||
+            $instance instanceof Aspect ||
+            !self::$app->has(AspectManager::class)
+        ) {
+            return $instance->$method(...$arguments);
+        }
+        return AspectManager::weavingAspectWithClosure(
+            function () use ($instance, $method, $arguments) {
+                return $instance->$method(...$arguments);
+            },
+            $class,
+            $method
+        );
     }
 
     /**

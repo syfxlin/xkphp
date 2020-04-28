@@ -14,7 +14,6 @@ use App\Kernel\Container;
 use App\Kernel\RouteManager;
 use function app_path;
 use function array_walk;
-use function asset_path;
 use function base_path;
 use function config;
 use function config_path;

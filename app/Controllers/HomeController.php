@@ -138,6 +138,7 @@ class HomeController
         //        $proxy = new AspectProxy(new Test());
         //        /* @var Test $proxy */
         //        $proxy->aspect('args');
+        $hash = \App\Facades\Hash::make('123');
         return '';
     }
 }

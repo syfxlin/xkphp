@@ -14,7 +14,13 @@ class AspectProvider extends Provider
 
     public function register(): void
     {
-        $this->app->singleton(AspectManager::class, null, 'aspect.manager');
+        $this->app->singleton(
+            AspectManager::class,
+            function () {
+                return new AspectManager($this->app);
+            },
+            'aspect.manager'
+        );
         $this->aspects = config('aspect');
         foreach ($this->aspects as $aspect) {
             $this->app->singleton($aspect, null);

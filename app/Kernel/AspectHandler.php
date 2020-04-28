@@ -3,13 +3,15 @@
 namespace App\Kernel;
 
 use App\Aspect\Aspect;
+use Closure;
 use Throwable;
 use function array_shift;
+use function is_callable;
 
 class AspectHandler
 {
     /**
-     * @var AspectProxy
+     * @var AspectProxy|Closure
      */
     protected $proxy;
 
@@ -44,7 +46,7 @@ class AspectHandler
     protected $error;
 
     public function __construct(
-        AspectProxy $proxy,
+        $proxy,
         string $class,
         string $method,
         array $aspects,
@@ -89,7 +91,13 @@ class AspectHandler
             return $this->invokeNext();
         }
         $args = empty($args) ? $this->args : $args;
-        return $this->proxy->_handle($this->method, $args);
+        if ($this->proxy instanceof AspectProxy) {
+            return $this->proxy->handle($this->method, $args);
+        }
+        if (is_callable($this->proxy)) {
+            $run = $this->proxy;
+            return $run($args);
+        }
     }
 
     public function invokeNext()
