@@ -2,6 +2,7 @@
 
 use App\Providers\AnnotationProvider;
 use App\Providers\AppProvider;
+use App\Providers\AspectProvider;
 use App\Providers\AuthProvider;
 use App\Providers\ConsoleProvider;
 use App\Providers\CookieProvider;
@@ -34,6 +35,7 @@ return [
         RequestProvider::class,
         CookieProvider::class,
         SessionProvider::class,
+        AspectProvider::class,
         AnnotationProvider::class,
         DatabaseProvider::class,
         AuthProvider::class,

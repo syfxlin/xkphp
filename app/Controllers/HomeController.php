@@ -12,6 +12,7 @@ use App\Http\Response;
 use App\Http\Stream;
 use App\Kernel\View;
 use App\Annotations\DI;
+use App\Utils\Hash;
 use Doctrine\Common\Annotations\AnnotationReader;
 use App\Annotations\Middleware;
 use App\Annotations\Route;
@@ -19,7 +20,6 @@ use App\Annotations\Autowired\Autowired;
 use ReflectionClass;
 use RuntimeException;
 use function abort;
-use function asset_path;
 use function report;
 
 class HomeController
@@ -29,6 +29,17 @@ class HomeController
      * @Autowired("App\Http\Request")
      */
     public $request;
+
+    /**
+     * @var Hash
+     */
+    public $hash;
+
+    public function __construct(Hash $hash)
+    {
+        // 如果不使用注解注入类属性，则可以使用构造器注入
+        $this->hash = $hash;
+    }
 
     /**
      * @param Request $request
@@ -101,6 +112,7 @@ class HomeController
      */
     public function inject(int $path, int $query): string
     {
+        // IoC 容器会自动将参数名作为 key 在绑定的实例和 Request 中寻找匹配的字段，然后进行注入
         return $path . ',' . $query;
     }
 
@@ -114,5 +126,28 @@ class HomeController
         $response = \response('Cookie')->cookie('cookie1', 'value');
         Cookie::queue(\App\Http\Cookie::make('cookie2', 'value'));
         return $response;
+    }
+
+    /**
+     * @return string
+     *
+     * @Route\Get("/aspect")
+     */
+    public function aspect(): string
+    {
+        //        $proxy = new AspectProxy(new Test());
+        //        /* @var Test $proxy */
+        //        $proxy->aspect('args');
+        return '';
+    }
+}
+
+class Test
+{
+    public function aspect($args): string
+    {
+        report('info', 'Test->aspect');
+        // throw new Exception('Aspect Exception');
+        return "return-$args";
     }
 }
