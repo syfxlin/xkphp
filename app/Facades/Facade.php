@@ -40,10 +40,8 @@ abstract class Facade
             return $instance::$method(...$arguments);
         }
         if (
-            $class === \App\Utils\Config::class ||
-            $class === AspectManager::class ||
-            $instance instanceof Aspect ||
-            !self::$app->has(AspectManager::class)
+            !self::$app->has(AspectManager::class) ||
+            !AspectManager::hasAspect($class, $method)
         ) {
             return $instance->$method(...$arguments);
         }
@@ -51,8 +49,7 @@ abstract class Facade
             function () use ($instance, $method, $arguments) {
                 return $instance->$method(...$arguments);
             },
-            $class,
-            $method
+            [$class, $method]
         );
     }
 

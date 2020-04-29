@@ -11,27 +11,19 @@ use function report;
 
 class LogAspect extends Aspect
 {
-    public function pointCut(): array
-    {
-        return [
-            HomeController::class => 'aspect',
-            Hash::class => 'make'
-        ];
-    }
-
     public function after(JoinPoint $point): void
     {
-        report('info', 'after');
+        report('info', 'after-' . $point->getMethod());
     }
 
-    public function before(): void
+    public function before(JoinPoint $point): void
     {
-        report('info', 'before');
+        report('info', 'before-' . $point->getMethod());
     }
 
     public function afterReturning(JoinPoint $point): void
     {
-        report('info', 'afterReturning');
+        report('info', 'afterReturning-' . $point->getMethod());
     }
 
     public function afterThrowing(Throwable $e): void

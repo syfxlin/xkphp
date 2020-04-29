@@ -3,13 +3,14 @@
 namespace Migration;
 
 use App\Facades\DB;
+use RuntimeException;
 
 class Migration
 {
     public function __construct()
     {
         if (PHP_SAPI !== 'cli') {
-            throw new \RuntimeException('Illegal call to database migration');
+            throw new RuntimeException('Illegal call to database migration');
         }
     }
 

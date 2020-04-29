@@ -18,14 +18,13 @@ class Controller
      */
     public static function invokeController(Request $request, string $handler)
     {
-        [$class, $method] = explode('@', $handler);
-        return AspectManager::weavingAspectWithClosure(
-            function () use ($request, $handler) {
-                return App::callWithRequest($request, $handler);
-            },
-            $class,
-            $method
-        );
+        return AspectManager::weavingAspectWithClosure(function () use (
+            $request,
+            $handler
+        ) {
+            return App::callWithRequest($request, $handler);
+        },
+        explode('@', $handler));
     }
 
     /**

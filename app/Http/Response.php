@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Facades\App;
 use App\Kernel\View;
+use DateTimeInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -385,7 +386,7 @@ class Response implements ResponseInterface
     /**
      * @param string $name
      * @param string $value
-     * @param int|string|\DateTimeInterface $expire
+     * @param int|string|DateTimeInterface $expire
      * @param string $path
      * @param string $domain
      * @param bool $secure

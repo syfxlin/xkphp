@@ -4,7 +4,10 @@ namespace App\Kernel;
 
 use App\Application;
 use App\Aspect\Aspect;
+use App\Utils\Config;
 use Closure;
+use function array_map;
+use function array_merge;
 use function array_push;
 use function explode;
 use function is_array;
@@ -45,8 +48,8 @@ class AspectManager
 
     public function getPoint($class, $method = null)
     {
-        if (!$this->hasAspect($class, $method)) {
-            return null;
+        if (!self::hasAspect($class, $method)) {
+            return [];
         }
         if ($method === null) {
             return self::$pointMap[$class];
@@ -54,12 +57,7 @@ class AspectManager
         return self::$pointMap[$class][$method];
     }
 
-    public function putAspect(Aspect $aspect): void
-    {
-        $this->putPoint($aspect->pointCut(), $aspect);
-    }
-
-    public function hasAspect($class, $method = null): bool
+    public static function hasAspect($class, $method = null): bool
     {
         if ($method === null) {
             return isset(self::$pointMap[$class]);
@@ -67,47 +65,35 @@ class AspectManager
         return isset(self::$pointMap[$class][$method]);
     }
 
-    public static function weavingAspectWithProxy($instance, string $class)
-    {
-        if (
-            $class === \App\Utils\Config::class ||
-            $class === self::class ||
-            $instance instanceof Aspect ||
-            !self::$app->has(self::class)
-        ) {
-            return $instance;
-        }
-        $point = self::$app->make(self::class)->getPoint($class);
-        // 没有切面则直接返回实例
-        if ($point === null) {
-            return $instance;
-        }
-        return new AspectProxy($instance, $class);
-    }
-
     /**
      * @param $callback
-     * @param string $class
-     * @param string $method
+     * @param array $target
      * @param array $args
+     * @param array $aspects
      * @return mixed
      */
     public static function weavingAspectWithClosure(
         $callback,
-        string $class,
-        string $method,
-        array $args = []
+        array $target = ['', ''],
+        array $args = [],
+        array $aspects = []
     ) {
-        $point = self::$app->make(self::class)->getPoint($class, $method);
+        $point = array_merge(
+            self::$app->make(self::class)->getPoint($target[0], $target[1]),
+            array_map(function ($item) {
+                return self::$app->make($item);
+            }, $aspects)
+        );
         // 没有切面则直接返回实例
-        if ($point === null) {
+        if (empty($point)) {
             return $callback($args);
         }
         return (new AspectHandler(
             $callback,
-            $class,
-            $method,
-            $point
+            $target[0],
+            $target[1],
+            $point,
+            $args
         ))->invokeAspect();
     }
 }

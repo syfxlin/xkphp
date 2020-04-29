@@ -2,8 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Aspect\LogAspect;
 use App\Exceptions\Http\MethodNotAllowedException;
 use App\Exceptions\HttpStatusException;
+use App\Facades\App;
 use App\Facades\Console;
 use App\Facades\Cookie;
 use App\Facades\JWT;
@@ -12,6 +14,7 @@ use App\Http\Response;
 use App\Http\Stream;
 use App\Kernel\View;
 use App\Annotations\DI;
+use App\Utils\Crypt;
 use App\Utils\Hash;
 use Doctrine\Common\Annotations\AnnotationReader;
 use App\Annotations\Middleware;
@@ -135,20 +138,25 @@ class HomeController
      */
     public function aspect(): string
     {
-        //        $proxy = new AspectProxy(new Test());
-        //        /* @var Test $proxy */
-        //        $proxy->aspect('args');
+        report('debug', 'hash');
         $hash = \App\Facades\Hash::make('123');
+        report('debug', 'encrypt');
+        $encrypt = App::callWithAspect(
+            [Crypt::class, 'encrypt'],
+            [
+                'value' => '123'
+            ]
+        );
+        report('debug', 'function');
+        App::callWithAspect(
+            function () {
+                report('debug', 'function-in');
+            },
+            [],
+            null,
+            false,
+            [LogAspect::class]
+        );
         return '';
-    }
-}
-
-class Test
-{
-    public function aspect($args): string
-    {
-        report('info', 'Test->aspect');
-        // throw new Exception('Aspect Exception');
-        return "return-$args";
     }
 }

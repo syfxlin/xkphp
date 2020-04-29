@@ -8,9 +8,7 @@ use Throwable;
 
 abstract class Aspect
 {
-    abstract public function pointCut(): array;
-
-    public function before(): void
+    public function before(JoinPoint $point): void
     {
     }
 

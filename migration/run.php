@@ -1,6 +1,6 @@
 <?php
 if (PHP_SAPI !== 'cli') {
-    throw new \RuntimeException('Illegal call to database migration');
+    throw new RuntimeException('Illegal call to database migration');
 }
 
 require_once __DIR__ . '/../vendor/autoload.php';

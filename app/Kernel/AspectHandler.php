@@ -11,7 +11,7 @@ use function is_callable;
 class AspectHandler
 {
     /**
-     * @var AspectProxy|Closure
+     * @var Closure
      */
     protected $proxy;
 
@@ -86,18 +86,13 @@ class AspectHandler
     public function invokeProcess($args = [])
     {
         // Before
-        $this->aspect->before();
+        $this->aspect->before($this->makeJoinPoint());
         if (!empty($this->aspects)) {
             return $this->invokeNext();
         }
         $args = empty($args) ? $this->args : $args;
-        if ($this->proxy instanceof AspectProxy) {
-            return $this->proxy->handle($this->method, $args);
-        }
-        if (is_callable($this->proxy)) {
-            $run = $this->proxy;
-            return $run($args);
-        }
+        $run = $this->proxy;
+        return $run($args);
     }
 
     public function invokeNext()

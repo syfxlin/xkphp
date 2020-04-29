@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use RuntimeException;
 use function in_array;
 use function is_array;
 use function realpath;
@@ -54,7 +55,7 @@ class Storage
         $path = is_array($path) ? $path : [$path];
         foreach ($path as $value) {
             if (stripos(realpath($value), storage_path()) !== 0) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'Path is outside of the defined root'
                 );
             }

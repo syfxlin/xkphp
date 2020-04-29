@@ -2,6 +2,7 @@
 
 namespace App\Kernel;
 
+use App\Annotations\Autowired\Autowired;
 use App\Exceptions\Kernel\BindFailException;
 use App\Exceptions\Kernel\NotInstantiableException;
 use App\Facades\Annotation;
@@ -20,11 +21,13 @@ use function class_exists;
 use function compact;
 use function config;
 use function explode;
+use function get_class;
 use function is_array;
 use function is_bool;
 use function is_int;
 use function is_string;
 use function preg_match;
+use function preg_split;
 use function strpos;
 
 /**
@@ -410,10 +413,7 @@ class Container implements ContainerInterface
         }
         $props = $reflector->getProperties();
         foreach ($props as $prop) {
-            $anno = Annotation::getProperty(
-                $prop,
-                \App\Annotations\Autowired\Autowired::class
-            );
+            $anno = Annotation::getProperty($prop, Autowired::class);
             if ($anno !== null) {
                 if (class_exists($anno->value)) {
                     $concrete = $this->make($anno->value);
@@ -531,7 +531,10 @@ class Container implements ContainerInterface
         $isStatic = false;
         if (strpos($target, '@') !== false) {
             [$class, $method] = explode('@', $target);
-            $object = $this->build($class);
+            if (!$this->has($class)) {
+                $this->bind($class);
+            }
+            $object = $this->make($class);
         } else {
             [$class, $method] = explode('::', $target);
             $object = $class;
@@ -629,5 +632,36 @@ class Container implements ContainerInterface
             $result[$prop->name] = $prop->value;
         }
         return $result;
+    }
+
+    public function callWithAspect(
+        $target,
+        array $args = [],
+        $object = null,
+        $isStatic = false,
+        array $aspects = []
+    ) {
+        $class_method = ['', ''];
+        if ($object !== null) {
+            $class_method[0] = get_class($object);
+        }
+        if (is_string($target)) {
+            if (preg_match('/@|::/', $target) > 0) {
+                $class_method = preg_split('/@|::/', $target);
+            } else {
+                $target = $this->getMethodBind($target);
+            }
+        } elseif (is_array($target)) {
+            $class_method = $target;
+            $target = "{$target[0]}@{$target[1]}";
+        }
+        return AspectManager::weavingAspectWithClosure(
+            function () use ($target, $args, $object, $isStatic) {
+                $this->call($target, $args, $object, $isStatic);
+            },
+            $class_method,
+            $args,
+            $aspects
+        );
     }
 }

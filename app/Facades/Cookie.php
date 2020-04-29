@@ -2,6 +2,8 @@
 
 namespace App\Facades;
 
+use App\Http\CookieManager;
+
 /**
  * Class Cookie
  * @package App\Facades
@@ -23,6 +25,6 @@ class Cookie extends Facade
 {
     public static function getFacadeAccessor(): string
     {
-        return \App\Http\CookieManager::class;
+        return CookieManager::class;
     }
 }

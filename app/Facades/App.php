@@ -28,6 +28,7 @@ use App\Kernel\Container;
  * @method static string getAbstract($alias)
  * @method static void removeAlias($alias)
  * @method static Container boot()
+ * @method static mixed callWithAspect($method, array $args = [], $object = null, bool $isStatic = false, array $aspects = [])
  *
  * @see \App\Application
  */
