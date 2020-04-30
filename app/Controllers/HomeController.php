@@ -174,6 +174,7 @@ class HomeController
      */
     public function event(): string
     {
+        Event::dispatch('event.str_config');
         Event::listen(LogEvent::class, [LogListener::class, 'handle']);
         Event::subscribe(LogSubscriber::class);
         Event::dispatch(LogEvent::class);
