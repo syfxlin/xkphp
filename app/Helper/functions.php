@@ -3,8 +3,9 @@
 use App\Exceptions\HttpStatusException;
 use App\Facades\App;
 use App\Facades\Config;
-use App\Facades\Console;
+use App\Facades\Log;
 use App\Facades\Crypt;
+use App\Facades\Event;
 use App\Facades\Hash;
 use App\Facades\JWT;
 use App\Http\CookieManager;
@@ -26,6 +27,7 @@ use App\Http\SessionManager;
  */
 function request($name = null, $default = null)
 {
+    /* @var Request $request */
     $request = App::make(Request::class);
     if ($name === null) {
         return $request;
@@ -68,6 +70,7 @@ function redirect($url, int $code = 302, array $headers = []): Response
  */
 function session($name = null, $default = null)
 {
+    /* @var SessionManager $session */
     $session = App::make(SessionManager::class);
     if ($name === null) {
         return $session;
@@ -90,6 +93,7 @@ function session($name = null, $default = null)
  */
 function cookie($name = null, $default = null)
 {
+    /* @var CookieManager $cookie */
     $cookie = App::make(CookieManager::class);
     if ($name === null) {
         return $cookie;
@@ -143,6 +147,38 @@ function str_random(int $length)
     }
     $str = str_shuffle($str);
     return substr($str, 0, $length);
+}
+
+function str_parse_callback($callback, $default = null)
+{
+    if (is_array($callback)) {
+        return $callback;
+    }
+    if (strpos($callback, '@') !== false) {
+        return explode('@', $callback);
+    }
+    if (strpos($callback, '::') !== false) {
+        return explode('::', $callback);
+    }
+    return [$callback, $default];
+}
+
+function str_stringify_callback(
+    $callback,
+    $default = null,
+    bool $isStatic = false
+) {
+    $split = $isStatic ? '::' : '@';
+    if (is_array($callback)) {
+        return implode($split, $callback);
+    }
+    if (preg_match('/@|::/', $callback) > 0) {
+        return $callback;
+    }
+    if ($default === null) {
+        return $callback;
+    }
+    return "{$callback}{$split}{$default}";
 }
 
 // Path
@@ -309,5 +345,21 @@ function getDotData(string $key, array $source)
 // Log
 function report($level, ...$data)
 {
-    Console::{$level}(...$data);
+    Log::{$level}(...$data);
+}
+
+// Event
+function listen(string $event, $listener)
+{
+    Event::listen($event, $listener);
+}
+
+function subscribe(string $subscriber)
+{
+    Event::subscribe($subscriber);
+}
+
+function event($event, $args = []): array
+{
+    return Event::dispatch($event, $args);
 }

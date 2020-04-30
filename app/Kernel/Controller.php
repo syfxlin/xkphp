@@ -5,6 +5,7 @@ namespace App\Kernel;
 use App\Facades\App;
 use App\Http\Request;
 use function explode;
+use function str_parse_callback;
 use function strpos;
 
 class Controller
@@ -24,7 +25,7 @@ class Controller
         ) {
             return App::callWithRequest($request, $handler);
         },
-        explode('@', $handler));
+        str_parse_callback($handler));
     }
 
     /**

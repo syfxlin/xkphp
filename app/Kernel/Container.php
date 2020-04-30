@@ -20,6 +20,7 @@ use function array_pad;
 use function class_exists;
 use function compact;
 use function config;
+use function count;
 use function explode;
 use function get_class;
 use function is_array;
@@ -28,6 +29,7 @@ use function is_int;
 use function is_string;
 use function preg_match;
 use function preg_split;
+use function str_parse_callback;
 use function strpos;
 
 /**
@@ -507,7 +509,10 @@ class Container implements ContainerInterface
         if ($object !== null) {
             return $this->callMethod($object, $method, $isStatic, $args);
         }
-        if (is_string($method) && preg_match('/@|::/', $method) > 0) {
+        if (
+            is_array($method) ||
+            (is_string($method) && preg_match('/@|::/', $method) > 0)
+        ) {
             return $this->callClass($method, $args);
         }
         if (is_string($method)) {
@@ -523,24 +528,44 @@ class Container implements ContainerInterface
         return $reflector->invokeArgs($dependency);
     }
 
+    /**
+     * @param string|array $target
+     * @param array $args
+     * @return mixed
+     */
     protected function callClass($target, array $args = [])
     {
         $class = null;
         $method = null;
         $object = null;
         $isStatic = false;
-        if (strpos($target, '@') !== false) {
-            [$class, $method] = explode('@', $target);
-            if (!$this->has($class)) {
-                $this->bind($class);
-            }
-            $object = $this->make($class);
+        if (is_string($target)) {
+            $isStatic = strpos($target, '@') === false;
+            [$class, $method] = str_parse_callback($target);
+            $object = $this->bindAndMakeReflection($class, $isStatic);
         } else {
-            [$class, $method] = explode('::', $target);
-            $object = $class;
-            $isStatic = true;
+            if (count($target) === 3) {
+                [$class, $split, $method] = $target;
+                $isStatic = $split === '::';
+            } else {
+                [$class, $method] = $target;
+            }
+            $object = $this->bindAndMakeReflection($class, $isStatic);
         }
         return $this->callMethod($object, $method, $isStatic, $args);
+    }
+
+    protected function bindAndMakeReflection(
+        string $class,
+        bool $isStatic = false
+    ) {
+        if ($isStatic) {
+            return $class;
+        }
+        if (!$this->has($class)) {
+            $this->bind($class);
+        }
+        return $this->make($class);
     }
 
     protected function callMethod(

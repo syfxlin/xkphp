@@ -12,6 +12,7 @@ use function array_push;
 use function explode;
 use function is_array;
 use function is_string;
+use function str_parse_callback;
 
 class AspectManager
 {
@@ -33,7 +34,7 @@ class AspectManager
     public function putPoint($point, Aspect $aspect): void
     {
         if (is_string($point)) {
-            [$class, $method] = explode('@', $point);
+            [$class, $method] = str_parse_callback($point);
             $point = [$class => $method];
         }
         foreach ($point as $class => $method) {
@@ -48,7 +49,7 @@ class AspectManager
 
     public function getPoint($class, $method = null)
     {
-        if (!self::hasAspect($class, $method)) {
+        if (!self::has($class, $method)) {
             return [];
         }
         if ($method === null) {
@@ -57,7 +58,7 @@ class AspectManager
         return self::$pointMap[$class][$method];
     }
 
-    public static function hasAspect($class, $method = null): bool
+    public static function has($class, $method = null): bool
     {
         if ($method === null) {
             return isset(self::$pointMap[$class]);

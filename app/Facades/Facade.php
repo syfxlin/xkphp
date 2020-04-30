@@ -3,10 +3,7 @@
 namespace App\Facades;
 
 use App\Application;
-use App\Aspect\Aspect;
 use App\Kernel\AspectManager;
-use App\Kernel\AspectProxy;
-use RuntimeException;
 
 /**
  * Class Facade
@@ -41,7 +38,7 @@ abstract class Facade
         }
         if (
             !self::$app->has(AspectManager::class) ||
-            !AspectManager::hasAspect($class, $method)
+            !AspectManager::has($class, $method)
         ) {
             return $instance->$method(...$arguments);
         }

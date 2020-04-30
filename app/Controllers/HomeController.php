@@ -3,17 +3,23 @@
 namespace App\Controllers;
 
 use App\Aspect\LogAspect;
+use App\Events\LogEvent;
 use App\Exceptions\Http\MethodNotAllowedException;
 use App\Exceptions\HttpStatusException;
 use App\Facades\App;
-use App\Facades\Console;
+use App\Facades\Log;
 use App\Facades\Cookie;
+use App\Facades\Event;
 use App\Facades\JWT;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Stream;
+use App\Kernel\EventDispatcher;
 use App\Kernel\View;
 use App\Annotations\DI;
+use App\Listeners\LogListener;
+use App\Listeners\LogSubscriber;
+use App\Listeners\StrListener;
 use App\Utils\Crypt;
 use App\Utils\Hash;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -96,11 +102,11 @@ class HomeController
      */
     public function exception(Request $request): bool
     {
-        Console::info('Info', 'Info', ['Info']);
-        Console::debug('Debug', 'Debug', ['Debug']);
-        Console::warn('Warn', 'Warn', ['Warn']);
-        Console::error(new MethodNotAllowedException('Error'));
-        Console::fatal(new MethodNotAllowedException('Fatal'));
+        Log::info('Info', 'Info', ['Info']);
+        Log::debug('Debug', 'Debug', ['Debug']);
+        Log::warn('Warn', 'Warn', ['Warn']);
+        Log::error(new MethodNotAllowedException('Error'));
+        Log::fatal(new MethodNotAllowedException('Fatal'));
         report('info', 'Info Function');
         abort(403);
         return true;
@@ -157,6 +163,22 @@ class HomeController
             false,
             [LogAspect::class]
         );
+        report('debug', App::make('path'));
+        return '';
+    }
+
+    /**
+     * @return string
+     *
+     * @Route\Get("/event")
+     */
+    public function event(): string
+    {
+        Event::listen(LogEvent::class, [LogListener::class, 'handle']);
+        Event::subscribe(LogSubscriber::class);
+        Event::dispatch(LogEvent::class);
+        Event::listen('event.str', StrListener::class);
+        Event::dispatch('event.str');
         return '';
     }
 }

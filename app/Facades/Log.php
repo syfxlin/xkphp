@@ -2,10 +2,11 @@
 
 namespace App\Facades;
 
+use App\Utils\Console;
 use Throwable;
 
 /**
- * Class Console
+ * Class Log
  * @package App\Facades
  *
  * @method static void error(Throwable $e)
@@ -16,10 +17,10 @@ use Throwable;
  *
  * @see \App\Utils\Console
  */
-class Console extends Facade
+class Log extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \App\Utils\Console::class;
+        return Console::class;
     }
 }

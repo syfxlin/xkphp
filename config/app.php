@@ -8,6 +8,7 @@ use App\Providers\ConsoleProvider;
 use App\Providers\CookieProvider;
 use App\Providers\DatabaseProvider;
 use App\Providers\EncryptionProvider;
+use App\Providers\EventProvider;
 use App\Providers\FileProvider;
 use App\Providers\HashProvider;
 use App\Providers\JwtProvider;
@@ -36,6 +37,7 @@ return [
         CookieProvider::class,
         SessionProvider::class,
         AspectProvider::class,
+        EventProvider::class,
         AnnotationProvider::class,
         DatabaseProvider::class,
         AuthProvider::class,
