@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'web' => __DIR__ . '/../App/Route/web.php',
-    'api' => __DIR__ . '/../App/Route/api.php'
+    'web' => __DIR__ . '/../app/Route/web.php',
+    'api' => __DIR__ . '/../app/Route/api.php'
 ];
