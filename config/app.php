@@ -29,7 +29,8 @@ return [
     'jwt_algo' => 'HS256',
     'jwt_payload' => '',
     'log_to' =>
-        env('APP_ENV', 'production') !== 'production'
+        env('APP_ENV', 'production') !== 'production' &&
+        in_array(PHP_SAPI, ['cli', 'cli-server'])
             ? 'console'
             : BASE_PATH . 'storage/app.log',
     'providers' => [

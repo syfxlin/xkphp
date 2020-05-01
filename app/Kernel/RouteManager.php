@@ -3,6 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\App;
+use App\Facades\Route;
 use App\Http\Request;
 use Closure;
 use FastRoute\RouteCollector;
@@ -76,8 +77,11 @@ class RouteManager
             }
             // 导入注解路由
             foreach (self::$annotationRoute as $route) {
-                // 闭包执行的效果和路由表的 require 方式类似
-                $route();
+                Route::match(
+                    $route['method'],
+                    $route['route'],
+                    $route['handler']
+                );
             }
         });
     }

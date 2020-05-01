@@ -91,9 +91,8 @@ trait MessageTrait
 
     public function setHeaders(array $headers): self
     {
-        $this->headers = $headers;
         foreach ($headers as $key => $value) {
-            $this->headerAlias[strtolower($key)] = $key;
+            $this->setHeader($key, $value);
         }
         return $this;
     }

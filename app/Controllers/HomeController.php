@@ -15,6 +15,7 @@ use App\Http\Request;
 use App\Http\Response;
 use App\Http\Stream;
 use App\Kernel\EventDispatcher;
+use App\Kernel\Scheduler;
 use App\Kernel\View;
 use App\Annotations\DI;
 use App\Listeners\LogListener;
@@ -29,7 +30,14 @@ use App\Annotations\Autowired\Autowired;
 use ReflectionClass;
 use RuntimeException;
 use function abort;
+use function curl_close;
+use function curl_exec;
+use function curl_init;
+use function curl_multi_exec;
+use function curl_multi_getcontent;
+use function curl_setopt;
 use function report;
+use function sleep;
 
 class HomeController
 {
@@ -180,6 +188,41 @@ class HomeController
         Event::dispatch(LogEvent::class);
         Event::listen('event.str', StrListener::class);
         Event::dispatch('event.str');
+        return '';
+    }
+
+    /**
+     * @return string
+     *
+     * @Route\Get("/task")
+     */
+    public function task(): string
+    {
+        $scheduler = new Scheduler();
+        $req = function () {
+            report('debug', 'task1-start');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "http://ixk.me");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            report('debug', 'task1-end');
+            return $data;
+        };
+        $task1 = function () use ($req) {
+            for ($i = 0; $i < 5; $i++) {
+                yield $req();
+            }
+        };
+        $task2 = function () {
+            for ($i = 0; $i < 5; $i++) {
+                report('debug', 'task2-start');
+                yield;
+            }
+        };
+        $scheduler->add($task1);
+        $scheduler->add($task2);
+        $scheduler->then();
         return '';
     }
 }

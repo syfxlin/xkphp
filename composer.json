@@ -15,7 +15,8 @@
     "ext-json": "*",
     "ext-fileinfo": "*",
     "doctrine/annotations": "^1.10",
-    "guzzlehttp/guzzle": "^6.5"
+    "guzzlehttp/guzzle": "^6.5",
+    "ext-apcu": "*"
   },
   "license": "Apache 2.0",
   "authors": [

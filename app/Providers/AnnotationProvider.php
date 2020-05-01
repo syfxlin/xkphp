@@ -3,18 +3,22 @@
 namespace App\Providers;
 
 use App\Facades\Annotation;
+use App\Facades\APCu;
 use App\Facades\File;
-use App\Facades\Route;
 use App\Kernel\Controller;
 use App\Kernel\RouteManager;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ReflectionClass;
 use ReflectionMethod;
+use function apcu_delete;
+use function apcu_exists;
+use function apcu_fetch;
+use function apcu_store;
 use function app_path;
 use function array_map;
 use function class_exists;
 use function config;
-use function config_path;
+use function function_exists;
 use function str_replace;
 use function strtoupper;
 use function substr;
@@ -28,7 +32,7 @@ class AnnotationProvider extends Provider
 
     public function boot(): void
     {
-        $this->parseAnnotation();
+        $this->loadAnnotation();
     }
 
     protected function bootAnnotation(): void
@@ -36,12 +40,22 @@ class AnnotationProvider extends Provider
         AnnotationRegistry::registerLoader('class_exists');
     }
 
-    protected function parseAnnotation(): void
+    protected function loadAnnotation(): void
     {
         $config = config('annotation');
         if (empty($config['middleware']) && empty($config['route'])) {
             return;
         }
+
+        // Read Cache
+        $cache_enable = config('cache.annotation') && APCu::isEnable();
+        if ($cache_enable && APCu::exists('annotation_cache')) {
+            $cache = APCu::fetch('annotation_cache');
+            RouteManager::$annotationRoute = $cache['route'];
+            RouteManager::$annotationMiddlewares = $cache['middleware'];
+            return;
+        }
+
         $files = File::allFiles(app_path('Controllers'));
         foreach ($files as $file) {
             $class_name = Controller::getFull(
@@ -61,6 +75,14 @@ class AnnotationProvider extends Provider
                     }
                 }
             }
+        }
+
+        // Store Cache
+        if ($cache_enable) {
+            APCu::store('annotation_cache', [
+                'route' => RouteManager::$annotationRoute,
+                'middleware' => RouteManager::$annotationMiddlewares
+            ]);
         }
     }
 
@@ -93,22 +115,17 @@ class AnnotationProvider extends Provider
         foreach ($anno_class as $anno) {
             $route = Annotation::get($method, "App\Annotations\Route\\$anno");
             if ($route !== null) {
-                RouteManager::$annotationRoute[] = function () use (
-                    $route,
-                    $method,
-                    $anno
-                ) {
-                    $handler = "$method->class@$method->name";
-                    if ($anno === 'Route' && $route->method === null) {
-                        Route::any($route->value, $handler);
-                    } else {
-                        Route::match(
-                            $route->method ?? [strtoupper($anno)],
-                            $route->value,
-                            $handler
-                        );
-                    }
-                };
+                $handler = "$method->class@$method->name";
+                if ($anno === 'Route' && $route->method === null) {
+                    $httpMethod = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+                } else {
+                    $httpMethod = $route->method ?? [strtoupper($anno)];
+                }
+                RouteManager::$annotationRoute[] = [
+                    'method' => $httpMethod,
+                    'route' => $route->value,
+                    'handler' => $handler
+                ];
             }
         }
     }
