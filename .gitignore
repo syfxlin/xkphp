@@ -31,7 +31,7 @@ storage/app.log
 #mix
 public/
 !public/index.php
-!public/.htaccess
+!.htaccess
 
 .idea
 .phpunit.result.cache
