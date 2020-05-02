@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Contracts\Subscriber;
 use App\Events\LogEvent;
 use App\Kernel\EventDispatcher;
 

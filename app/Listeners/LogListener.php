@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Contracts\Listener;
 use App\Events\LogEvent;
 
 class LogListener implements Listener

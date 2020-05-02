@@ -4,7 +4,7 @@ namespace App\Kernel;
 
 use App\Facades\App;
 use App\Http\Request;
-use App\Http\Responseable;
+use App\Contracts\Responseable;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use function array_merge;

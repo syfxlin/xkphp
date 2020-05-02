@@ -54,7 +54,7 @@ class HandleExceptions extends Bootstrap
         } catch (\Exception $ex) {
             $request = null;
         }
-        if (!$e instanceof Exception) {
+        if (!$e instanceof \App\Contracts\Exception) {
             $e = new Exception(Response::$phrases[500], 500, $e->getPrevious());
         }
         return $e->render($request);

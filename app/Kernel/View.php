@@ -3,7 +3,7 @@
 namespace App\Kernel;
 
 use App\Facades\Auth;
-use App\Http\Renderable;
+use App\Contracts\Renderable;
 use UnexpectedValueException;
 use function array_merge;
 use function asset;

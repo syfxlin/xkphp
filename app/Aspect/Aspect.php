@@ -6,7 +6,7 @@ use App\Kernel\JoinPoint;
 use App\Kernel\ProceedingJoinPoint;
 use Throwable;
 
-abstract class Aspect
+abstract class Aspect implements \App\Contracts\Aspect
 {
     public function before(JoinPoint $point): void
     {

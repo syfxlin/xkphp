@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Listeners;
-
-use App\Events\Event;
+namespace App\Contracts;
 
 interface Listener
 {

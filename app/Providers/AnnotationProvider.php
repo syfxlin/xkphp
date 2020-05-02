@@ -88,6 +88,9 @@ class AnnotationProvider extends Provider
 
     protected function parseMiddlewareAnnotation(ReflectionMethod $method): void
     {
+        if ($method->getDocComment() === false) {
+            return;
+        }
         $middlewares = Annotation::getList(
             $method,
             'App\Annotations\Middleware'
@@ -103,6 +106,9 @@ class AnnotationProvider extends Provider
 
     protected function parseRouteAnnotation(ReflectionMethod $method): void
     {
+        if ($method->getDocComment() === false) {
+            return;
+        }
         $anno_class = [
             'Get',
             'Post',

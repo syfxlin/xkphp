@@ -3,7 +3,7 @@
 namespace App\Kernel;
 
 use App\Application;
-use App\Events\Event;
+use App\Contracts\Event;
 use Closure;
 use function array_walk;
 use function class_exists;

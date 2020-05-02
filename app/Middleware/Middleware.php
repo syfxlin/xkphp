@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class Middleware implements MiddlewareInterface
+abstract class Middleware implements \App\Contracts\Middleware
 {
     /**
      * @param ServerRequestInterface $request
@@ -22,9 +22,4 @@ abstract class Middleware implements MiddlewareInterface
     ): ResponseInterface {
         return $this->handle($request, $handler);
     }
-
-    abstract public function handle(
-        Request $request,
-        MiddlewareRunner $next
-    ): ResponseInterface;
 }

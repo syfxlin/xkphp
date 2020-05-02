@@ -418,6 +418,9 @@ class Container implements ContainerInterface
         }
         $props = $reflector->getProperties();
         foreach ($props as $prop) {
+            if ($prop->getDocComment() === false) {
+                continue;
+            }
             $anno = Annotation::getProperty($prop, Autowired::class);
             if ($anno !== null) {
                 if (class_exists($anno->value)) {
@@ -651,7 +654,11 @@ class Container implements ContainerInterface
     {
         // 如果不是方法或者关闭了DI就直接返回空
         $config = config('annotation');
-        if (!$method instanceof ReflectionMethod || empty($config['di'])) {
+        if (
+            !$method instanceof ReflectionMethod ||
+            empty($config['di']) ||
+            $method->getDocComment() === false
+        ) {
             return [];
         }
         $props = Annotation::getList($method, 'App\Annotations\DI');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Contracts;
 
 use App\Kernel\EventDispatcher;
 

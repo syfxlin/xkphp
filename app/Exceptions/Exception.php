@@ -8,7 +8,7 @@ use RuntimeException;
 use function response;
 use function view;
 
-class Exception extends RuntimeException
+class Exception extends RuntimeException implements \App\Contracts\Exception
 {
     /**
      * @param Request $request

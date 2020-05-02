@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Application;
 
-abstract class Provider
+abstract class Provider implements \App\Contracts\Provider
 {
     /**
      * @var Application
@@ -20,6 +20,4 @@ abstract class Provider
     {
         $this->app = $app;
     }
-
-    abstract public function register(): void;
 }

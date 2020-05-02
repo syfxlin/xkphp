@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Contracts\Renderable;
 use App\Facades\App;
 use App\Kernel\View;
 use DateTimeInterface;

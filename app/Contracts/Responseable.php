@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http;
+namespace App\Contracts;
+
+use App\Http\Response;
 
 interface Responseable
 {

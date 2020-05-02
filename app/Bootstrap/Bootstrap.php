@@ -4,7 +4,7 @@ namespace App\Bootstrap;
 
 use App\Application;
 
-abstract class Bootstrap
+abstract class Bootstrap implements \App\Contracts\Bootstrap
 {
     /**
      * @var Application
@@ -15,6 +15,4 @@ abstract class Bootstrap
     {
         $this->app = $app;
     }
-
-    abstract public function boot(): void;
 }
