@@ -36,6 +36,7 @@ use function curl_init;
 use function curl_multi_exec;
 use function curl_multi_getcontent;
 use function curl_setopt;
+use function preg_replace;
 use function report;
 use function sleep;
 
@@ -69,7 +70,9 @@ class HomeController
      */
     public function index($request, AnnotationReader $reader): View
     {
-        return view('home');
+        return view('home')->filter(function (string $content) {
+            return preg_replace('/>(\s*)</', '><', $content);
+        });
     }
 
     /**

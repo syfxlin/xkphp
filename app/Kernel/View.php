@@ -4,6 +4,7 @@ namespace App\Kernel;
 
 use App\Facades\Auth;
 use App\Contracts\Renderable;
+use Closure;
 use UnexpectedValueException;
 use function array_merge;
 use function asset;
@@ -33,6 +34,12 @@ class View implements Renderable
      * @var array
      */
     protected $data = [];
+
+    /**
+     * 视图过滤器
+     * @var Closure|null
+     */
+    protected $filter_callback = null;
 
     /**
      * 判断视图是否存在
@@ -111,7 +118,20 @@ class View implements Renderable
             ViewHtml::$extends = null;
         }
         ViewHtml::$data = [];
+
+        // Filter
+        if ($this->filter_callback !== null) {
+            $callback = $this->filter_callback;
+            $content = $callback($content);
+        }
+
         return $content;
+    }
+
+    public function filter($callback): View
+    {
+        $this->filter_callback = $callback;
+        return $this;
     }
 
     /**
