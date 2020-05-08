@@ -253,8 +253,7 @@ class Container implements ContainerInterface
     public function instance(
         string $abstract,
         $instance,
-        $alias = false,
-        bool $overwrite = false
+        $alias = false
     ): Container {
         [$abstract, $alias] = $this->getAbstractAndAliasByAlias(
             $abstract,
@@ -268,7 +267,7 @@ class Container implements ContainerInterface
             },
             true,
             $alias,
-            $overwrite
+            true
         );
         return $this;
     }

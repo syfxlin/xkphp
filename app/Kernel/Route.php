@@ -65,7 +65,7 @@ class Route
             // Make middlewares handler
             $runner = new MiddlewareRunner(
                 array_merge(
-                    RouteManager::$globalMiddlewares,
+                    RouteManager::$global_middlewares,
                     $this->middlewares
                 )
             );
@@ -86,8 +86,8 @@ class Route
 
     protected function registerAnnotationMiddleware(string $handler): void
     {
-        if (isset(RouteManager::$annotationMiddlewares[$handler])) {
-            $this->middleware(RouteManager::$annotationMiddlewares[$handler]);
+        if (isset(RouteManager::$annotation_middlewares[$handler])) {
+            $this->middleware(RouteManager::$annotation_middlewares[$handler]);
         }
     }
 
@@ -304,11 +304,11 @@ class Route
         if (is_array($name)) {
             foreach ($name as $n) {
                 $this->middlewares[] =
-                    RouteManager::$routeMiddlewares[$n] ?? $n;
+                    RouteManager::$route_middlewares[$n] ?? $n;
             }
         } else {
             $this->middlewares[] =
-                RouteManager::$routeMiddlewares[$name] ?? $name;
+                RouteManager::$route_middlewares[$name] ?? $name;
         }
         return $this;
     }

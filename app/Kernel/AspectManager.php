@@ -24,7 +24,7 @@ class AspectManager
     /**
      * @var array
      */
-    protected static $pointMap = [];
+    protected static $point_map = [];
 
     public function __construct(Application $app)
     {
@@ -42,7 +42,7 @@ class AspectManager
                 $method = [$method];
             }
             foreach ($method as $item) {
-                self::$pointMap[$class][$item][] = $aspect;
+                self::$point_map[$class][$item][] = $aspect;
             }
         }
     }
@@ -53,17 +53,17 @@ class AspectManager
             return [];
         }
         if ($method === null) {
-            return self::$pointMap[$class];
+            return self::$point_map[$class];
         }
-        return self::$pointMap[$class][$method];
+        return self::$point_map[$class][$method];
     }
 
     public static function has($class, $method = null): bool
     {
         if ($method === null) {
-            return isset(self::$pointMap[$class]);
+            return isset(self::$point_map[$class]);
         }
-        return isset(self::$pointMap[$class][$method]);
+        return isset(self::$point_map[$class][$method]);
     }
 
     /**

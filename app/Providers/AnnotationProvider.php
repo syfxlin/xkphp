@@ -51,8 +51,8 @@ class AnnotationProvider extends Provider
         $cache_enable = config('cache.annotation') && APCu::isEnable();
         if ($cache_enable && APCu::exists('annotation_cache')) {
             $cache = APCu::fetch('annotation_cache');
-            RouteManager::$annotationRoute = $cache['route'];
-            RouteManager::$annotationMiddlewares = $cache['middleware'];
+            RouteManager::$annotation_route = $cache['route'];
+            RouteManager::$annotation_middlewares = $cache['middleware'];
             return;
         }
 
@@ -80,8 +80,8 @@ class AnnotationProvider extends Provider
         // Store Cache
         if ($cache_enable) {
             APCu::store('annotation_cache', [
-                'route' => RouteManager::$annotationRoute,
-                'middleware' => RouteManager::$annotationMiddlewares
+                'route' => RouteManager::$annotation_route,
+                'middleware' => RouteManager::$annotation_middlewares
             ]);
         }
     }
@@ -96,7 +96,7 @@ class AnnotationProvider extends Provider
             'App\Annotations\Middleware'
         );
         if ($middlewares !== []) {
-            RouteManager::$annotationMiddlewares[
+            RouteManager::$annotation_middlewares[
                 "$method->class@$method->name"
             ] = array_map(function ($prop) {
                 return $prop->value;
@@ -127,7 +127,7 @@ class AnnotationProvider extends Provider
                 } else {
                     $httpMethod = $route->method ?? [strtoupper($anno)];
                 }
-                RouteManager::$annotationRoute[] = [
+                RouteManager::$annotation_route[] = [
                     'method' => $httpMethod,
                     'route' => $route->value,
                     'handler' => $handler

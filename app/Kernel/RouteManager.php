@@ -32,28 +32,28 @@ class RouteManager
      *
      * @var array|null
      */
-    public static $globalMiddlewares;
+    public static $global_middlewares;
 
     /**
      * Route 中间件
      *
      * @var array|null
      */
-    public static $routeMiddlewares;
+    public static $route_middlewares;
 
     /**
      * 注解中间件，按需开启
      *
      * @var array
      */
-    public static $annotationMiddlewares = [];
+    public static $annotation_middlewares = [];
 
     /**
      * 注解路由，按需开启
      *
      * @var Closure[]
      */
-    public static $annotationRoute = [];
+    public static $annotation_route = [];
 
     /**
      * @var Dispatcher
@@ -66,8 +66,8 @@ class RouteManager
     public function __construct()
     {
         $middleware_config = config('middleware');
-        self::$globalMiddlewares = $middleware_config['global'];
-        self::$routeMiddlewares = $middleware_config['route'];
+        self::$global_middlewares = $middleware_config['global'];
+        self::$route_middlewares = $middleware_config['route'];
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
             self::$route = $r;
             // 导入路由表
@@ -76,7 +76,7 @@ class RouteManager
                 require_once $route;
             }
             // 导入注解路由
-            foreach (self::$annotationRoute as $route) {
+            foreach (self::$annotation_route as $route) {
                 Route::match(
                     $route['method'],
                     $route['route'],
