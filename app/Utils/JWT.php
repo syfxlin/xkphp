@@ -6,7 +6,6 @@ use App\Exceptions\Utils\AlgoNotSupportException;
 use App\Exceptions\Utils\InvalidPayloadException;
 use App\Exceptions\Utils\InvalidSignException;
 use App\Exceptions\Utils\InvalidTokenException;
-use RuntimeException;
 use function array_key_exists;
 use function array_merge;
 use function array_pad;
@@ -48,7 +47,7 @@ class JWT
     protected static $supported = [
         'HS256' => 'SHA256',
         'HS384' => 'SHA384',
-        'HS512' => 'SHA512'
+        'HS512' => 'SHA512',
     ];
 
     /**
@@ -123,12 +122,12 @@ class JWT
         $timestamp = time();
         $header = [
             'alg' => $this->algo,
-            'typ' => $type
+            'typ' => $type,
         ];
         $auto_payload = [
             'iat' => $timestamp,
             'nbf' => $timestamp,
-            'exp' => $timestamp + $exp
+            'exp' => $timestamp + $exp,
         ];
         $payload = array_merge($this->default_payload, $auto_payload, $payload);
         $segments = [];

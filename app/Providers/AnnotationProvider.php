@@ -10,15 +10,10 @@ use App\Kernel\RouteManager;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ReflectionClass;
 use ReflectionMethod;
-use function apcu_delete;
-use function apcu_exists;
-use function apcu_fetch;
-use function apcu_store;
 use function app_path;
 use function array_map;
 use function class_exists;
 use function config;
-use function function_exists;
 use function str_replace;
 use function strtoupper;
 use function substr;
@@ -81,7 +76,7 @@ class AnnotationProvider extends Provider
         if ($cache_enable) {
             APCu::store('annotation_cache', [
                 'route' => RouteManager::$annotation_route,
-                'middleware' => RouteManager::$annotation_middlewares
+                'middleware' => RouteManager::$annotation_middlewares,
             ]);
         }
     }
@@ -116,7 +111,7 @@ class AnnotationProvider extends Provider
             'Put',
             'Patch',
             'Head',
-            'Route'
+            'Route',
         ];
         foreach ($anno_class as $anno) {
             $route = Annotation::get($method, "App\Annotations\Route\\$anno");
@@ -130,7 +125,7 @@ class AnnotationProvider extends Provider
                 RouteManager::$annotation_route[] = [
                     'method' => $httpMethod,
                     'route' => $route->value,
-                    'handler' => $handler
+                    'handler' => $handler,
                 ];
             }
         }

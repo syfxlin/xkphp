@@ -2,7 +2,6 @@
 
 namespace App\Middleware;
 
-use App\Facades\App;
 use App\Facades\Crypt;
 use App\Http\Cookie;
 use App\Http\Request;

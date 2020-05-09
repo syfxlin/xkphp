@@ -45,7 +45,7 @@ class VerifyCsrfToken extends Middleware
             [
                 'status' => 419,
                 'message' => 'Request Expired',
-                'errors' => ['CSRF Token needs to be updated.']
+                'errors' => ['CSRF Token needs to be updated.'],
             ],
             419
         );

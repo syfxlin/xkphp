@@ -3,20 +3,13 @@
 namespace App\Http;
 
 use App\Contracts\Renderable;
-use App\Facades\App;
-use App\Kernel\View;
 use DateTimeInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use function array_merge;
-use function get_class;
-use function in_array;
-use function is_object;
 use function is_string;
 use function json_encode;
 use function method_exists;
-use function view;
 
 class Response implements ResponseInterface
 {
@@ -96,7 +89,7 @@ class Response implements ResponseInterface
         508 => 'Loop Detected',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
-        599 => 'Network Connect Timeout Error'
+        599 => 'Network Connect Timeout Error',
     ];
 
     /**

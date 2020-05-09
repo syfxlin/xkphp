@@ -5,7 +5,6 @@ namespace App\Http;
 use App\Exceptions\Http\UriParseException;
 use App\Exceptions\Http\UriTypeException;
 use Psr\Http\Message\UriInterface;
-use RuntimeException;
 use function array_pad;
 use function explode;
 use function implode;

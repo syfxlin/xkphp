@@ -9,15 +9,14 @@ use App\Bootstrap\LoadEnvironmentVariables;
 use App\Bootstrap\RegisterFacades;
 use App\Bootstrap\RegisterProviders;
 use App\Http\Request;
-use App\Kernel\ProviderManager;
 use App\Kernel\Container;
+use App\Kernel\ProviderManager;
 use App\Kernel\RouteManager;
 use function app_path;
 use function array_walk;
 use function base_path;
 use function config;
 use function config_path;
-use function env;
 use function public_path;
 use function realpath;
 use function storage_path;
@@ -50,7 +49,7 @@ class Application extends Container
         // 注册服务提供者管理器
         RegisterProviders::class,
         // 启动服务
-        BootProviders::class
+        BootProviders::class,
     ];
 
     /**

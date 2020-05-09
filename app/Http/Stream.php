@@ -9,7 +9,6 @@ use App\Exceptions\Http\ResourceReadFailException;
 use App\Exceptions\Http\ResourceWriteFailException;
 use App\Exceptions\Http\SeekFailException;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 use function fclose;
 use function feof;
 use function fopen;

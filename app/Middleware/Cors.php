@@ -25,7 +25,7 @@ class Cors extends Middleware
             ),
             'Access-Control-Allow-Credentials' => 'true',
             'Access-Control-Allow-Headers' => '*',
-            'Access-Control-Allow-Methods' => '*'
+            'Access-Control-Allow-Methods' => '*',
         ]);
     }
 }

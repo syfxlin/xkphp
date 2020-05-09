@@ -56,7 +56,7 @@ class User extends Model
             ->where([
                 'id' => $id,
                 'remember_token' => $token,
-                'password' => $password_hash
+                'password' => $password_hash,
             ])
             ->first();
     }
@@ -88,7 +88,7 @@ class User extends Model
         return self::query()
             ->where('id', $id)
             ->update([
-                'remember_token' => $token
+                'remember_token' => $token,
             ]);
     }
 }

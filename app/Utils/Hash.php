@@ -3,9 +3,7 @@
 namespace App\Utils;
 
 use App\Exceptions\Utils\AlgoNotSupportException;
-use RuntimeException;
 use function in_array;
-use function is_int;
 use function password_hash;
 use function password_needs_rehash;
 use function password_verify;

@@ -6,7 +6,6 @@ use App\Exceptions\Utils\AlgoNotSupportException;
 use App\Exceptions\Utils\DecryptException;
 use App\Exceptions\Utils\EncryptException;
 use App\Exceptions\Utils\InvalidPayloadException;
-use RuntimeException;
 use function base64_decode;
 use function base64_encode;
 use function compact;

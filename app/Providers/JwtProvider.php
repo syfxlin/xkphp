@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Utils\JWT;
 use function base64_decode;
 use function config;
-use function env;
 
 class JwtProvider extends Provider
 {

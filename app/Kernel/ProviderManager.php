@@ -6,7 +6,6 @@ use App\Application;
 use App\Providers\Provider;
 use function array_map;
 use function array_walk;
-use function config;
 use function is_string;
 use function method_exists;
 

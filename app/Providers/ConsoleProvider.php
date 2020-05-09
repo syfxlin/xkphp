@@ -13,7 +13,7 @@ class ConsoleProvider extends Provider
             Console::class,
             function () {
                 return new Console([
-                    'print_to' => config('app.log_to')
+                    'print_to' => config('app.log_to'),
                 ]);
             },
             'console'

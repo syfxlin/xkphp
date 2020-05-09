@@ -69,7 +69,7 @@ class Storage
             'copy',
             'link',
             'moveDirectory',
-            'copyDirectory'
+            'copyDirectory',
         ];
         $arguments[0] = realpath(storage_path() . '/' . $arguments[0]);
         $this->vaildPath($arguments[0]);

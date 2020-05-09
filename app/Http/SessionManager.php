@@ -48,7 +48,7 @@ class SessionManager
         }
         $this->options = array_merge($options, [
             'use_cookies' => false,
-            'use_only_cookies' => true
+            'use_only_cookies' => true,
         ]);
         @session_start($this->options);
         $this->id = session_id();

@@ -2,10 +2,8 @@
 
 namespace App\Aspect;
 
-use App\Controllers\HomeController;
 use App\Kernel\JoinPoint;
 use App\Kernel\ProceedingJoinPoint;
-use App\Utils\Hash;
 use Throwable;
 use function report;
 

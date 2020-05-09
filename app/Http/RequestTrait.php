@@ -73,7 +73,7 @@ trait RequestTrait
                 'CONNECT',
                 'OPTIONS',
                 'TRACE',
-                'PATCH'
+                'PATCH',
             ])
         ) {
             throw new MethodNotAllowedException(

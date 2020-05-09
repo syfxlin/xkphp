@@ -3,8 +3,6 @@
 namespace App\Http;
 
 use App\Facades\App;
-use App\Http\Cookie;
-use App\Http\Request;
 use function is_string;
 
 class CookieManager

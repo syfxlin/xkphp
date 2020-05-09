@@ -7,7 +7,6 @@ use App\Exceptions\Http\FailMoveFileException;
 use App\Exceptions\Http\UploadFailException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
 use function is_resource;
 use function is_string;
 use function move_uploaded_file;
@@ -24,7 +23,7 @@ class UploadFile implements UploadedFileInterface
         UPLOAD_ERR_NO_FILE => 'No file was uploaded',
         UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
         UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.'
+        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.',
     ];
 
     /**

@@ -2,15 +2,12 @@
 
 namespace App\Kernel;
 
-use App\Facades\App;
 use App\Facades\Route;
 use App\Http\Request;
 use Closure;
-use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
-
 use function array_pad;
 use function config;
 use function FastRoute\simpleDispatcher;
@@ -130,8 +127,8 @@ class RouteManager
                             sprintf(
                                 'The URI "%s" was not found.',
                                 $request->getUri()
-                            )
-                        ]
+                            ),
+                        ],
                     ],
                     404
                 );
@@ -146,8 +143,8 @@ class RouteManager
                             sprintf(
                                 'Method "%s" is not allowed.',
                                 $request->getMethod()
-                            )
-                        ]
+                            ),
+                        ],
                     ],
                     405
                 );

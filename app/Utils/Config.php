@@ -2,16 +2,13 @@
 
 namespace App\Utils;
 
-use function array_map;
 use function array_shift;
-use function basename;
 use function config_path;
 use function dirname;
 use function explode;
 use function glob;
 use function is_array;
 use function pathinfo;
-use function scandir;
 
 class Config
 {

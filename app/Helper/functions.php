@@ -3,15 +3,15 @@
 use App\Exceptions\HttpStatusException;
 use App\Facades\App;
 use App\Facades\Config;
-use App\Facades\Log;
 use App\Facades\Crypt;
 use App\Facades\Event;
 use App\Facades\Hash;
 use App\Facades\JWT;
+use App\Facades\Log;
+use App\Facades\View;
 use App\Http\CookieManager;
 use App\Http\Request;
 use App\Http\Response;
-use App\Facades\View;
 use App\Http\SessionManager;
 
 /**
@@ -347,7 +347,7 @@ function data_get_dot(string $key, $source, $default = null)
         }
         if (is_array($data)) {
             $data = $data[$segment];
-        } else if (is_object($data)) {
+        } elseif (is_object($data)) {
             $data = $data->$segment;
         } else {
             return $default;

@@ -3,7 +3,6 @@
 namespace App\Http;
 
 use App\Exceptions\Http\UnsupportedHttpProtocolException;
-use RuntimeException;
 use Psr\Http\Message\StreamInterface;
 use function array_merge;
 use function implode;

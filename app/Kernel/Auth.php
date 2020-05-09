@@ -66,14 +66,14 @@ class Auth
             'nickname' => 'required|string:1,255',
             'email' => 'required|string:3,255|email|unique_users',
             'password' => 'required|string:8,255',
-            'password_confirmed' => 'required|string:8,255|eqField:password'
+            'password_confirmed' => 'required|string:8,255|eqField:password',
         ])
             ->addValidator(
                 'unique_users',
                 function ($data) {
                     return !User::existUserByAccount([
                         'username' => $data,
-                        'email' => $data
+                        'email' => $data,
                     ]);
                 },
                 'Duplicate username or email.'
@@ -155,16 +155,16 @@ class Auth
             return [
                 [
                     'name' => 'account',
-                    'msg' => sprintf('No "%s" users found', $user['account'])
-                ]
+                    'msg' => sprintf('No "%s" users found', $user['account']),
+                ],
             ];
         }
         if (!Hash::check($user['password'], $db_user['password'])) {
             return [
                 [
                     'name' => 'password',
-                    'msg' => 'Account does not match the password.'
-                ]
+                    'msg' => 'Account does not match the password.',
+                ],
             ];
         }
         unset($user['account'], $user['password']);
@@ -173,8 +173,8 @@ class Auth
                 return [
                     [
                         'name' => $key,
-                        'msg' => 'These credentials do not match our records.'
-                    ]
+                        'msg' => 'These credentials do not match our records.',
+                    ],
                 ];
             }
         }
@@ -192,7 +192,7 @@ class Auth
     {
         return Validator::check($data, [
             'account' => 'required|string:1,255',
-            'password' => 'required|string:8,255'
+            'password' => 'required|string:8,255',
         ]);
     }
 

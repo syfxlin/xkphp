@@ -40,7 +40,7 @@ class Console
         'bright_cyan' => '96',
         'bright_white' => '97',
 
-        'bg_red' => '41;37'
+        'bg_red' => '41;37',
     ];
 
     public const OPTION = [
@@ -48,7 +48,7 @@ class Console
         'underline' => '4',
         'flicker' => '5',
         'reverse' => '7',
-        'hide' => '8'
+        'hide' => '8',
     ];
 
     protected $print_to = 'console';

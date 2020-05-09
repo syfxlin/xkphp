@@ -45,7 +45,7 @@ class Exception extends RuntimeException implements \App\Contracts\Exception
         $content = [
             'status' => $status,
             'message' => $message,
-            'errors' => $errors
+            'errors' => $errors,
         ];
         if ($request === null || !$request->ajax()) {
             $content = view('errors/errors', $content);

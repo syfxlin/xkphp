@@ -3,7 +3,6 @@
 namespace App\Utils;
 
 use App\Exceptions\Utils\FileNotExistException;
-use RuntimeException;
 use function array_filter;
 use function array_push;
 use function array_values;

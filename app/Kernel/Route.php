@@ -2,14 +2,12 @@
 
 namespace App\Kernel;
 
-use App\Facades\App;
-use App\Http\Request;
 use App\Contracts\Responseable;
+use App\Facades\App;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use function array_merge;
 use function is_array;
-use function is_object;
 use function is_string;
 use function redirect;
 use function response;

@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Utils\Crypt;
 use function base64_decode;
 use function config;
-use function env;
 
 class EncryptionProvider extends Provider
 {

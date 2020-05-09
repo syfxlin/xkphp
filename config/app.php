@@ -51,6 +51,6 @@ return [
 
         // App
         AppProvider::class,
-        RouteProvider::class
-    ]
+        RouteProvider::class,
+    ],
 ];

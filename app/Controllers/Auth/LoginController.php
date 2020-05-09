@@ -14,7 +14,7 @@ class LoginController extends Controller
         $logged = Auth::login(
             [
                 'account' => $request->input('account'),
-                'password' => $request->input('password')
+                'password' => $request->input('password'),
             ],
             $request->input('remember_me') === 'on'
         );
@@ -22,7 +22,7 @@ class LoginController extends Controller
             return redirect('/home');
         }
         return view('auth/login', [
-            'errors' => Validator::convertViewErrors($logged)
+            'errors' => Validator::convertViewErrors($logged),
         ]);
     }
 

@@ -34,8 +34,8 @@ class LogSubscriber implements Subscriber
         return [
             LogEvent::class => [
                 [self::class, 'handle1'],
-                [self::class, 'handle2']
-            ]
+                [self::class, 'handle2'],
+            ],
         ];
     }
 }

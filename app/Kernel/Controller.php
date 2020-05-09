@@ -4,7 +4,6 @@ namespace App\Kernel;
 
 use App\Facades\App;
 use App\Http\Request;
-use function explode;
 use function str_parse_callback;
 use function strpos;
 

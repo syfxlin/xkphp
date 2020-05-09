@@ -9,6 +9,6 @@ return [
     LogAspect::class => [
         HomeController::class => 'aspect',
         Hash::class => 'make',
-        Crypt::class => 'encrypt'
-    ]
+        Crypt::class => 'encrypt',
+    ],
 ];

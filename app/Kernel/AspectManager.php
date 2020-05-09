@@ -4,13 +4,8 @@ namespace App\Kernel;
 
 use App\Application;
 use App\Aspect\Aspect;
-use App\Utils\Config;
-use Closure;
 use function array_map;
 use function array_merge;
-use function array_push;
-use function explode;
-use function is_array;
 use function is_string;
 use function str_parse_callback;
 

@@ -4,7 +4,7 @@ use App\Listeners\StrListener;
 
 return [
     'listeners' => [
-        'event.str_config' => StrListener::class
+        'event.str_config' => StrListener::class,
     ],
-    'subscribers' => []
+    'subscribers' => [],
 ];

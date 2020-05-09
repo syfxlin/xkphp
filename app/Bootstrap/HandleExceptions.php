@@ -8,8 +8,6 @@ use App\Http\Response;
 use ErrorException;
 use Throwable;
 use function in_array;
-use function response;
-use function view;
 
 class HandleExceptions extends Bootstrap
 {

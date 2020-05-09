@@ -5,14 +5,10 @@ namespace App\Kernel;
 use App\Application;
 use App\Contracts\Event;
 use Closure;
-use function array_walk;
 use function class_exists;
 use function get_class;
-use function implode;
 use function is_array;
-use function is_callable;
 use function is_string;
-use function str_parse_callback;
 use function str_stringify_callback;
 
 class EventDispatcher
@@ -57,7 +53,7 @@ class EventDispatcher
         $subscribers = $this->app->call(
             [$subscriber, 'subscribe'],
             [
-                'dispatcher' => $this
+                'dispatcher' => $this,
             ]
         );
         $this->subscribers[$subscriber] = $subscribers;
@@ -111,7 +107,7 @@ class EventDispatcher
                     str_stringify_callback($listener, 'handle'),
                     [
                         'event' => $event,
-                        'args' => $args
+                        'args' => $args,
                     ]
                 );
             };
@@ -119,7 +115,7 @@ class EventDispatcher
         return function ($event, $args) use ($listener) {
             return $this->app->call($listener, [
                 'event' => $event,
-                'args' => $args
+                'args' => $args,
             ]);
         };
     }

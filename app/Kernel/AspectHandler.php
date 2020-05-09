@@ -6,7 +6,6 @@ use App\Aspect\Aspect;
 use Closure;
 use Throwable;
 use function array_shift;
-use function is_callable;
 
 class AspectHandler
 {

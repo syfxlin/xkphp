@@ -10,5 +10,5 @@ return [
     'cookie_path' => '/',
     'cookie_domain' => env('SESSION_DOMAIN', ''),
     'cookie_secure' => env('SESSION_SECURE_COOKIE', false),
-    'cookie_httponly' => true
+    'cookie_httponly' => true,
 ];

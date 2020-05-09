@@ -2,43 +2,34 @@
 
 namespace App\Controllers;
 
+use App\Annotations\Autowired\Autowired;
+use App\Annotations\DI;
+use App\Annotations\Route;
 use App\Aspect\LogAspect;
 use App\Events\LogEvent;
 use App\Exceptions\Http\MethodNotAllowedException;
-use App\Exceptions\HttpStatusException;
 use App\Facades\App;
-use App\Facades\Log;
 use App\Facades\Cookie;
 use App\Facades\Event;
 use App\Facades\JWT;
+use App\Facades\Log;
 use App\Http\Request;
 use App\Http\Response;
-use App\Http\Stream;
-use App\Kernel\EventDispatcher;
 use App\Kernel\Scheduler;
 use App\Kernel\View;
-use App\Annotations\DI;
 use App\Listeners\LogListener;
 use App\Listeners\LogSubscriber;
 use App\Listeners\StrListener;
 use App\Utils\Crypt;
 use App\Utils\Hash;
 use Doctrine\Common\Annotations\AnnotationReader;
-use App\Annotations\Middleware;
-use App\Annotations\Route;
-use App\Annotations\Autowired\Autowired;
-use ReflectionClass;
-use RuntimeException;
 use function abort;
 use function curl_close;
 use function curl_exec;
 use function curl_init;
-use function curl_multi_exec;
-use function curl_multi_getcontent;
 use function curl_setopt;
 use function preg_replace;
 use function report;
-use function sleep;
 
 class HomeController
 {
@@ -161,7 +152,7 @@ class HomeController
         $encrypt = App::callWithAspect(
             [Crypt::class, 'encrypt'],
             [
-                'value' => '123'
+                'value' => '123',
             ]
         );
         report('debug', 'function');

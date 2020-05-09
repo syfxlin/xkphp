@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Facades\Crypt;
 use App\Http\Request;
-use RuntimeException;
-use function array_map;
 
 class RequestProvider extends Provider
 {

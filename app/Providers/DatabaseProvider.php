@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Database\DB;
-use App\Http\Request;
 
 class DatabaseProvider extends Provider
 {
