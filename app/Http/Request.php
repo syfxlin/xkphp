@@ -11,7 +11,7 @@ use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use function array_merge;
 use function count;
-use function getDotData;
+use function data_get_dot;
 use function is_array;
 use function is_string;
 use function json_decode;
@@ -415,7 +415,7 @@ class Request implements ServerRequestInterface
             return $this->parsed_body;
         }
         if (isset($key) && strpos($key, '.') !== false) {
-            return getDotData($key, $this->parsed_body);
+            return data_get_dot($key, $this->parsed_body);
         }
         if (!isset($this->parsed_body[$key])) {
             return $default;

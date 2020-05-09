@@ -326,18 +326,32 @@ function asset(string $asset): string
 // Array
 /**
  * @param string $key
- * @param array $source
+ * @param $source
+ * @param $default
  * @return array|mixed|null
  */
-function getDotData(string $key, array $source)
+function data_get_dot(string $key, $source, $default = null)
 {
     $keys = explode('.', $key);
     $data = $source;
-    foreach ($keys as $k) {
-        if (!isset($data[$k])) {
-            return null;
+    foreach ($keys as $index => $segment) {
+        if ($data === null) {
+            return $default;
         }
-        $data = $data[$k];
+        if ($segment === "*") {
+            $result = [];
+            foreach ($data as $item) {
+                $result[] = data_get_dot($item, $key);
+            }
+            return $result;
+        }
+        if (is_array($data)) {
+            $data = $data[$segment];
+        } else if (is_object($data)) {
+            $data = $data->$segment;
+        } else {
+            return $default;
+        }
     }
     return $data;
 }
