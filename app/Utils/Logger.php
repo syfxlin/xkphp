@@ -2,20 +2,25 @@
 
 namespace App\Utils;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use RuntimeException;
 use Throwable;
 use function count;
 use function date_create;
 use function file_put_contents;
 use function get_class;
 use function implode;
+use function in_array;
 use function ini_set;
 use function is_object;
 use function str_replace;
 use function strtolower;
+use function strtoupper;
 use function substr;
 use function var_export;
 
-class Console
+class Logger implements LoggerInterface
 {
     public const BEGIN = "\33[";
     public const MIDDLE = 'm';
@@ -51,19 +56,42 @@ class Console
         'hide' => '8',
     ];
 
+    public const LOG_COLOR = [
+        LogLevel::EMERGENCY => 'red',
+        LogLevel::ALERT => 'red',
+        LogLevel::CRITICAL => 'red',
+        LogLevel::ERROR => 'red',
+        LogLevel::WARNING => 'yellow',
+        LogLevel::NOTICE => 'cyan',
+        LogLevel::INFO => 'cyan',
+        LogLevel::DEBUG => 'magenta',
+    ];
+
+    public const LOG_OPTION = [
+        LogLevel::EMERGENCY => 'reverse',
+        LogLevel::ALERT => 'reverse',
+        LogLevel::CRITICAL => 'reverse',
+    ];
+
+    /**
+     * @var string
+     */
     protected $print_to = 'console';
+
+    /**
+     * @var string
+     */
+    public $log_name = 'XK-Log';
 
     public function __construct($options = [])
     {
         ini_set('date.timezone', $options['timezone'] ?? 'Asia/Shanghai');
         $this->print_to = $options['print_to'] ?? 'console';
+        $this->log_name = $options['log_name'] ?? 'XK-Log';
     }
 
-    protected function render(
-        string $text,
-        string $color,
-        string $option = null
-    ): string {
+    protected function render($text, $color, $option = null): string
+    {
         if ($this->print_to !== 'console') {
             return $text;
         }
@@ -80,7 +108,7 @@ class Console
             self::END;
     }
 
-    protected function send(string $text): void
+    protected function send($text): void
     {
         if ($this->print_to === 'console') {
             file_put_contents('php://stdout', "$text\n");
@@ -120,26 +148,16 @@ class Console
         return substr($date, 0, -3);
     }
 
-    public function error(Throwable $e): void
+    public function parseError(Throwable $e): string
     {
-        $time = $this->time();
         $code = $e->getCode();
         $class = get_class($e);
         $message = $e->getMessage() === '' ? 'null' : $e->getMessage();
         $stack = $this->stack($e);
-        $out = "[XK-Log] ERROR[$class]($code): $message | $time";
-        $this->send($this->render($out, 'red') . "\n$stack");
-    }
-
-    public function fatal(Throwable $e): void
-    {
-        $time = $this->time();
-        $code = $e->getCode();
-        $class = get_class($e);
-        $message = $e->getMessage() === '' ? 'null' : $e->getMessage();
-        $stack = $this->stack($e);
-        $out = "[XK-Log] FATAL[$class]($code): $message | $time";
-        $this->send($this->render($out, 'red', 'reverse') . "\n$stack");
+        return $this->render(
+            "\n Message: $message, Code: $code, Class: $class",
+            'red'
+        ) . "\n$stack";
     }
 
     protected function parse($objects): string
@@ -157,36 +175,84 @@ class Console
         return $out;
     }
 
-    public function warn(
-        string $title = 'null',
-        string $message = 'null',
-        ...$objects
-    ): void {
-        $time = $this->time();
-        $out = "[XK-Log] WARN[$title]: $message | $time";
-        $out .= $this->parse($objects);
-        $this->send($this->render($out, 'yellow'));
+    public function emergency($message, array $context = []): void
+    {
+        $this->log(LogLevel::EMERGENCY, $message, $context);
     }
 
-    public function info(
-        string $title = 'null',
-        string $message = 'null',
-        ...$objects
-    ): void {
-        $time = $this->time();
-        $out = "[XK-Log] INFO[$title]: $message | $time";
-        $out .= $this->parse($objects);
-        $this->send($this->render($out, 'cyan'));
+    public function alert($message, array $context = []): void
+    {
+        $this->log(LogLevel::ALERT, $message, $context);
     }
 
-    public function debug(
-        string $title = 'null',
-        string $message = 'null',
-        ...$objects
-    ): void {
+    public function critical($message, array $context = []): void
+    {
+        $this->log(LogLevel::CRITICAL, $message, $context);
+    }
+
+    public function error($message, array $context = []): void
+    {
+        $this->log(LogLevel::ERROR, $message, $context);
+    }
+
+    public function warning($message, array $context = []): void
+    {
+        $this->log(LogLevel::WARNING, $message, $context);
+    }
+
+    public function notice($message, array $context = []): void
+    {
+        $this->log(LogLevel::NOTICE, $message, $context);
+    }
+
+    public function info($message, array $context = []): void
+    {
+        $this->log(LogLevel::INFO, $message, $context);
+    }
+
+    public function debug($message, array $context = []): void
+    {
+        $this->log(LogLevel::DEBUG, $message, $context);
+    }
+
+    public function log($level, $message, array $context = []): void
+    {
+        $level = strtolower($level);
+        $error = null;
+        if (isset($context['error'])) {
+            $error = $context['error'];
+            unset($context['error']);
+        }
+        if (
+            !in_array($level, [
+                'emergency',
+                'alert',
+                'critical',
+                'error',
+                'warning',
+                'notice',
+                'info',
+                'debug',
+            ])
+        ) {
+            throw new RuntimeException(
+                "The error level of the log is set incorrectly"
+            );
+        }
         $time = $this->time();
-        $out = "[XK-Log] DEBUG[$title]: $message | $time";
-        $out .= $this->parse($objects);
-        $this->send($this->render($out, 'magenta'));
+        $title = strtoupper($level);
+        $out = "[$this->log_name] $title: $message | $time";
+        $out .= self::END;
+        $out .= $this->parse($context);
+        if ($error !== null) {
+            $out .= $this->parseError($error);
+        }
+        $this->send(
+            $this->render(
+                $out,
+                self::LOG_COLOR[$level],
+                self::LOG_OPTION[$level] ?? null
+            )
+        );
     }
 }

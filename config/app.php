@@ -4,7 +4,6 @@ use App\Providers\AnnotationProvider;
 use App\Providers\AppProvider;
 use App\Providers\AspectProvider;
 use App\Providers\AuthProvider;
-use App\Providers\ConsoleProvider;
 use App\Providers\CookieProvider;
 use App\Providers\DatabaseProvider;
 use App\Providers\EncryptionProvider;
@@ -12,6 +11,7 @@ use App\Providers\EventProvider;
 use App\Providers\FileProvider;
 use App\Providers\HashProvider;
 use App\Providers\JwtProvider;
+use App\Providers\LoggerProvider;
 use App\Providers\RequestProvider;
 use App\Providers\RouteProvider;
 use App\Providers\SessionProvider;
@@ -47,7 +47,7 @@ return [
         HashProvider::class,
         JwtProvider::class,
         StorageProvider::class,
-        ConsoleProvider::class,
+        LoggerProvider::class,
 
         // App
         AppProvider::class,

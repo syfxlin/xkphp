@@ -104,11 +104,15 @@ class HomeController
      */
     public function exception(Request $request): bool
     {
-        Log::info('Info', 'Info', ['Info']);
-        Log::debug('Debug', 'Debug', ['Debug']);
-        Log::warn('Warn', 'Warn', ['Warn']);
-        Log::error(new MethodNotAllowedException('Error'));
-        Log::fatal(new MethodNotAllowedException('Fatal'));
+        Log::info('Info', ['Info']);
+        Log::debug('Debug', ['Debug']);
+        Log::warning('Warn', ['Warn']);
+        Log::error('Error', [
+            'error' => new MethodNotAllowedException("Error"),
+        ]);
+        Log::alert('Alert', [
+            'error' => new MethodNotAllowedException("Error"),
+        ]);
         report('info', 'Info Function');
         abort(403);
         return true;

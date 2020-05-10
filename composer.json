@@ -16,7 +16,9 @@
     "ext-fileinfo": "*",
     "doctrine/annotations": "^1.10",
     "guzzlehttp/guzzle": "^6.5",
-    "ext-apcu": "*"
+    "ext-apcu": "*",
+    "psr/log": "^1.1",
+    "psr/http-factory": "^1.0"
   },
   "license": "Apache 2.0",
   "authors": [

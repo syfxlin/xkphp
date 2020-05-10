@@ -2,17 +2,17 @@
 
 namespace App\Providers;
 
-use App\Utils\Console;
+use App\Utils\Logger;
 use function config;
 
-class ConsoleProvider extends Provider
+class LoggerProvider extends Provider
 {
     public function register(): void
     {
         $this->app->singleton(
-            Console::class,
+            Logger::class,
             function () {
-                return new Console([
+                return new Logger([
                     'print_to' => config('app.log_to'),
                 ]);
             },

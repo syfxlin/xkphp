@@ -357,9 +357,9 @@ function data_get_dot(string $key, $source, $default = null)
 }
 
 // Log
-function report($level, ...$data)
+function report($level, $message, array $context = [])
 {
-    Log::{$level}(...$data);
+    Log::log($level, $message, $context);
 }
 
 // Event

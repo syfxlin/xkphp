@@ -2,25 +2,28 @@
 
 namespace App\Facades;
 
-use App\Utils\Console;
-use Throwable;
+use App\Utils\Logger;
 
 /**
  * Class Log
  * @package App\Facades
  *
- * @method static void error(Throwable $e)
- * @method static void fatal(Throwable $e)
- * @method static void warn(string $title = 'null', string $message = 'null', ...$objects)
- * @method static void info(string $title = 'null', string $message = 'null', ...$objects)
- * @method static void debug(string $title = 'null', string $message = 'null', ...$objects)
+ * @method static void emergency($message, array $context = [])
+ * @method static void alert($message, array $context = [])
+ * @method static void critical($message, array $context = [])
+ * @method static void error($message, array $context = [])
+ * @method static void warning($message, array $context = [])
+ * @method static void notice($message, array $context = [])
+ * @method static void info($message, array $context = [])
+ * @method static void debug($message, array $context = [])
+ * @method static void log($level, $message, array $context = [])
  *
- * @see \App\Utils\Console
+ * @see \App\Utils\Logger
  */
 class Log extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return Console::class;
+        return Logger::class;
     }
 }
