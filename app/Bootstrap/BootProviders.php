@@ -6,6 +6,6 @@ class BootProviders extends Bootstrap
 {
     public function boot(): void
     {
-        $this->app->provider_manager->boot();
+        $this->app->getProviderManager()->boot();
     }
 }

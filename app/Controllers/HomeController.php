@@ -12,6 +12,7 @@ use App\Facades\App;
 use App\Facades\Cookie;
 use App\Facades\Event;
 use App\Facades\JWT;
+use App\Facades\Lang;
 use App\Facades\Log;
 use App\Http\Request;
 use App\Http\Response;
@@ -23,6 +24,7 @@ use App\Listeners\StrListener;
 use App\Utils\Crypt;
 use App\Utils\Hash;
 use Doctrine\Common\Annotations\AnnotationReader;
+use function __;
 use function abort;
 use function curl_close;
 use function curl_exec;
@@ -222,5 +224,17 @@ class HomeController
         $scheduler->add($task2);
         $scheduler->then();
         return '';
+    }
+
+    /**
+     * @return string
+     *
+     * @Route\Get("/lang")
+     */
+    public function locale(): string
+    {
+        $res = Lang::trans("message.msg", ['str' => 'string', 'int' => 123]);
+        $res .= __("message.not", [], "default");
+        return $res;
     }
 }

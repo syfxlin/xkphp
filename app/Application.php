@@ -18,8 +18,9 @@ use function base_path;
 use function config;
 use function config_path;
 use function public_path;
-use function realpath;
+use function resources_path;
 use function storage_path;
+use function view_path;
 
 /**
  * Class Application
@@ -55,9 +56,19 @@ class Application extends Container
     /**
      * @var ProviderManager
      */
-    public $provider_manager;
+    protected $provider_manager;
 
-    public function __construct()
+    /**
+     * @var callable
+     */
+    protected $booting_callback;
+
+    /**
+     * @var callable
+     */
+    protected $booted_callback;
+
+    protected function __construct()
     {
         // 基础绑定
         $this->registerBaseBindings();
@@ -80,7 +91,8 @@ class Application extends Container
         $this->instance('path.config', config_path());
         $this->instance('path.public', public_path());
         $this->instance('path.storage', storage_path());
-        $this->instance('path.view', realpath(BASE_PATH . '/app/Views'));
+        $this->instance('path.view', view_path());
+        $this->instance('path.resources', resources_path());
     }
 
     /**
@@ -108,14 +120,7 @@ class Application extends Container
         $response->send();
     }
 
-    /**
-     * 启动 App，程序入口
-     *
-     * @return Application $app
-     *
-     * @codeCoverageIgnore
-     */
-    public static function boot(): Application
+    public static function create(): Application
     {
         // 若已启动则直接返回
         if (isset(self::$app)) {
@@ -123,19 +128,42 @@ class Application extends Container
         }
 
         // 创建应用
-        self::$app = new self();
+        return self::$app = new self();
+    }
+
+    /**
+     * 启动 App，程序入口
+     *
+     * @return Application $app
+     *
+     * @codeCoverageIgnore
+     */
+    public function boot(): Application
+    {
+        // Booting
+        if (isset($this->booting_callback)) {
+            $booting = $this->booting_callback;
+            $booting($this);
+        }
 
         // 初始化
-        self::$app->bootstrap();
+        $this->bootstrap();
+
+        // Booted
+        if (isset($this->booted_callback)) {
+            $booted = $this->booted_callback;
+            $booted($this);
+        }
 
         // 路由
-        self::$app->dispatchToEmit();
-        return self::$app;
+        $this->dispatchToEmit();
+
+        return $this;
     }
 
     public static function getInstance(): Application
     {
-        return self::boot();
+        return self::create();
     }
 
     public static function setInstance(Application $application): void
@@ -150,5 +178,45 @@ class Application extends Container
             return $app_env;
         }
         return $app_env === $env;
+    }
+
+    public function version(): string
+    {
+        return config('app.version');
+    }
+
+    public function getProviderManager(): ProviderManager
+    {
+        return $this->provider_manager;
+    }
+
+    public function setProviderManager(ProviderManager $manager): void
+    {
+        $this->provider_manager = $manager;
+    }
+
+    public function isBooted(): bool
+    {
+        return isset(self::$app);
+    }
+
+    public function booting(callable $callback): void
+    {
+        $this->booting_callback = $callback;
+    }
+
+    public function booted(callable $callback): void
+    {
+        $this->booted_callback = $callback;
+    }
+
+    public function getLocale(): string
+    {
+        return config('app.locale');
+    }
+
+    public function isLocale(string $locale): bool
+    {
+        return $this->getLocale() === $locale;
     }
 }

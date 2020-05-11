@@ -7,6 +7,7 @@ use App\Facades\Crypt;
 use App\Facades\Event;
 use App\Facades\Hash;
 use App\Facades\JWT;
+use App\Facades\Lang;
 use App\Facades\Log;
 use App\Facades\View;
 use App\Http\CookieManager;
@@ -181,6 +182,28 @@ function str_stringify_callback(
     return "{$callback}{$split}{$default}";
 }
 
+function sprintf_array($string, $array)
+{
+    $key_index = array_flip(array_keys($array));
+
+    while (preg_match("/:([a-zA-Z0-9_$-]+)(\(([^)]*)\)|)/", $string, $m)) {
+        if (!isset($array[$m[1]])) {
+            continue;
+        }
+        $index = $key_index[$m[1]] + 1;
+        $option = $m[3] ?? 's';
+        $replace = "%$index$$option";
+        $string = substr_replace(
+            $string,
+            $replace,
+            strpos($string, $m[0]),
+            strlen($m[0])
+        );
+    }
+
+    return sprintf($string, ...array_values($array));
+}
+
 // Path
 /**
  * @param string $sub_path
@@ -231,10 +254,18 @@ function storage_path(string $sub_path = '')
  * @param string $view
  * @return false|string
  */
-function view_path(string $view)
+function view_path(string $view = null)
 {
+    if ($view === null) {
+        return realpath(BASE_PATH . "/app/Views/");
+    }
     $view = str_replace('.', '/', $view);
     return realpath(BASE_PATH . "/app/Views/$view.php");
+}
+
+function resources_path(string $sub_path = '')
+{
+    return realpath(BASE_PATH . "/resources/$sub_path");
 }
 
 // Process
@@ -345,9 +376,9 @@ function data_get_dot(string $key, $source, $default = null)
             }
             return $result;
         }
-        if (is_array($data)) {
+        if (is_array($data) && isset($data[$segment])) {
             $data = $data[$segment];
-        } elseif (is_object($data)) {
+        } elseif (is_object($data) && isset($data->$segment)) {
             $data = $data->$segment;
         } else {
             return $default;
@@ -376,4 +407,9 @@ function subscribe(string $subscriber)
 function event($event, $args = []): array
 {
     return Event::dispatch($event, $args);
+}
+
+function __(string $key, array $data = [], string $default = null)
+{
+    return Lang::trans($key, $data, $default);
 }

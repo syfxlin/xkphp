@@ -11,6 +11,7 @@ use App\Providers\EventProvider;
 use App\Providers\FileProvider;
 use App\Providers\HashProvider;
 use App\Providers\JwtProvider;
+use App\Providers\LocaleProvider;
 use App\Providers\LoggerProvider;
 use App\Providers\RequestProvider;
 use App\Providers\RouteProvider;
@@ -19,6 +20,8 @@ use App\Providers\StorageProvider;
 
 return [
     'name' => env('APP_NAME', 'XK-PHP'),
+    'version' => env('APP_VERSION', '1.0'),
+    'locale' => env('APP_LOCALE', 'zh_CN'),
     'env' => env('APP_ENV', 'production'),
     'url' => env('APP_URL', 'http://localhost'),
     'asset_url' => env('ASSET_URL', ''),
@@ -26,7 +29,7 @@ return [
     'cipher' => env('APP_CIPHER', 'AES-256-CBC'),
     'hash_algo' => env('APP_HASH', 'bcrypt'),
     'hash_options' => [],
-    'jwt_algo' => 'HS256',
+    'jwt_algo' => env('APP_JWT', 'HS256'),
     'jwt_payload' => '',
     'log_to' =>
         env('APP_ENV', 'production') !== 'production' &&
@@ -37,6 +40,7 @@ return [
         RequestProvider::class,
         CookieProvider::class,
         SessionProvider::class,
+        LocaleProvider::class,
         AspectProvider::class,
         EventProvider::class,
         AnnotationProvider::class,

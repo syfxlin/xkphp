@@ -6,5 +6,5 @@ namespace App;
  * 启动 App
  */
 // @codeCoverageIgnoreStart
-Application::boot();
+Application::create()->boot();
 // @@codeCoverageIgnoreEnd

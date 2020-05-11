@@ -47,7 +47,7 @@ class File
         return file_exists($path);
     }
 
-    public function size(string $path)
+    public function size(string $path): int
     {
         return filesize($path);
     }

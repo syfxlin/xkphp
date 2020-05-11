@@ -16,7 +16,7 @@ class LoggerProvider extends Provider
                     'print_to' => config('app.log_to'),
                 ]);
             },
-            'console'
+            'log'
         );
     }
 }

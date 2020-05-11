@@ -6,18 +6,14 @@ use App\Application;
 use App\Bootstrap\BootProviders;
 use App\Bootstrap\RegisterProviders;
 use App\Facades\App;
-use App\Facades\Crypt;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Stream;
 use App\Kernel\RouteManager;
 use App\Providers\RequestProvider;
-use App\Providers\RouteProvider;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use ReflectionClass;
-use RuntimeException;
 use function array_filter;
-use function array_map;
 use function array_merge;
 use function array_walk;
 use function config;
@@ -61,7 +57,7 @@ abstract class TestCase extends BaseTestCase
     protected static function boot(): void
     {
         // 启动
-        self::$app = new Application();
+        self::$app = Application::create();
 
         // 初始化
         $ref = new ReflectionClass(Application::class);
@@ -135,7 +131,7 @@ abstract class TestCase extends BaseTestCase
             'accept' => $accept,
             'dnt' => '1',
             'accept-encoding' => 'gzip, deflate, br',
-            'accept-language' => 'zh-CN,zh;q=0.8,en;q=0.6,it-IT;q=0.4,it;q=0.2'
+            'accept-language' => 'zh-CN,zh;q=0.8,en;q=0.6,it-IT;q=0.4,it;q=0.2',
         ];
 
         $headers = array_merge($headers, $defaultHeaders);
@@ -150,7 +146,7 @@ abstract class TestCase extends BaseTestCase
             'remote_port' => 49999,
             'remote_addr' => '127.0.0.1',
             'master_time' => microtime(),
-            'server_protocol' => 'HTTP/1.1'
+            'server_protocol' => 'HTTP/1.1',
         ];
 
         $get = [];

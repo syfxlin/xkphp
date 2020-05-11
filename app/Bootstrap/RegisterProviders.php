@@ -9,11 +9,11 @@ class RegisterProviders extends Bootstrap
 {
     public function boot(): void
     {
-        $this->app->provider_manager = new ProviderManager($this->app);
-        $this->app->provider_manager->registers(config('app.providers'));
+        $this->app->setProviderManager(new ProviderManager($this->app));
+        $this->app->getProviderManager()->registers(config('app.providers'));
         $this->app->instance(
             ProviderManager::class,
-            $this->app->provider_manager,
+            $this->app->getProviderManager(),
             'provider_manager'
         );
     }

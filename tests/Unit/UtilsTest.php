@@ -9,14 +9,19 @@ use Test\TestCase;
 use function base64_decode;
 use function base64_encode;
 use function env;
-use function hash_hmac;
 use function json_decode;
 use function json_encode;
+use function sprintf_array;
 
 class UtilsTest extends TestCase
 {
     public function testHash(): void
     {
+        $str = sprintf_array("This is a :str(s),but is a :int, :integer(d)", [
+            'str' => 'string',
+            'int' => 2,
+            'integer' => 3,
+        ]);
         $hashed_value = Hash::make('This is a hash test');
         $result_true = Hash::check('This is a hash test', $hashed_value);
         $result_false = Hash::check('This is a wrong hash test', $hashed_value);

@@ -5,6 +5,7 @@ namespace App\Facades;
 use App\Application;
 use App\Http\Request;
 use App\Kernel\Container;
+use App\Kernel\ProviderManager;
 
 /**
  * Class Application
@@ -27,8 +28,20 @@ use App\Kernel\Container;
  * @method static string getAlias($abstract)
  * @method static string getAbstract($alias)
  * @method static void removeAlias($alias)
- * @method static Container boot()
+ * @method static Application boot()
  * @method static mixed callWithAspect($method, array $args = [], $object = null, bool $isStatic = false, array $aspects = [])
+ * @method static Application create()
+ * @method static Application getInstance()
+ * @method static void setInstance(Application $application)
+ * @method static mixed environment(string $env = null)
+ * @method static string version()
+ * @method static ProviderManager getProviderManager()
+ * @method static void setProviderManager(ProviderManager $manager)
+ * @method static bool isBooted()
+ * @method static void booting(callable $callback)
+ * @method static void booted(callable $callback)
+ * @method static string getLocale()
+ * @method static bool isLocale(string $locale)
  *
  * @see \App\Application
  */
