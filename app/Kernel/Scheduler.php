@@ -3,15 +3,17 @@
 namespace App\Kernel;
 
 use Closure;
+use Exception;
 use Generator;
-use function array_shift;
+use SplQueue;
+use SplStack;
 
 class Scheduler
 {
     /**
-     * @var Task[]
+     * @var SplQueue<Task>
      */
-    protected $tasks = [];
+    protected $tasks;
 
     /**
      * @var int
@@ -19,33 +21,120 @@ class Scheduler
     protected $task_id = 1;
 
     /**
+     * @var array
+     */
+    protected $result = [];
+
+    /**
+     * @var array
+     */
+    protected $context = [];
+
+    public function __construct()
+    {
+        $this->tasks = new SplQueue();
+    }
+
+    /**
      * @param Task|Generator|Closure $task
+     * @param Task|null $parent
      * @return $this
      */
-    public function add($task): Scheduler
+    public function add($task, Task $parent = null): Scheduler
     {
         if ($task instanceof Closure) {
             $task = $task();
         }
         if ($task instanceof Generator) {
-            $this->tasks[] = new Task($this->task_id++, $task);
-        } else {
-            $this->tasks[] = $task;
+            $task = new Task($this->task_id++, $task, $this, $parent);
         }
+        $this->tasks->enqueue($task);
         return $this;
     }
 
-    public function then(): array
+    public function then()
     {
-        $result = [];
-        while (!empty($this->tasks)) {
-            $task = array_shift($this->tasks);
-            $result[] = $task->then();
+        $return_values = [];
+        $stack = new SplStack();
+        $result = null;
+        $exception = null;
+        while (!$this->tasks->isEmpty()) {
+            $task = $this->tasks->dequeue();
+            while (true) {
+                try {
+                    if ($exception !== null) {
+                        $task->exception($exception);
+                        $exception = null;
+                        continue;
+                    }
 
+                    $return = $task->then($result);
+
+                    if ($return instanceof SystemCall) {
+                        $return = $return($task, $this);
+                    }
+
+                    if ($return === $task) {
+                        $result = $return;
+                        continue;
+                    }
+
+                    if ($return instanceof Generator) {
+                        $return = new Task(
+                            $this->task_id++,
+                            $return,
+                            $this,
+                            $task
+                        );
+                    }
+
+                    if ($return instanceof Task) {
+                        $stack->push($task);
+                        $task = $return;
+                        continue;
+                    }
+
+                    $result = $return;
+
+                    if ($stack->isEmpty()) {
+                        break;
+                    }
+
+                    if ($task->isDone()) {
+                        // 获取返回值
+                        $return = $task->getReturn();
+                        /* @var Task $task */
+                        $task = $stack->pop();
+                        $result = $return;
+                        continue;
+                    }
+                } catch (Exception $e) {
+                    if ($stack->isEmpty()) {
+                        throw $e;
+                    }
+                    $task = $stack->pop();
+                    $exception = $e;
+                }
+            }
             if (!$task->isDone()) {
-                $this->tasks[] = $task;
+                $this->add($task);
+            } else {
+                $return_values[] = $task->getReturn();
             }
         }
-        return $result;
+        if ($exception !== null) {
+            throw $exception;
+        }
+        return $return_values;
+    }
+
+    public function &getContext(): array
+    {
+        return $this->context;
+    }
+
+    public function getTaskId(): int
+    {
+        return $this->task_id++;
     }
 }

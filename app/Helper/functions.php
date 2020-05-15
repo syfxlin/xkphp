@@ -356,12 +356,12 @@ function asset(string $asset): string
 
 // Array
 /**
- * @param string $key
  * @param $source
+ * @param string $key
  * @param $default
  * @return array|mixed|null
  */
-function data_get_dot(string $key, $source, $default = null)
+function dget($source, string $key, $default = null)
 {
     $keys = explode('.', $key);
     $data = $source;
@@ -372,7 +372,7 @@ function data_get_dot(string $key, $source, $default = null)
         if ($segment === "*") {
             $result = [];
             foreach ($data as $item) {
-                $result[] = data_get_dot($item, $key);
+                $result[] = dget($key, $item);
             }
             return $result;
         }
@@ -385,6 +385,33 @@ function data_get_dot(string $key, $source, $default = null)
         }
     }
     return $data;
+}
+
+function dset(&$source, string $key, $value)
+{
+    $keys = explode('.', $key);
+    if (count($keys) === 0) {
+        return false;
+    }
+    $last_key = array_pop($keys);
+    $data = &$source;
+    foreach ($keys as $index => $segment) {
+        if (is_array($data)) {
+            if (!isset($data[$segment])) {
+                $data[$segment] = [];
+            }
+            $data = &$data[$segment];
+        } elseif (is_object($data)) {
+            if (!isset($data->$segment)) {
+                $data[$segment] = new stdClass();
+            }
+            $data = &$data->$segment;
+        } else {
+            return false;
+        }
+    }
+    $data[$last_key] = $value;
+    return true;
 }
 
 // Log

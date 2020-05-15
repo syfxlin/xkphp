@@ -2,10 +2,10 @@
 
 namespace App\Utils;
 
-use function array_shift;
 use function config_path;
+use function dget;
 use function dirname;
-use function explode;
+use function dset;
 use function glob;
 use function is_array;
 use function pathinfo;
@@ -58,30 +58,12 @@ class Config
      */
     public function get(string $name, $default = null)
     {
-        $names = explode('.', $name);
-        $config_name = array_shift($names);
-        $config = self::$config[$config_name];
-        foreach ($names as $item) {
-            if (!isset($config[$item])) {
-                return $default;
-            }
-            $config = $config[$item];
-        }
-        return $config ?? $default;
+        return dget(self::$config, $name, $default);
     }
 
     private function setItem(string $name, $value): void
     {
-        $names = explode('.', $name);
-        $config_name = array_shift($names);
-        $config = &self::$config[$config_name];
-        foreach ($names as $item) {
-            if (!isset($config[$item])) {
-                $config[$item] = [];
-            }
-            $config = &$config[$item];
-        }
-        $config = $value;
+        dset(self::$config, $name, $value);
     }
 
     /**

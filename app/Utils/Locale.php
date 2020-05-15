@@ -3,7 +3,7 @@
 namespace App\Utils;
 
 use App\Exceptions\Utils\LocaleNotExistException;
-use function data_get_dot;
+use function dget;
 use function file_exists;
 use function resources_path;
 use function sprintf_array;
@@ -57,12 +57,12 @@ class Locale
         array $data = [],
         string $default = null
     ): string {
-        $string = data_get_dot($key, $this->locale_data, $default);
+        $string = dget($this->locale_data, $key, $default);
         return sprintf_array($string, $data);
     }
 
     public function has(string $key): bool
     {
-        return data_get_dot($key, $this->locale_data) !== null;
+        return dget($this->locale_data, $key) !== null;
     }
 }

@@ -11,7 +11,7 @@ use function array_pop;
 use function array_unshift;
 use function asset;
 use function csrf_token;
-use function data_get_dot;
+use function dget;
 use function htmlspecialchars;
 use function json_encode;
 use function ob_get_clean;
@@ -66,7 +66,7 @@ class ViewHtml
         if ($key === null) {
             return self::$data;
         }
-        return data_get_dot($key, self::$data);
+        return dget(self::$data, $key);
     }
 
     public function csrfToken()
