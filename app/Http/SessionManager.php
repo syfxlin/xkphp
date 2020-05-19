@@ -20,18 +20,22 @@ class SessionManager
      * @var string
      */
     private $id;
+
     /**
      * @var string
      */
     private $name;
+
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $options;
+
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $sessions;
+
     /**
      * @var bool
      */

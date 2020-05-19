@@ -15,7 +15,7 @@ use function is_string;
 class MiddlewareRunner implements RequestHandlerInterface
 {
     /**
-     * @var array
+     * @var MiddlewareInterface[]|callable[]|RequestHandlerInterface[]
      */
     public $middlewares;
 

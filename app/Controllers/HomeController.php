@@ -229,7 +229,7 @@ class HomeController
     /**
      * @return string
      *
-     * @Route\Get("/lang")
+     * @Route\Get("/lang/{lang}")
      */
     public function locale(): string
     {

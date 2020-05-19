@@ -13,12 +13,16 @@ use function strtolower;
 trait MessageTrait
 {
     /**
-     * @var array
+     * @var array<string, string[]|string>
+     *
+     * ["Content-Type" => "text/html"]
      */
     private $headers = [];
 
     /**
-     * @var array
+     * @var array<string, string>
+     *
+     * ["content-type" => "Content-Type"]
      */
     private $headerAlias = [];
 

@@ -103,7 +103,7 @@ class Response implements ResponseInterface
     private $status;
 
     /**
-     * @var array
+     * @var array<string, Cookie>
      */
     private $cookies;
 

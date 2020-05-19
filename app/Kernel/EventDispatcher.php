@@ -19,12 +19,14 @@ class EventDispatcher
     protected $app;
 
     /**
-     * @var array
+     * @var array<string, Closure>
+     *
+     * [LogEvent::class => handler]
      */
     protected $listeners = [];
 
     /**
-     * @var array
+     * @var array<string, array<string, mixed>>
      */
     protected $subscribers = [];
 

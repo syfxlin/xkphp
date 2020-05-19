@@ -63,7 +63,6 @@ class Task
             $this->before = false;
             return $this->coroutine->current();
         }
-
         return $this->coroutine->send($data);
     }
 

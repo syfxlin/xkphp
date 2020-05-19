@@ -20,30 +20,37 @@ class Cookie
      * @var string
      */
     private $name;
+
     /**
      * @var string|null
      */
     private $value;
+
     /**
      * @var int
      */
     private $expires = 0;
+
     /**
      * @var int
      */
     private $max_age = 0;
+
     /**
      * @var string|null
      */
     private $path;
+
     /**
      * @var string|null
      */
     private $domain;
+
     /**
      * @var bool
      */
     private $secure = false;
+
     /**
      * @var bool
      */

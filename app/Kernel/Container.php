@@ -40,21 +40,26 @@ class Container implements ContainerInterface
      * 容器中存储依赖的数组
      * 存储的是闭包，运行闭包会返回对应的依赖实例
      *
-     * @var array
+     * @var array<string, array<string, mixed>>
+     *
+     * ["request" => ["shared" => true, "concrete" => Closure]]
      */
     protected $bindings = [];
 
     /**
      * 绑定方法
      *
-     * @var array
+     * @var array<string, callable>
      */
     protected $methodBindings = [];
 
     /**
      * 已创建的单例实例
      *
-     * @var array
+     * @var array<string, mixed>
+     *
+     * ["request" => new Request()]
+     * ["str" => "This is a string"]
      */
     protected $instances = [];
 
@@ -68,7 +73,9 @@ class Container implements ContainerInterface
     /**
      * 依赖别名
      *
-     * @var string[]
+     * @var array<string, string>
+     *
+     * ["request" => Request::class]
      */
     protected $aliases = [];
 

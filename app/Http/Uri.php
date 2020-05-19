@@ -21,26 +21,32 @@ class Uri implements UriInterface
      * @var string
      */
     private $scheme;
+
     /**
      * @var string
      */
     private $host;
+
     /**
      * @var int|null
      */
     private $port;
+
     /**
      * @var string
      */
     private $path;
+
     /**
      * @var string
      */
     private $query;
+
     /**
      * @var string
      */
     private $fragment;
+
     /**
      * @var string
      */

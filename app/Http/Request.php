@@ -24,12 +24,14 @@ class Request implements ServerRequestInterface
     use RequestTrait;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $attributes = [];
 
     /**
-     * @var array
+     * @var array<string, string>
+     *
+     * ["cookie-key" => "cookie-value"]
      */
     private $cookies;
 
@@ -39,17 +41,21 @@ class Request implements ServerRequestInterface
     private $parsed_body;
 
     /**
-     * @var array
+     * @var array<string, string|array>
+     *
+     * ["key" => "value"]
+     * ["key" => ["value1", "value2"]]
+     * ["key" => ["key1" => "value1"]]
      */
     private $query;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $server;
 
     /**
-     * @var array
+     * @var array<string, UploadFile>
      */
     private $files;
 

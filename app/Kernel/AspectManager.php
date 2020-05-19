@@ -17,7 +17,9 @@ class AspectManager
     protected static $app;
 
     /**
-     * @var array
+     * @var array<string, array<string, Aspect>>
+     *
+     * ["HomeController" => ["aspect" => new Aspect()]]
      */
     protected static $point_map = [];
 
