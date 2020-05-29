@@ -179,14 +179,14 @@ class JWT
         ) {
             throw new InvalidSignException('Signature verification failed');
         }
-        if (isset($payload['nbf']) && $payload['nbf'] < $timestamp) {
+        if (isset($payload['nbf']) && $payload['nbf'] > $timestamp) {
             throw new InvalidTokenException(
                 'The token is not yet valid [' .
                     gmdate('D, d M Y H:i:s T', $payload['nbf']) .
                     ']'
             );
         }
-        if (isset($payload['iat']) && $payload['iat'] < $timestamp) {
+        if (isset($payload['iat']) && $payload['iat'] > $timestamp) {
             throw new InvalidTokenException(
                 'The token is not yet valid [' .
                     gmdate('D, d M Y H:i:s T', $payload['iat']) .
