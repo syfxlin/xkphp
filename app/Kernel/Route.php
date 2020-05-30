@@ -234,7 +234,7 @@ class Route
     public function any(string $route, $handler): Route
     {
         $this->addRoute(
-            ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
             $route,
             $handler
         );

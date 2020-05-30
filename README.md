@@ -80,6 +80,7 @@ php -S 0.0.0.0:8000 -t public
 - 终止流程
 - Aop 注解
 - 兼容 PSR-17
+- 适配 Swoole
 
 ## 文档 Doc
 
